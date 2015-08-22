@@ -1,0 +1,94 @@
+
+# Social
+guiFriendRequestTitle=Friend Request
+guiFriendRequestText=%s wants to add you as a friend.
+guiPartyInviteTitle=Invite
+guiPartyInviteText=%s invites you to join a party.
+guiPartyDissolvingTitle=Dissolve
+guiPartyDissolvingText=Do you want to disband your party?
+guiPartyLeaveTitle=Leave
+guiPartyLeaveText=Do you want to leave your party?
+guiMessageTitle=Message
+guiMessageFrom=from %s
+guiDeadAlert=You are Dead
+guiInvite=Invite
+guiCreate=Create
+guiDissolve=Dissolve
+guiMessageBox=Message Box
+guiGuild=Guild
+guiParty=Party
+guiFriends=Friends
+
+
+# Inventory
+guiWeapons=Weapons
+guiEquipped=Equipped
+guiAccessory=Accessory
+guiProfile=Profile
+guiEquipment=Equipment
+guiItems=Items
+
+
+#Skills
+skillSprinting=Sprinting
+skillCrafting=Crafting
+skillSneaking=Sneaking
+
+
+# Info
+guiPositionCheck=Position Check
+guiFieldMap=Field Map
+guiDungMap=Dungeon Map
+guiQuest=Quest
+guiSkills=Skills
+guiQuestList=Quest List
+guiDistance=Distance
+guiFloor=Floor
+guiCrafting=Crafting
+guiSprinting=Sprinting
+guiSneaking=Sneaking
+guiProfile=Profile
+
+
+# Misc
+guiOptions=Options..
+guiOption=Option
+guiHelp=Help
+guiLogout=Logout
+guiBack=Back
+
+
+# Options
+optionDefaultUI=Default UI
+optionDefaultInv=Default Inventory
+optionDefaultDeath=Default Death
+optionCrossHair=Cross Hair
+optionHealthBars=Health Bars
+optionSmoothHealth=Smooth Health
+optionColorCursor=Guild Icon
+optionParticles=Particles
+optionCursorMov=Cursor Movement
+optionCliChatPacks=Client Chat Packets
+optionSounds=Sound Effects
+optionLogout=Can Log Out?
+optionOrigUI=Original UI
+optionLessVis=Less Visual Noise
+optionSpinning=Spinning Crystals
+optionForceHud=Force HUD (gm 1)
+optionLightHud=Lighter HUD
+optionBossBar=Force Boss HP bar
+optionAltAbsorbPos=Alt Absorb Value Pos
+
+optCatUI=UI category
+optCatRend=Renderer category
+optCatInterf=Interface category
+
+# Display
+displayLvShort=LV
+displayLvLong=Level
+displayXpShort=XP
+displayXpLong=Experience
+displayHpLong=Health
+displayStrLong=Strength
+displayDexLong=Agility
+displayResLong=Resistance

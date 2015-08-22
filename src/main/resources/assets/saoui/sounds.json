@@ -1,0 +1,50 @@
+{
+  "sao.confirm": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "confirm"
+      }
+    ]
+  },
+  "sao.dialog.close": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "dialog_close"
+      }
+    ]
+  },
+  "sao.menu.popup": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "menu_popup"
+      }
+    ]
+  },
+  "sao.message": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "message"
+      }
+    ]
+  },
+  "sao.orb.dropdown": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "orb_dropdown"
+      }
+    ]
+  },
+  "sao.particles.death": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "particles_death"
+      }
+    ]
+  }
+}
