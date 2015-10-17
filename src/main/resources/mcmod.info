@@ -3,7 +3,7 @@
   "modid": "saoui",
   "name": "Sword Art Online UI",
   "description": "A Design-Mod for playing SAO in Minecraft..",
-  "version": "1.1",
+  "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
