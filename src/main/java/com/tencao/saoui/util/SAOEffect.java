@@ -45,11 +45,11 @@ public enum SAOEffect {
     private static final int SRC_HEIGHT = 10;
 
 	public final int getSrcX() {
-        return SRC_X + ordinal() % 14 * SRC_WIDTH;
+        return SRC_X + (ordinal() % 14) * SRC_WIDTH;
 	}
 
 	public final int getSrcY() {
-        return SRC_Y + ordinal() * SRC_HEIGHT / 14;
+        return SRC_Y + ordinal() / 14 * SRC_HEIGHT ;
 	}
 
 	public final void glDraw(int x, int y, float z) {

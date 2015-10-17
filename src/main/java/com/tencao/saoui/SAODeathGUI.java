@@ -72,7 +72,6 @@ public class SAODeathGUI extends SAOScreenGUI {
         }
     }
 
-    @Override
     protected void backgroundClicked(int cursorX, int cursorY, int button) {
         if (!mc.theWorld.getWorldInfo().isHardcoreModeEnabled()) {
             if (button == 0) {

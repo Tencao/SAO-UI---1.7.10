@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -26,6 +28,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 
@@ -43,7 +46,6 @@ import com.tencao.saoui.util.SAOID;
 import com.tencao.saoui.util.SAOOption;
 import com.tencao.saoui.util.SAOResources;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -57,7 +59,7 @@ public class SAOMod implements Runnable {
 
 	public static final String MODID = "saoui";
 	public static final String NAME = "Sword Art Online UI";
-	public static final String VERSION = "1.1";
+	public static final String VERSION = "1.2";
 
 	private static final double MAX_RANGE = 256.0D;
 	private static final float HEALTH_ANIMATION_FACTOR = 0.075F;
@@ -104,10 +106,11 @@ public class SAOMod implements Runnable {
     public static int REPLACE_GUI_DELAY = 0;
 
 	private boolean replaceGUI;
-    private SAOEventHandler events;
     
     @EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
+        MinecraftForge.EVENT_BUS.register(new SAOEventHandler());
+        //MinecraftForge.EVENT_BUS.register(new SAOIngameGUI(Minecraft.getMinecraft()));
         
 		config = new Configuration(event.getSuggestedConfigurationFile());
 		config.load();
@@ -161,11 +164,29 @@ public class SAOMod implements Runnable {
 		}
 		
 		renderManagerUpdate = new Thread() {
-		
-			@SuppressWarnings("unchecked")
+			
+			@Override
 			public void run() {
 				while (manager != null) {
-                    try {
+                    try {/*
+                        for (final Field field : manager.getClass().getDeclaredFields()) {
+                            if (Map.class.isAssignableFrom(field.getType())) {
+                                field.setAccessible(true);
+
+                                final Map playerRenderMap = (Map) field.get(manager);
+
+                                for (final Object entry : playerRenderMap.entrySet()) {
+                                    final Object value = ((Entry) entry).getValue();
+
+                                    if ((value instanceof Render) && (!(value instanceof SAORenderBase))) {
+                                        final Render render = new SAORenderBase((Render) value);
+                                        ((Entry) entry).setValue(render);
+                                    }
+                                }
+                            }
+                        }  */        	
+                
+                    	
                     	for (final Object key : manager.entityRenderMap.keySet()) {
                     		if (key instanceof Class<?>) {
                     			final Class<?> class0 = (Class<?>) key;
@@ -220,15 +241,6 @@ public class SAOMod implements Runnable {
 		(mcModThread = new Thread(this)).start();
 	}
 
-    @Mod.EventHandler
-	public void postinit(FMLInitializationEvent event) {
-        events = new SAOEventHandler();
-
-        FMLCommonHandler.instance().bus().register(events);
-        MinecraftForge.EVENT_BUS.register(events);
-        MinecraftForge.EVENT_BUS.register(new SAOIngameGUI(Minecraft.getMinecraft()));
-	}
-	
 	private static final boolean sleep(long time) {
 		try {
 			Thread.sleep(time);
@@ -273,19 +285,24 @@ public class SAOMod implements Runnable {
 					KeyBinding.setKeyBindState(mc.gameSettings.keyBindSneak.getKeyCode(), true);
 				}
 			}
-			
-			if ((mc.ingameGUI != null) && (!(mc.ingameGUI instanceof SAOIngameGUI))) {
-				mc.ingameGUI = new SAOIngameGUI(mc);
-				continue;
-			}
-			
+
+            if (!SAOOption.DEFAULT_UI.value && mc.ingameGUI != null && (!(mc.ingameGUI instanceof SAOIngameGUI))) {
+                mc.ingameGUI = new SAOIngameGUI(mc);
+                continue;
+            } else if (SAOOption.DEFAULT_UI.value && mc.ingameGUI != null && (mc.ingameGUI instanceof SAOIngameGUI)) {
+                mc.ingameGUI = new GuiIngameForge(mc);
+                continue;
+            }
+            
 			if (replaceGUI) {
-				if ((mc.currentScreen != null) && (!(mc.currentScreen instanceof SAOScreenGUI))) {
-					if ((mc.currentScreen instanceof GuiIngameMenu) || ((mc.currentScreen instanceof GuiInventory) &&
-						(!SAOOption.DEFAULT_INVENTORY.value))) {
-						final boolean inv = (mc.currentScreen instanceof GuiInventory);
-						
-						mc.currentScreen.mc = mc;
+                if ((mc.currentScreen != null) && (!(mc.currentScreen instanceof SAOScreenGUI))) {
+                    if (REPLACE_GUI_DELAY > 0) {
+                        REPLACE_GUI_DELAY--;
+                    } else if ((mc.currentScreen instanceof GuiIngameMenu) || ((mc.currentScreen instanceof GuiInventory) &&
+                            (!SAOOption.DEFAULT_INVENTORY.value))) {
+                        final boolean inv = (mc.currentScreen instanceof GuiInventory);
+
+                        mc.currentScreen.mc = mc;
 						
 						try {
 							SAOSound.play(mc, SAOSound.ORB_DROPDOWN);

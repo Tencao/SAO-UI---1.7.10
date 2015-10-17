@@ -1,14 +1,27 @@
 package com.tencao.saoui.util;
 
 import com.tencao.saoui.SAOMod;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityFlying;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.entity.INpc;
+import net.minecraft.entity.monster.EntityGolem;
+import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityPigZombie;
+import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.monster.EntitySnowman;
+import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.passive.EntityWolf;
+import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -37,22 +50,36 @@ public enum SAOColorState {
         if (entity instanceof EntityPlayer) {
             return SAOMod.isCreative((AbstractClientPlayer) entity)? CREATIVE : getPlayerColorState(mc, (EntityPlayer) entity, time);
         } else if (entity instanceof EntityCreature) {
-            return getEntityColorState((EntityCreature) entity);
-        } else {
-            return INNOCENT;
-        }
+            return getCreatureColorState((EntityCreature) entity);
+        } else if (entity instanceof EntityLiving) {
+        	return getLivingColorState((EntityLiving) entity);
+        } else if ((entity.hitByEntity(entity)) && (entity instanceof EntityLiving) && (((EntityCreature)entity).getAITarget() instanceof EntityPlayer) || 
+        		(entity.hitByEntity(entity)) && (entity instanceof EntityLiving) && (((EntityCreature)entity).getAttackTarget() instanceof EntityPlayer)) {
+         		return KILLER;
+        } else
+        	return VIOLENT;
     }
 
-    private static SAOColorState getEntityColorState(EntityCreature creature) {
-        if ((creature instanceof EntityTameable) && (((EntityTameable) creature).isTamed())) {
-            return VIOLENT;
-        } else if (((creature instanceof EntityWolf) && (((EntityWolf) creature).isAngry())) ||
-                (creature.getAttackTarget() instanceof EntityPlayer) ||
-                ((creature.getAITarget() instanceof EntityPlayer)) ||
-                ((creature instanceof EntityMob) && (!(creature instanceof EntityPigZombie)))) {
+    private static SAOColorState getCreatureColorState(EntityCreature creature) {
+    	if ((creature instanceof EntityCreature) && (creature instanceof IMob) && !(creature instanceof EntityPigZombie) ||
+    		(creature instanceof EntityWolf) && (((EntityWolf) creature).isAngry())){
+    		return KILLER;
+    	} else if ((creature instanceof EntityCreature) && (creature instanceof EntityAnimal) && !(creature instanceof EntityWolf) ||
+    		(creature instanceof EntityWolf) && !(creature.getAttackTarget() instanceof EntityPlayer) && !(creature.getAITarget() instanceof EntityPlayer) && !(((EntityWolf) creature).isAngry()) ||
+    		(creature instanceof EntityCreature) && (creature instanceof INpc)){
+    		return INNOCENT;
+    	} else{
+    		return VIOLENT;
+    	}
+    }
+    
+    private static SAOColorState getLivingColorState(EntityLiving creature) {
+        if ((creature instanceof EntityLiving) && (creature instanceof IMob)) {
             return KILLER;
-        } else {
+        } else if ((creature instanceof EntityLiving) && (creature instanceof IAnimals)) {
             return INNOCENT;
+        } else {
+        	return VIOLENT;
         }
     }
 
