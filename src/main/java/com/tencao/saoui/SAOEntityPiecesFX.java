@@ -33,7 +33,6 @@ public class SAOEntityPiecesFX extends EntityFX {
         this.noClip = false;
     }
 
-    @Override
     public void renderParticle(Tessellator tessellator, float time, float x, float y, float z, float f0, float f1) {
         float particle = ((float)this.particleAge + time) / (float)this.particleMaxAge * 32.0F;
 
@@ -55,6 +54,7 @@ public class SAOEntityPiecesFX extends EntityFX {
         super.renderParticle(tessellator, time, x, y, z, f0, f1);
     }
 
+
     /**
      * Called to update the entity's position/logic.
      */
@@ -71,15 +71,13 @@ public class SAOEntityPiecesFX extends EntityFX {
         }
 
         this.setParticleTextureIndex(7 - this.particleAge * 8 / this.particleMaxAge);
-        this.motionY -= 0.002D;
+        this.motionY -= 0.04D * (double)this.particleGravity;
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
-
         if (this.posY == this.prevPosY)
         {
             this.motionX *= 1.1D;
             this.motionZ *= 1.1D;
         }
-
         this.motionX *= 0.9599999785423279D;
         this.motionY *= 0.9599999785423279D;
         this.motionZ *= 0.9599999785423279D;

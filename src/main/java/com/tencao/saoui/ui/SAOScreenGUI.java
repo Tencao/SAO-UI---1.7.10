@@ -61,11 +61,21 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
     }
 	
     private int getCursorX() {
-        return SAOOption.CURSOR_MOVEMENT.value ? (width / 2 - mouseX) / 2 : 0;
+    	if (SAOOption.CURSOR_MOVEMENT.value){
+            return SAOOption.CURSOR_MOVEMENT.value ? (width / 2 - mouseX) / 2 : 0;
+    	}
+    	else {
+            return 0;
+    	}
     }
 
     private int getCursorY() {
+    	if (SAOOption.CURSOR_MOVEMENT.value){
         return SAOOption.CURSOR_MOVEMENT.value ? (height / 2 - mouseY) / 2 : 0;
+    	}
+    	else {
+            return 0;
+    	}
     }
 
     @Override

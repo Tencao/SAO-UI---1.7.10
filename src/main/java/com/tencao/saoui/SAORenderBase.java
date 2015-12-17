@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
@@ -34,13 +35,19 @@ class SAORenderBase extends RenderPlayer {
     private static final double HEALTH_ANGLE = 0.35F;
     private static final double HEALTH_RANGE = 0.975F;
     private static final float HEALTH_OFFSET = 0.75F;
-    private static final float HEALTH_OFFSET_PLAYER = -0.125F;
+    @SuppressWarnings("unused")
+	private static final float HEALTH_OFFSET_PLAYER = -0.125F;
     private static final double HEALTH_HEIGHT = 0.21F;
 
+    @SuppressWarnings("unused")
     private static final double PIECES_X_OFFSET = 0.02;
+    @SuppressWarnings("unused")
     private static final double PIECES_Y_OFFSET = -0.02;
+    @SuppressWarnings("unused")
     private static final int PIECES_COUNT = 150;
+    @SuppressWarnings("unused")
     private static final double PIECES_SPEED = 1.4;
+    @SuppressWarnings("unused")
     private static final double PIECES_GRAVITY = 0.4;
 
     private final Render parent;
@@ -56,7 +63,6 @@ class SAORenderBase extends RenderPlayer {
 		}
 	}*/
 
-    @Override
 	public void doRender(Entity entity, double x, double y, double z, float f0, float f1) {
         final Minecraft mc = Minecraft.getMinecraft();
 
@@ -104,12 +110,10 @@ class SAORenderBase extends RenderPlayer {
         }
     }
 
-    @Override
 	protected ResourceLocation getEntityTexture(Entity entity) {
     	return getEntityTexture((AbstractClientPlayer)entity);
 	}
     
-    @Override
     protected void bindEntityTexture(Entity entity)
     {
         this.bindTexture(this.getEntityTexture(entity));
@@ -125,7 +129,6 @@ class SAORenderBase extends RenderPlayer {
         return parent.getFontRendererFromRenderManager();
     }
 
-    @Override
 	public void setRenderManager(RenderManager render) {
 		parent.setRenderManager(render);
 		super.setRenderManager(render);
@@ -161,8 +164,8 @@ class SAORenderBase extends RenderPlayer {
             Tessellator tessellator = Tessellator.instance;
 
             tessellator.startDrawingQuads();
-
-            SAOColorState.getColorState(mc, entity, SAOMod.UNKNOWN_TIME_DELAY).glColor();
+            if (entity instanceof EntityLiving || entity instanceof EntityPlayer){
+            SAOColorState.getColorState(mc, entity, SAOMod.UNKNOWN_TIME_DELAY).glColor();}
 
             if (SAOOption.SPINNING_CRYSTALS.value) {
                 double a = (entity.worldObj.getTotalWorldTime() % 40) / 20.0D  * Math.PI;

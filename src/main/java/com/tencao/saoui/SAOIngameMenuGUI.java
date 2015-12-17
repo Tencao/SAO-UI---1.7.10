@@ -4,20 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiIngameMenu;
-import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.gui.GuiOptions;
-import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.stats.Achievement;
-import net.minecraft.util.StatCollector;
-import net.minecraft.world.World;
-
 import org.lwjgl.input.Keyboard;
 
 import com.tencao.saoui.ui.SAOButtonGUI;
@@ -53,6 +39,19 @@ import com.tencao.saoui.util.SAOSub;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiIngameMenu;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiOptions;
+import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+import net.minecraft.stats.Achievement;
+import net.minecraft.util.StatCollector;
+import net.minecraft.world.World;
 
 @SideOnly(Side.CLIENT)
 public class SAOIngameMenuGUI extends SAOScreenGUI {
@@ -85,7 +84,7 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
         this(null);
     }
 
-    @Override
+	@Override
     protected void init() {
         super.init();
         menus.clear();
@@ -118,7 +117,10 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
     @Override
     public void updateScreen() {
         super.updateScreen();
-
+        /*
+    	this.mc.displayGuiScreen((GuiScreen)null);
+        this.mc.displayGuiScreen(new SAOIngameMenuGUI());
+        */
         if (flowY < height / 2) {
             flowY = (flowY + height / 2 - 32) / 2;
         }
@@ -178,7 +180,7 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
                 mc.loadWorld(null);
                 mc.displayGuiScreen(new GuiMainMenu());
             }
-        } else if (id == SAOID.HELP) {
+        } else if (id == SAOID.MENU) {
             mc.displayGuiScreen(new GuiIngameMenu());
         } else if ((id == SAOID.OPTION) && (element instanceof SAOButtonGUI)) {
             final SAOButtonGUI button = (SAOButtonGUI) element;
@@ -457,15 +459,15 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
             menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
             menu.enabled = false;
 
-            menu.elements.add(new SAOButtonGUI(menu, SAOID.GUILD, 0, 0, StatCollector.translateToLocal("guiGuild"), SAOIcon.GUILD));
+            //menu.elements.add(new SAOButtonGUI(menu, SAOID.GUILD, 0, 0, StatCollector.translateToLocal("guiGuild"), SAOIcon.GUILD));
             menu.elements.add(new SAOButtonGUI(menu, SAOID.PARTY, 0, 0, StatCollector.translateToLocal("guiParty"), SAOIcon.PARTY));
             menu.elements.add(new SAOButtonGUI(menu, SAOID.FRIENDS, 0, 0, StatCollector.translateToLocal("guiFriends"), SAOIcon.FRIEND));
-
+            /*
             sub = SAOSub.createSocialSub(mc, element, -189, menuOffsetY);
             info = SAOSub.addInfo(sub);
 
             infoCaption = null;
-            infoText = null;
+            infoText = null;*/
         } else if (id == SAOID.NAVIGATION) {
             menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
 
@@ -482,7 +484,7 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
             menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
 
             menu.elements.add(new SAOButtonGUI(menu, SAOID.OPTIONS, 0, 0, StatCollector.translateToLocal("guiOption"), SAOIcon.OPTION));
-            menu.elements.add(new SAOButtonGUI(menu, SAOID.HELP, 0, 0, StatCollector.translateToLocal("guiHelp"), SAOIcon.HELP));
+            menu.elements.add(new SAOButtonGUI(menu, SAOID.MENU, 0, 0, StatCollector.translateToLocal("guiHelp"), SAOIcon.HELP));
 			menu.elements.add(new SAOStateButtonGUI(menu, SAOID.LOGOUT, 0, 0, SAOOption.LOGOUT.value? StatCollector.translateToLocal("guiLogout") : "", SAOIcon.LOGOUT, new SAOStateHandler() {
 
 				public boolean isStateEnabled(Minecraft mc, SAOStateButtonGUI button) {

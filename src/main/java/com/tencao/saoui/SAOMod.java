@@ -4,33 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.Map.Entry;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.gui.GuiGameOver;
-import net.minecraft.client.gui.GuiIngameMenu;
-import net.minecraft.client.gui.GuiPlayerInfo;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraftforge.client.GuiIngameForge;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
 
 import com.tencao.saoui.ui.SAOConfirmGUI;
 import com.tencao.saoui.ui.SAOElementGUI;
@@ -52,6 +30,26 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.gui.GuiGameOver;
+import net.minecraft.client.gui.GuiIngameMenu;
+import net.minecraft.client.gui.GuiPlayerInfo;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
+import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraftforge.client.GuiIngameForge;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 
 @Mod(modid = SAOMod.MODID, name = SAOMod.NAME, version = SAOMod.VERSION)
 @SideOnly(Side.CLIENT)
@@ -59,7 +57,7 @@ public class SAOMod implements Runnable {
 
 	public static final String MODID = "saoui";
 	public static final String NAME = "Sword Art Online UI";
-	public static final String VERSION = "1.2";
+	public static final String VERSION = "1.3";
 
 	private static final double MAX_RANGE = 256.0D;
 	private static final float HEALTH_ANIMATION_FACTOR = 0.075F;
@@ -143,13 +141,14 @@ public class SAOMod implements Runnable {
 		config.save();
 	}
 
+
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		final Minecraft mc = Minecraft.getMinecraft();
 		
 		friendsFile = new File(mc.mcDataDir, ".sao_friends");
 		
-		if (!friendsFile.exists()) {
+		if (friendsFile.exists()) {
 			writeFriends(friends);
 		}
 		
@@ -165,6 +164,7 @@ public class SAOMod implements Runnable {
 		
 		renderManagerUpdate = new Thread() {
 			
+			@SuppressWarnings("unchecked")
 			@Override
 			public void run() {
 				while (manager != null) {
@@ -293,7 +293,7 @@ public class SAOMod implements Runnable {
                 mc.ingameGUI = new GuiIngameForge(mc);
                 continue;
             }
-            
+
 			if (replaceGUI) {
                 if ((mc.currentScreen != null) && (!(mc.currentScreen instanceof SAOScreenGUI))) {
                     if (REPLACE_GUI_DELAY > 0) {
@@ -303,26 +303,35 @@ public class SAOMod implements Runnable {
                         final boolean inv = (mc.currentScreen instanceof GuiInventory);
 
                         mc.currentScreen.mc = mc;
-						
-						try {
+                        if (mc.playerController.isInCreativeMode() && mc.currentScreen instanceof GuiInventory)
+                        {
+                             mc.displayGuiScreen(new GuiContainerCreative(mc.thePlayer));
+                        }
+                        else try {
 							SAOSound.play(mc, SAOSound.ORB_DROPDOWN);
 							mc.displayGuiScreen(new SAOIngameMenuGUI((GuiInventory) (inv ? mc.currentScreen : null)));
 							replaceGUI = false;
 						} catch (NullPointerException e) {
 							continue;
 						}
+                       
                     } else if ((mc.currentScreen instanceof GuiGameOver) && (!SAOOption.DEFAULT_DEATH_SCREEN.value)) {
                         mc.currentScreen.mc = mc;
 
-                        try {
-                            mc.displayGuiScreen(new SAODeathGUI((GuiGameOver) mc.currentScreen));
-                            replaceGUI = false;
-                        } catch (NullPointerException e) {
-                            continue;
+                        if (mc.ingameGUI instanceof SAOIngameGUI){
+                        	try {
+                                mc.displayGuiScreen((GuiScreen)null);
+                        		mc.displayGuiScreen(new SAODeathGUI((GuiGameOver) mc.currentScreen));
+                        		replaceGUI = false;
+                        	}
+                        	catch (NullPointerException e) {
+                        		continue;
+                        	}
                         }
                     }
                 }
 			} else if ((mc.currentScreen == null) && (mc.inGameHasFocus)) {
+                mc.displayGuiScreen((GuiScreen)null);
 				replaceGUI = true;
 			}
 			
@@ -752,7 +761,7 @@ public class SAOMod implements Runnable {
 				
 				return true;
 			} catch (IOException e) {
-				if (DEBUG) {
+				if (SAOMod.DEBUG) {
 					System.out.println(e);
 				}
 				

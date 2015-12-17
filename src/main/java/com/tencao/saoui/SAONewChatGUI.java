@@ -17,14 +17,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class SAONewChatGUI extends GuiNewChat {
 
-	private final SAOIngameGUI parent;
 	private final List<String> input;
 	private final Minecraft minecraft;
 	private final GuiNewChat oldChat;
 
 	public SAONewChatGUI(SAOIngameGUI gui, Minecraft mc, GuiNewChat chat) {
 		super(mc);
-		parent = gui;
 		input = new ArrayList<String>();
 		minecraft = mc;
 		oldChat = chat;

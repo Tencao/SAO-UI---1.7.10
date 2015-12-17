@@ -1,13 +1,19 @@
 package com.tencao.saoui.ui;
 
-import com.tencao.saoui.util.*;
+import com.tencao.saoui.util.SAOColor;
+import com.tencao.saoui.util.SAOGL;
+import com.tencao.saoui.util.SAOID;
+import com.tencao.saoui.util.SAOOption;
+import com.tencao.saoui.util.SAOParentGUI;
+import com.tencao.saoui.util.SAOResources;
+
 import net.minecraft.client.Minecraft;
 
 public class SAOAlertGUI extends SAOElementGUI {
 
     private int alertColor;
 
-    private SAOAlertGUI(SAOParentGUI gui, int xPos, int yPos, int w, String string, int color) {
+    public SAOAlertGUI(SAOParentGUI gui, int xPos, int yPos, int w, String string, int color) {
         super(gui, xPos, yPos, w, 32);
         alertColor = color;
     }
@@ -16,7 +22,8 @@ public class SAOAlertGUI extends SAOElementGUI {
         this(gui, xPos, yPos, autoWidth(string), string, color);
     }
 
-    private static int autoWidth(String string) {
+
+	private static int autoWidth(String string) {
         final int defValue = SAOGL.glStringWidth(string);
 
         return Math.max(0, defValue - 20);
@@ -68,5 +75,10 @@ public class SAOAlertGUI extends SAOElementGUI {
 	public SAOID ID() {
     return SAOID.ALERT;
     }
+
+	public void add(SAOAlertGUI saoAlertGUI) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

@@ -24,7 +24,8 @@ public final class SAOColor {
 
     public static final int CURSOR_COLOR = 0x8EE1E8;
 
-    public static final int DEAD_COLOR = 0xC94141FF;
+    public static final int DEAD_COLOR = 0x0033ccFF;
+    public static final int HARDCORE_DEAD_COLOR = 0xC94141FF;
 
 	public static final int multiplyAlpha(int rgba, float alpha) {
 		final int value = (int) (((rgba >> 0) & 0xFF) * alpha);

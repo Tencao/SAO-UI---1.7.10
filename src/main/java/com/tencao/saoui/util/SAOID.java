@@ -27,7 +27,7 @@ public enum SAOID {
 	DUNGEON_MAP(NAVIGATION, true),
 
 	OPTIONS(SETTINGS, true),
-	HELP(SETTINGS, false),
+	MENU(SETTINGS, false),
 	LOGOUT(SETTINGS, false),
 
 	WEAPONS(EQUIPMENT, true),

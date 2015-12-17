@@ -8,13 +8,19 @@ import com.tencao.saoui.util.SAOID;
 import com.tencao.saoui.ui.SAOScreenGUI;
 import com.tencao.saoui.util.SAOAction;
 import net.minecraft.client.gui.GuiGameOver;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiYesNo;
+import net.minecraft.client.gui.GuiYesNoCallback;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.resources.I18n;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-public class SAODeathGUI extends SAOScreenGUI {
+public class SAODeathGUI extends SAOScreenGUI implements GuiYesNoCallback {
 
     private final GuiGameOver gameOver;
     private final SAOCursorStatus oldCursorStatus;
@@ -31,7 +37,12 @@ public class SAODeathGUI extends SAOScreenGUI {
     protected void init() {
         super.init();
 
-        elements.add(new SAOAlertGUI(this, 0, 0, SAOMod._DEAD_ALERT, SAOColor.DEAD_COLOR));
+    	if (this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled()){
+            elements.add(new SAOAlertGUI(this, 0, 0, SAOMod._DEAD_ALERT, SAOColor.HARDCORE_DEAD_COLOR));
+    	}
+    	else {
+            elements.add(new SAOAlertGUI(this, 0, 0, SAOMod._DEAD_ALERT, SAOColor.DEAD_COLOR));
+    	}
     }
 
     @Override
@@ -67,6 +78,9 @@ public class SAODeathGUI extends SAOScreenGUI {
 
         element.click(mc.getSoundHandler(), false);
 
+        GuiYesNo guiyesno = new GuiYesNo(this, I18n.format("deathScreen.quit.confirm", new Object[0]), "", data);
+        this.mc.displayGuiScreen(guiyesno);
+        guiyesno.func_146350_a(20);
         if (id == SAOID.ALERT) {
             gameOver.confirmClicked(false, 0);
         }
@@ -74,12 +88,23 @@ public class SAODeathGUI extends SAOScreenGUI {
 
     protected void backgroundClicked(int cursorX, int cursorY, int button) {
         if (!mc.theWorld.getWorldInfo().isHardcoreModeEnabled()) {
-            if (button == 0) {
-                if (!((SAOIngameGUI) mc.ingameGUI).backgroundClicked(cursorX, cursorY, button)) {
-                    gameOver.confirmClicked(false, 0);
-                    mc.setIngameFocus();
-                }
+            if (!((SAOIngameGUI) this.mc.ingameGUI).backgroundClicked(cursorX, cursorY, button)) {
+                this.mc.thePlayer.respawnPlayer();
+                this.mc.displayGuiScreen((GuiScreen)null);
+                mc.setIngameFocus();
             }
+        }
+        else if (this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled()) {
+            if (!((SAOIngameGUI) this.mc.ingameGUI).backgroundClicked(cursorX, cursorY, button)) {
+                this.mc.theWorld.sendQuittingDisconnectingPacket();
+                this.mc.loadWorld((WorldClient)null);
+                this.mc.displayGuiScreen(new GuiMainMenu());
+            }
+        }
+        else {
+            this.mc.theWorld.sendQuittingDisconnectingPacket();
+            this.mc.loadWorld((WorldClient)null);
+            this.mc.displayGuiScreen(new GuiMainMenu());        	
         }
     }
 

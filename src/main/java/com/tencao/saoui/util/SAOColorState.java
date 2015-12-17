@@ -2,38 +2,30 @@ package com.tencao.saoui.util;
 
 import com.tencao.saoui.SAOMod;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.entity.INpc;
-import net.minecraft.entity.monster.EntityGolem;
-import net.minecraft.entity.monster.EntityIronGolem;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntityPigZombie;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.monster.EntitySnowman;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.entity.player.EntityPlayerMP;
 
 @SideOnly(Side.CLIENT)
-public enum SAOColorState {
+public enum SAOColorState{
 
     INNOCENT(0x93F43EFF),
     VIOLENT(0xF49B00FF),
     KILLER(0xBD0000FF),
 
-    CREATIVE(0xEDE24CFF),
+    CREATIVE(0x4cedc5FF),
+    OP(0xFFFFFFFF),
+    INVALID(0x8B8B8BFF),
     GAMEMASTER(0x79139EFF);
 
     private final int color;
@@ -47,45 +39,31 @@ public enum SAOColorState {
     }
 
     public static SAOColorState getColorState(Minecraft mc, Entity entity, float time) {
-        if (entity instanceof EntityPlayer) {
-            return SAOMod.isCreative((AbstractClientPlayer) entity)? CREATIVE : getPlayerColorState(mc, (EntityPlayer) entity, time);
-        } else if (entity instanceof EntityCreature) {
-            return getCreatureColorState((EntityCreature) entity);
-        } else if (entity instanceof EntityLiving) {
-        	return getLivingColorState((EntityLiving) entity);
-        } else if ((entity.hitByEntity(entity)) && (entity instanceof EntityLiving) && (((EntityCreature)entity).getAITarget() instanceof EntityPlayer) || 
-        		(entity.hitByEntity(entity)) && (entity instanceof EntityLiving) && (((EntityCreature)entity).getAttackTarget() instanceof EntityPlayer)) {
-         		return KILLER;
-        } else
-        	return VIOLENT;
+        if (entity instanceof EntityPlayer) return getPlayerColorState(mc, (EntityPlayer)entity, time);
+        else if (entity instanceof EntityLiving) {
+            if (((EntityLiving)entity).getAttackTarget() instanceof EntityPlayer) return KILLER;
+            else return getState(mc, (EntityLiving) entity, time);
+        } else return INVALID;
     }
 
-    private static SAOColorState getCreatureColorState(EntityCreature creature) {
-    	if ((creature instanceof EntityCreature) && (creature instanceof IMob) && !(creature instanceof EntityPigZombie) ||
-    		(creature instanceof EntityWolf) && (((EntityWolf) creature).isAngry())){
-    		return KILLER;
-    	} else if ((creature instanceof EntityCreature) && (creature instanceof EntityAnimal) && !(creature instanceof EntityWolf) ||
-    		(creature instanceof EntityWolf) && !(creature.getAttackTarget() instanceof EntityPlayer) && !(creature.getAITarget() instanceof EntityPlayer) && !(((EntityWolf) creature).isAngry()) ||
-    		(creature instanceof EntityCreature) && (creature instanceof INpc)){
-    		return INNOCENT;
-    	} else{
-    		return VIOLENT;
-    	}
-    }
-    
-    private static SAOColorState getLivingColorState(EntityLiving creature) {
-        if ((creature instanceof EntityLiving) && (creature instanceof IMob)) {
-            return KILLER;
-        } else if ((creature instanceof EntityLiving) && (creature instanceof IAnimals)) {
-            return INNOCENT;
-        } else {
-        	return VIOLENT;
-        }
+    private static SAOColorState getState(Minecraft mc, EntityLiving entity, float time) {
+    	if (entity instanceof EntityWolf && ((EntityWolf)entity).isAngry()) return KILLER;
+    	else if (entity instanceof EntityTameable && ((EntityTameable)entity).isTamed()){
+            if(((EntityTameable)entity).getOwner() != mc.thePlayer)
+                return SAOColorState.getColorState(mc, ((EntityTameable)entity).getOwner(), time);
+            else return INNOCENT;
+    	} else if (entity instanceof IMob) return KILLER;
+    	else if (entity instanceof IAnimals) return INNOCENT;
+    	else return INVALID;
     }
 
-    private static SAOColorState getPlayerColorState(Minecraft mc, EntityPlayer player, float time) {
+	private static SAOColorState getPlayerColorState(Minecraft mc, EntityPlayer player, float time) {
         if (isDev(SAOMod.getName(player))) {
 			return GAMEMASTER;
+        } else if (FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().func_152596_g(((EntityPlayerMP)player).getGameProfile())){
+        	return OP;
+        } else if (SAOMod.isCreative((AbstractClientPlayer)player)) {
+        	return CREATIVE;
 		} else {
             return SAOMod.getColorState(player);
         }
