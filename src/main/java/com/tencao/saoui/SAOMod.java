@@ -148,7 +148,7 @@ public class SAOMod implements Runnable {
 		
 		friendsFile = new File(mc.mcDataDir, ".sao_friends");
 		
-		if (friendsFile.exists()) {
+		if (!friendsFile.exists()) {
 			writeFriends(friends);
 		}
 		

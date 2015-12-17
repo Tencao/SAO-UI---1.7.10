@@ -13,7 +13,7 @@ public class SAOAlertGUI extends SAOElementGUI {
 
     private int alertColor;
 
-    public SAOAlertGUI(SAOParentGUI gui, int xPos, int yPos, int w, String string, int color) {
+    private SAOAlertGUI(SAOParentGUI gui, int xPos, int yPos, int w, String string, int color) {
         super(gui, xPos, yPos, w, 32);
         alertColor = color;
     }
@@ -75,10 +75,5 @@ public class SAOAlertGUI extends SAOElementGUI {
 	public SAOID ID() {
     return SAOID.ALERT;
     }
-
-	public void add(SAOAlertGUI saoAlertGUI) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

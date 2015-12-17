@@ -20,7 +20,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-public class SAODeathGUI extends SAOScreenGUI implements GuiYesNoCallback {
+public class SAODeathGUI extends SAOScreenGUI {
 
     private final GuiGameOver gameOver;
     private final SAOCursorStatus oldCursorStatus;
@@ -78,9 +78,6 @@ public class SAODeathGUI extends SAOScreenGUI implements GuiYesNoCallback {
 
         element.click(mc.getSoundHandler(), false);
 
-        GuiYesNo guiyesno = new GuiYesNo(this, I18n.format("deathScreen.quit.confirm", new Object[0]), "", data);
-        this.mc.displayGuiScreen(guiyesno);
-        guiyesno.func_146350_a(20);
         if (id == SAOID.ALERT) {
             gameOver.confirmClicked(false, 0);
         }
