@@ -24,6 +24,7 @@ import com.tencao.saoui.util.SAOID;
 import com.tencao.saoui.util.SAOOption;
 import com.tencao.saoui.util.SAOResources;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -53,70 +54,61 @@ import net.minecraftforge.common.config.Configuration;
 
 @Mod(modid = SAOMod.MODID, name = SAOMod.NAME, version = SAOMod.VERSION)
 @SideOnly(Side.CLIENT)
-public class SAOMod implements Runnable {
+public class SAOMod {
 
 	public static final String MODID = "saoui";
 	public static final String NAME = "Sword Art Online UI";
 	public static final String VERSION = "1.3";
-
 	private static final double MAX_RANGE = 256.0D;
 	private static final float HEALTH_ANIMATION_FACTOR = 0.075F;
     private static final float HEALTH_FRAME_FACTOR = HEALTH_ANIMATION_FACTOR * HEALTH_ANIMATION_FACTOR * 0x40 * 0x64;
-
 	public static final float UNKNOWN_TIME_DELAY = -1F;
-
 	public static boolean IS_SPRINTING = false;
 	public static boolean IS_SNEAKING = false;
-
 	public static boolean DEBUG = false;
-
+    public static String _DEAD_ALERT;
+	private static Thread mcModThread, renderManagerUpdate;
+	private static Map<UUID, Float> healthSmooth;
+    private static Map<UUID, Float> hungerSmooth;
+    private static Map<UUID, SAOColorCursor> colorStates;
+	private static Configuration config;
+    public static int REPLACE_GUI_DELAY = 0;
+	public static boolean replaceGUI;
+	/*
 	private static File friendsFile;
 	private static String[] friends;
 	private static List<SAOFriendRequest> friendRequests;
 	private static String[] party;
-
 	private static String _FRIEND_REQUEST_TITLE;
 	private static String _FRIEND_REQUEST_TEXT;
-
 	private static String _PARTY_INVITATION_TITLE;
 	private static String _PARTY_INVITATION_TEXT;
-
 	public static String _PARTY_DISSOLVING_TITLE;
 	public static String _PARTY_DISSOLVING_TEXT;
-
 	public static String _PARTY_LEAVING_TITLE;
 	public static String _PARTY_LEAVING_TEXT;
-
 	public static String _MESSAGE_TITLE;
 	public static String _MESSAGE_FROM;
-
-    public static String _DEAD_ALERT;
-
-	private static Thread mcModThread, renderManagerUpdate;
-
-	private static Map<UUID, Float> healthSmooth;
-    private static Map<UUID, Float> hungerSmooth;
-    private static Map<UUID, SAOColorCursor> colorStates;
-
 	private static int partyTicks;
-	private static Configuration config;
+	*/
 
-    public static int REPLACE_GUI_DELAY = 0;
-
-	private boolean replaceGUI;
     
     @EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
+    	
+        FMLCommonHandler.instance().bus().register(new SAOEventHandler());
         MinecraftForge.EVENT_BUS.register(new SAOEventHandler());
+        FMLCommonHandler.instance().bus().register(new SAORenderHandler());
+        MinecraftForge.EVENT_BUS.register(new SAORenderHandler());
         //MinecraftForge.EVENT_BUS.register(new SAOIngameGUI(Minecraft.getMinecraft()));
         
 		config = new Configuration(event.getSuggestedConfigurationFile());
 		config.load();
 		
-		friendRequests = new ArrayList<SAOFriendRequest>();
+		//friendRequests = new ArrayList<SAOFriendRequest>();
 		
 		DEBUG = config.get(Configuration.CATEGORY_GENERAL, "debug", DEBUG).getBoolean();
-		
+		/*
 		_FRIEND_REQUEST_TITLE = config.get(Configuration.CATEGORY_GENERAL, "friend.request.title", SAOResources.FRIEND_REQUEST_TITLE).getString();
 		_FRIEND_REQUEST_TEXT = config.get(Configuration.CATEGORY_GENERAL, "friend.request.text", SAOResources.FRIEND_REQUEST_TEXT).getString();
 		
@@ -130,7 +122,7 @@ public class SAOMod implements Runnable {
 		_PARTY_LEAVING_TEXT = config.get(Configuration.CATEGORY_GENERAL, "party.leaving.text", SAOResources.PARTY_LEAVING_TEXT).getString();
 		
 		_MESSAGE_TITLE = config.get(Configuration.CATEGORY_GENERAL, "message.title", SAOResources.MESSAGE_TITLE).getString();
-		_MESSAGE_FROM = config.get(Configuration.CATEGORY_GENERAL, "message.from", SAOResources.MESSAGE_FROM).getString();
+		_MESSAGE_FROM = config.get(Configuration.CATEGORY_GENERAL, "message.from", SAOResources.MESSAGE_FROM).getString();*/
 
         _DEAD_ALERT = config.get(Configuration.CATEGORY_GENERAL, "dead.alert", SAOResources.DEAD_ALERT).getString();
 
@@ -145,7 +137,7 @@ public class SAOMod implements Runnable {
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		final Minecraft mc = Minecraft.getMinecraft();
-		
+		/*
 		friendsFile = new File(mc.mcDataDir, ".sao_friends");
 		
 		if (!friendsFile.exists()) {
@@ -153,7 +145,7 @@ public class SAOMod implements Runnable {
 		}
 		
 		friends = loadFriends();
-		
+		*/
 		final RenderManager manager = RenderManager.instance;
 		
 		if (renderManagerUpdate != null) {
@@ -238,7 +230,6 @@ public class SAOMod implements Runnable {
         }
 		
 		replaceGUI = true;
-		(mcModThread = new Thread(this)).start();
 	}
 
 	private static final boolean sleep(long time) {
@@ -250,93 +241,7 @@ public class SAOMod implements Runnable {
 		}
 	}
 
-    @Override
-	public void run() {
-    	long time = System.currentTimeMillis();
-        long lasttime = time;
-
-        long delay;
-		while ((mcModThread != null) && (!mcModThread.isInterrupted())) {
-			final Minecraft mc = Minecraft.getMinecraft();
-
-            time = System.currentTimeMillis();
-            delay = Math.abs(time - lasttime);
-            lasttime = time;
-            
-			if (mc == null) {
-				sleep(2500);
-				continue;
-			}
-
-            for (final SAOColorCursor cursor : colorStates.values()) {
-                cursor.update(delay);
-            }
-            
-			if (mc.thePlayer == null) {
-				IS_SPRINTING = false;
-				IS_SNEAKING = false;
-			} else
-			if (mc.inGameHasFocus) {
-				if (IS_SPRINTING) {
-					KeyBinding.setKeyBindState(mc.gameSettings.keyBindSprint.getKeyCode(), true);
-				}
-				
-				if (IS_SNEAKING) {
-					KeyBinding.setKeyBindState(mc.gameSettings.keyBindSneak.getKeyCode(), true);
-				}
-			}
-
-            if (!SAOOption.DEFAULT_UI.value && mc.ingameGUI != null && (!(mc.ingameGUI instanceof SAOIngameGUI))) {
-                mc.ingameGUI = new SAOIngameGUI(mc);
-                continue;
-            } else if (SAOOption.DEFAULT_UI.value && mc.ingameGUI != null && (mc.ingameGUI instanceof SAOIngameGUI)) {
-                mc.ingameGUI = new GuiIngameForge(mc);
-                continue;
-            }
-
-			if (replaceGUI) {
-                if ((mc.currentScreen != null) && (!(mc.currentScreen instanceof SAOScreenGUI))) {
-                    if (REPLACE_GUI_DELAY > 0) {
-                        REPLACE_GUI_DELAY--;
-                    } else if ((mc.currentScreen instanceof GuiIngameMenu) || ((mc.currentScreen instanceof GuiInventory) &&
-                            (!SAOOption.DEFAULT_INVENTORY.value))) {
-                        final boolean inv = (mc.currentScreen instanceof GuiInventory);
-
-                        mc.currentScreen.mc = mc;
-                        if (mc.playerController.isInCreativeMode() && mc.currentScreen instanceof GuiInventory)
-                        {
-                             mc.displayGuiScreen(new GuiContainerCreative(mc.thePlayer));
-                        }
-                        else try {
-							SAOSound.play(mc, SAOSound.ORB_DROPDOWN);
-							mc.displayGuiScreen(new SAOIngameMenuGUI((GuiInventory) (inv ? mc.currentScreen : null)));
-							replaceGUI = false;
-						} catch (NullPointerException e) {
-							continue;
-						}
-                       
-                    } else if ((mc.currentScreen instanceof GuiGameOver) && (!SAOOption.DEFAULT_DEATH_SCREEN.value)) {
-                        mc.currentScreen.mc = mc;
-
-                        if (mc.ingameGUI instanceof SAOIngameGUI){
-                        	try {
-                                mc.displayGuiScreen((GuiScreen)null);
-                        		mc.displayGuiScreen(new SAODeathGUI((GuiGameOver) mc.currentScreen));
-                        		replaceGUI = false;
-                        	}
-                        	catch (NullPointerException e) {
-                        		continue;
-                        	}
-                        }
-                    }
-                }
-			} else if ((mc.currentScreen == null) && (mc.inGameHasFocus)) {
-                mc.displayGuiScreen((GuiScreen)null);
-				replaceGUI = true;
-			}
-			
-			sleep(1);
-			
+			/*
 			synchronized (friendRequests) {
 				for (int i = friendRequests.size() - 1; i >= 0; i--) {
 					if (i >= friendRequests.size()) {
@@ -878,7 +783,7 @@ public class SAOMod implements Runnable {
 		
 		partyTicks = 0;
 		party = null;
-	}
+	}*/
 
 	public static final String getName(EntityPlayer player) {
         return player == null ? "" : player.getDisplayName();
@@ -953,7 +858,7 @@ public class SAOMod implements Runnable {
 	}
 
 	private static final int gameFPS(Minecraft mc) {
-		final List<String> output = new ArrayList<String>();
+		/*final List<String> output = new ArrayList<String>();
 		
 		if (SAONewChatGUI.reformat(mc.debug, "%s fps, %s chunk updates", output)) {
 			try {
@@ -962,8 +867,8 @@ public class SAOMod implements Runnable {
 				return mc.getLimitFramerate();
 			}
 		} else {
+		}*/
 			return mc.getLimitFramerate();
-		}
 	}
 
 	private static final float gameTimeDelay(Minecraft mc, float time) {

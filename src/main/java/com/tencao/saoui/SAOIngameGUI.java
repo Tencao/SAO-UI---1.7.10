@@ -11,6 +11,16 @@ import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType
 
 import java.util.List;
 
+import com.tencao.saoui.util.SAOEffect;
+import com.tencao.saoui.util.SAOGL;
+import com.tencao.saoui.util.SAOHealthStep;
+import com.tencao.saoui.util.SAOOption;
+import com.tencao.saoui.util.SAOResources;
+
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -24,20 +34,6 @@ import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
-
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
-import com.tencao.saoui.util.SAOEffect;
-import com.tencao.saoui.util.SAOGL;
-import com.tencao.saoui.util.SAOHealthStep;
-import com.tencao.saoui.util.SAOOption;
-import com.tencao.saoui.util.SAOResources;
-
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class SAOIngameGUI extends GuiIngameForge {
@@ -345,7 +341,7 @@ public class SAOIngameGUI extends GuiIngameForge {
         }
 
         mc.mcProfiler.endSection();
-
+        /*
         if (SAOMod.isPartyMember(username)) {
             mc.mcProfiler.startSection("party");
 
@@ -410,7 +406,7 @@ public class SAOIngameGUI extends GuiIngameForge {
             }
             
             mc.mcProfiler.endSection();
-        }
+        }*/
    	}
 
     @Override
@@ -419,7 +415,6 @@ public class SAOIngameGUI extends GuiIngameForge {
         // See below, called by renderHealth
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
     private void renderFood(int healthWidth, int healthHeight, int offsetUsername, int stepOne, int stepTwo, int stepThree) {
     	if(eventParent.type == FOOD) {
     		if(eventParent.isCancelable()) {
@@ -523,7 +518,6 @@ public class SAOIngameGUI extends GuiIngameForge {
         return MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Pre(eventParent, type));
     }
     
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
     private void post(ElementType type)
     {
     	

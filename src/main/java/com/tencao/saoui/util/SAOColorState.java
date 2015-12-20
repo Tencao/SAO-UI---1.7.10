@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityWolf;
@@ -54,6 +55,7 @@ public enum SAOColorState{
             else return INNOCENT;
     	} else if (entity instanceof IMob) return KILLER;
     	else if (entity instanceof IAnimals) return INNOCENT;
+    	else if (entity instanceof IEntityOwnable) return VIOLENT;
     	else return INVALID;
     }
 

@@ -33,7 +33,7 @@ public final class SAOSub {
     private static SAOMenuGUI createSub(Minecraft mc, SAOElementGUI element, int x, int y) {
         return resetSub(mc, new SAOPanelGUI(element, x, y, 175, 240));
     }
-
+    /*
     public static SAOMenuGUI createSocialSub(Minecraft mc, SAOElementGUI element, int x, int y) {
         final SAOMenuGUI sub = createSub(mc, element, x, y);
         final String[] party = SAOMod.listPartyMembers();
@@ -43,7 +43,7 @@ public final class SAOSub {
         } else {
             return setFriendsSub(mc, sub);
         }
-    }
+    }*/
 
     public static SAOMenuGUI createNavigationSub(Minecraft mc, SAOElementGUI element, int x, int y) {
         return setQuestsSub(mc, createSub(mc, element, x, y), mc.thePlayer);
@@ -52,14 +52,14 @@ public final class SAOSub {
     public static SAOMenuGUI createMainProfileSub(Minecraft mc, SAOElementGUI element, int x, int y) {
         return resetProfileSub(mc, new SAOPanelGUI(element, x, y, 175, 240), mc.thePlayer);
     }
-
+    /*
     public static SAOMenuGUI resetFriendsSub(Minecraft mc, SAOMenuGUI sub) {
         return setFriendsSub(mc, resetSub(mc, sub));
     }
 
     public static SAOMenuGUI resetPartySub(Minecraft mc, SAOMenuGUI sub) {
         return setPartySub(mc, resetSub(mc, sub));
-    }
+    }*/
 
     public static SAOMenuGUI resetProfileSub(Minecraft mc, SAOMenuGUI sub, EntityPlayer player) {
         sub.elements.clear();
@@ -101,7 +101,7 @@ public final class SAOSub {
 
         return sub;
     }
-
+    /*
     private static SAOMenuGUI setFriendsSub(Minecraft mc, SAOMenuGUI sub) {
         final String[] friends = SAOMod.listFriends();
         final boolean[] online = SAOMod.isOnline(mc, friends);
@@ -152,7 +152,7 @@ public final class SAOSub {
         }
 
         return sub;
-    }
+    }*/
 
     public static final SAOMenuGUI setProfileSub(Minecraft mc, SAOMenuGUI sub, EntityPlayer player) {
 		if (player != null) {

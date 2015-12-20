@@ -1,23 +1,21 @@
 package com.tencao.saoui;
 
+import org.lwjgl.opengl.GL11;
+
 import com.tencao.saoui.ui.SAOAlertGUI;
 import com.tencao.saoui.ui.SAOElementGUI;
+import com.tencao.saoui.ui.SAOScreenGUI;
+import com.tencao.saoui.util.SAOAction;
 import com.tencao.saoui.util.SAOColor;
 import com.tencao.saoui.util.SAOCursorStatus;
 import com.tencao.saoui.util.SAOID;
-import com.tencao.saoui.ui.SAOScreenGUI;
-import com.tencao.saoui.util.SAOAction;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiYesNo;
-import net.minecraft.client.gui.GuiYesNoCallback;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.resources.I18n;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class SAODeathGUI extends SAOScreenGUI {
@@ -79,12 +77,16 @@ public class SAODeathGUI extends SAOScreenGUI {
         element.click(mc.getSoundHandler(), false);
 
         if (id == SAOID.ALERT) {
-            gameOver.confirmClicked(false, 0);
+        	if (!this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled()) {
+        		gameOver.confirmClicked(false, 0);
+        	} else {
+                gameOver.confirmClicked(true, 1);
+        	}
         }
     }
 
     protected void backgroundClicked(int cursorX, int cursorY, int button) {
-        if (!mc.theWorld.getWorldInfo().isHardcoreModeEnabled()) {
+        if (!this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled()) {
             if (!((SAOIngameGUI) this.mc.ingameGUI).backgroundClicked(cursorX, cursorY, button)) {
                 this.mc.thePlayer.respawnPlayer();
                 this.mc.displayGuiScreen((GuiScreen)null);

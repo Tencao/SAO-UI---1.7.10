@@ -47,7 +47,7 @@ public class SAOWindowViewGUI extends SAOScreenGUI {
 	}
 
 	protected void backgroundClicked(int cursorX, int cursorY, int button) {}
-
+	/*
 	public static final SAOWindowViewGUI viewMessage(final String username, final String message) {
 		return new SAOWindowViewGUI(200, 40) {
 
@@ -66,6 +66,6 @@ public class SAOWindowViewGUI extends SAOScreenGUI {
 			}
 
 		};
-	}
+	}*/
 
 }
