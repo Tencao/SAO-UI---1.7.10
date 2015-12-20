@@ -110,78 +110,75 @@ public class SAOIngameGUI extends GuiIngameForge {
 				return;
 			}
 		}    
+		SAOGL.glAlpha(true);
+		SAOGL.glBlend(true);
+		SAOGL.glColor(1, 1, 1, 1);
 
-        {
-            SAOGL.glAlpha(true);
-            SAOGL.glBlend(true);
-            SAOGL.glColor(1, 1, 1, 1);
+		final InventoryPlayer inv = mc.thePlayer.inventory;
+		final int slotCount = 9;
+		if (SAOOption.DEFAULT_HOTBAR.value){
+			mc.renderEngine.bindTexture(WIDGITS);
+			SAOGL.glTexturedRect(width / 2 - 91, height - 22, 0, 0, 182, 22);
+			SAOGL.glTexturedRect(width / 2 - 91 - 1 + inv.currentItem * 20, height - 22 - 1, 0, 22, 24, 22);
 
-            final InventoryPlayer inv = mc.thePlayer.inventory;
-            final int slotCount = 9;
-            if (SAOOption.DEFAULT_HOTBAR.value){
-                mc.renderEngine.bindTexture(WIDGITS);
-                SAOGL.glTexturedRect(width / 2 - 91, height - 22, 0, 0, 182, 22);
-                SAOGL.glTexturedRect(width / 2 - 91 - 1 + inv.currentItem * 20, height - 22 - 1, 0, 22, 24, 22);
+			SAOGL.glBlend(false);
+			SAOGL.glRescaleNormal(true);
+			RenderHelper.enableGUIStandardItemLighting();
 
-                SAOGL.glBlend(false);
-                SAOGL.glRescaleNormal(true);
-                RenderHelper.enableGUIStandardItemLighting();
+			for (int i = 0; i < 9; ++i)
+			{
+				int x = width / 2 - 90 + i * 20 + 2;
+				int z = height - 16 - 3;
+				renderInventorySlot(i, x, z, partialTicks);
+			}            	
+		}
+		else if (SAOOption.ALT_HOTBAR.value) {
+			SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value? SAOResources.gui: SAOResources.guiCustom);
 
-                for (int i = 0; i < 9; ++i)
-                {
-                    int x = width / 2 - 90 + i * 20 + 2;
-                    int z = height - 16 - 3;
-                    renderInventorySlot(i, x, z, partialTicks);
-                }            	
-            }
-            else if (SAOOption.ALT_HOTBAR.value) {
-                SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value? SAOResources.gui: SAOResources.guiCustom);
+			for (int i = 0; i < slotCount; i++) {
+				SAOGL.glColorRGBA(i == inv.currentItem ? 0xE0BE62FF : 0xCDCDCDFF);
+				SAOGL.glTexturedRect(width / 2 - 91 - 1 + i * 20, height - 22 - 1, zLevel, 0, 25, 20, 20);
+			}
 
-                for (int i = 0; i < slotCount; i++) {
-                    SAOGL.glColorRGBA(i == inv.currentItem ? 0xE0BE62FF : 0xCDCDCDFF);
-                    SAOGL.glTexturedRect(width / 2 - 91 - 1 + i * 20, height - 22 - 1, zLevel, 0, 25, 20, 20);
-                }
+			SAOGL.glColor(1, 1, 1, 1);
 
-                SAOGL.glColor(1, 1, 1, 1);
+			SAOGL.glBlend(false);
+			SAOGL.glRescaleNormal(true);
 
-                SAOGL.glBlend(false);
-                SAOGL.glRescaleNormal(true);
+			RenderHelper.enableGUIStandardItemLighting();
 
-                RenderHelper.enableGUIStandardItemLighting();
+			for (int i = 0; i < slotCount; i++) {
+				int x = width / 2 - 92 + i * 20 + 2;
+				int z = height - 17 - 3;
+				//super.renderHotbarItem(i, res.getScaledWidth() - 22, slotsY + 2 + (22 * i), partialTicks, mc.thePlayer);
+				super.renderInventorySlot(i, x, z, partialTicks);
+			}
+		}
+		else {
+			SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value? SAOResources.gui: SAOResources.guiCustom);
+			final int slotsY = (height - (slotCount * 22)) / 2;
 
-                for (int i = 0; i < slotCount; i++) {
-                    int x = width / 2 - 92 + i * 20 + 2;
-                    int z = height - 17 - 3;
-                    //super.renderHotbarItem(i, res.getScaledWidth() - 22, slotsY + 2 + (22 * i), partialTicks, mc.thePlayer);
-                    super.renderInventorySlot(i, x, z, partialTicks);
-                }
-            }
-            else {
-                SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value? SAOResources.gui: SAOResources.guiCustom);
-                final int slotsY = (height - (slotCount * 22)) / 2;
+			for (int i = 0; i < slotCount; i++) {
+				SAOGL.glColorRGBA(i == inv.currentItem ? 0xE0BE62FF : 0xCDCDCDFF);
+				SAOGL.glTexturedRect(width - 24, slotsY + (22 * i), zLevel, 0, 25, 20, 20);
+			}
 
-                for (int i = 0; i < slotCount; i++) {
-                    SAOGL.glColorRGBA(i == inv.currentItem ? 0xE0BE62FF : 0xCDCDCDFF);
-                    SAOGL.glTexturedRect(width - 24, slotsY + (22 * i), zLevel, 0, 25, 20, 20);
-                }
+			SAOGL.glColor(1, 1, 1, 1);
 
-                SAOGL.glColor(1, 1, 1, 1);
+			SAOGL.glBlend(false);
+			SAOGL.glRescaleNormal(true);
 
-                SAOGL.glBlend(false);
-                SAOGL.glRescaleNormal(true);
+			RenderHelper.enableGUIStandardItemLighting();
 
-                RenderHelper.enableGUIStandardItemLighting();
+			for (int i = 0; i < slotCount; i++) {
+				//super.renderHotbarItem(i, res.getScaledWidth() - 22, slotsY + 2 + (22 * i), partialTicks, mc.thePlayer);
+				super.renderInventorySlot(i, width - 22, slotsY + 2 + (22 * i), partialTicks);
+			}
+		}
 
-                for (int i = 0; i < slotCount; i++) {
-                    //super.renderHotbarItem(i, res.getScaledWidth() - 22, slotsY + 2 + (22 * i), partialTicks, mc.thePlayer);
-                    super.renderInventorySlot(i, width - 22, slotsY + 2 + (22 * i), partialTicks);
-                }
-            }
+		RenderHelper.disableStandardItemLighting();
 
-            RenderHelper.disableStandardItemLighting();
-
-            SAOGL.glRescaleNormal(false);
-        }
+		SAOGL.glRescaleNormal(false);
 
         post(HOTBAR);
     }
