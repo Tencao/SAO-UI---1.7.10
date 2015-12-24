@@ -62,8 +62,8 @@ public enum SAOColorState{
 	private static SAOColorState getPlayerColorState(Minecraft mc, EntityPlayer player, float time) {
         if (isDev(SAOMod.getName(player))) {
 			return GAMEMASTER;
-        } else if (FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().func_152596_g(((EntityPlayerMP)player).getGameProfile())){
-        	return OP;
+        /*} else if (FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().func_152596_g(((EntityPlayerMP)player).getGameProfile())){
+        	return OP;*/
         } else if (SAOMod.isCreative((AbstractClientPlayer)player)) {
         	return CREATIVE;
 		} else {

@@ -74,7 +74,7 @@ public class SAOMod {
 	private static Configuration config;
     public static int REPLACE_GUI_DELAY = 0;
 	public static boolean replaceGUI;
-	/*
+	
 	private static File friendsFile;
 	private static String[] friends;
 	private static List<SAOFriendRequest> friendRequests;
@@ -90,7 +90,7 @@ public class SAOMod {
 	public static String _MESSAGE_TITLE;
 	public static String _MESSAGE_FROM;
 	private static int partyTicks;
-	*/
+	
 
     
     @EventHandler
@@ -100,15 +100,14 @@ public class SAOMod {
         MinecraftForge.EVENT_BUS.register(new SAOEventHandler());
         FMLCommonHandler.instance().bus().register(new SAORenderHandler());
         MinecraftForge.EVENT_BUS.register(new SAORenderHandler());
-        //MinecraftForge.EVENT_BUS.register(new SAOIngameGUI(Minecraft.getMinecraft()));
         
 		config = new Configuration(event.getSuggestedConfigurationFile());
 		config.load();
 		
-		//friendRequests = new ArrayList<SAOFriendRequest>();
+		friendRequests = new ArrayList<SAOFriendRequest>();
 		
 		DEBUG = config.get(Configuration.CATEGORY_GENERAL, "debug", DEBUG).getBoolean();
-		/*
+		
 		_FRIEND_REQUEST_TITLE = config.get(Configuration.CATEGORY_GENERAL, "friend.request.title", SAOResources.FRIEND_REQUEST_TITLE).getString();
 		_FRIEND_REQUEST_TEXT = config.get(Configuration.CATEGORY_GENERAL, "friend.request.text", SAOResources.FRIEND_REQUEST_TEXT).getString();
 		
@@ -122,7 +121,7 @@ public class SAOMod {
 		_PARTY_LEAVING_TEXT = config.get(Configuration.CATEGORY_GENERAL, "party.leaving.text", SAOResources.PARTY_LEAVING_TEXT).getString();
 		
 		_MESSAGE_TITLE = config.get(Configuration.CATEGORY_GENERAL, "message.title", SAOResources.MESSAGE_TITLE).getString();
-		_MESSAGE_FROM = config.get(Configuration.CATEGORY_GENERAL, "message.from", SAOResources.MESSAGE_FROM).getString();*/
+		_MESSAGE_FROM = config.get(Configuration.CATEGORY_GENERAL, "message.from", SAOResources.MESSAGE_FROM).getString();
 
         _DEAD_ALERT = config.get(Configuration.CATEGORY_GENERAL, "dead.alert", SAOResources.DEAD_ALERT).getString();
 
@@ -137,7 +136,7 @@ public class SAOMod {
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		final Minecraft mc = Minecraft.getMinecraft();
-		/*
+		
 		friendsFile = new File(mc.mcDataDir, ".sao_friends");
 		
 		if (!friendsFile.exists()) {
@@ -145,7 +144,7 @@ public class SAOMod {
 		}
 		
 		friends = loadFriends();
-		*/
+		
 		final RenderManager manager = RenderManager.instance;
 		
 		if (renderManagerUpdate != null) {
@@ -238,57 +237,6 @@ public class SAOMod {
 			return true;
 		} catch (InterruptedException e) {
 			return false;
-		}
-	}
-
-			/*
-			synchronized (friendRequests) {
-				for (int i = friendRequests.size() - 1; i >= 0; i--) {
-					if (i >= friendRequests.size()) {
-						continue;
-					}
-					
-					if (--friendRequests.get(i).ticks <= 0) {
-						friendRequests.remove(i);
-					}
-				}
-			}
-			
-			if ((party != null) && (partyTicks > 0) && (--partyTicks <= 0)) {
-				final String name = getName(mc);
-				
-				if (party.length <= 1) {
-					dissolveParty(mc);
-				} else
-				if (isPartyLeader(name)) {
-					final boolean[] online = isOnline(mc, party);
-					final String[] remove = new String[party.length];
-					
-					int count = 0;
-					
-					for (int i = 0; i < online.length; i++) {
-						if (!online[i]) {
-							remove[count++] = party[i];
-						}
-					}
-					
-					for (int i = 0; i < count; i++) {
-						removeParty(mc, remove[i]);
-					}
-				} else {
-					final String leader = party[0];
-					
-					if (!isOnline(mc, leader)) {
-						dissolveParty(mc);
-					}
-				}
-				
-				if (party != null) {
-					partyTicks = 1000;
-				}
-			} else if (party == null) {
-				partyTicks = 0;
-			}
 		}
 	}
 
@@ -783,7 +731,7 @@ public class SAOMod {
 		
 		partyTicks = 0;
 		party = null;
-	}*/
+	}
 
 	public static final String getName(EntityPlayer player) {
         return player == null ? "" : player.getDisplayName();

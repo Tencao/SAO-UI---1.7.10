@@ -10,8 +10,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class SAOMessageGUI /*extends SAOWindowGUI*/ {
-	/*
+public class SAOMessageGUI extends SAOWindowGUI {
+	
 	private final SAOTextGUI textText;
 	private final SAOLabelGUI fromLable;
 
@@ -55,6 +55,6 @@ public class SAOMessageGUI /*extends SAOWindowGUI*/ {
 		}
 		
 		return super.mouseReleased(mc, cursorX, cursorY, button);
-	}*/
+	}
 
 }

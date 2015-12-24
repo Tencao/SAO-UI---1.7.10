@@ -53,7 +53,7 @@ guiProfile=Profile
 # Misc
 guiOptions=Options..
 guiOption=Option
-guiHelp=Help
+guiMenu=Menu
 guiLogout=Logout
 guiBack=Back
 

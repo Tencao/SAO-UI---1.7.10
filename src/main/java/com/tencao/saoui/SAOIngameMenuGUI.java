@@ -40,10 +40,12 @@ import com.tencao.saoui.util.SAOSub;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -72,7 +74,7 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
 
     private final GuiInventory parentInv;
     public World world;
-    public long soundcooldown;
+
 
     public SAOIngameMenuGUI(GuiInventory vanillaGUI) {
         super();
@@ -118,10 +120,6 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
     @Override
     public void updateScreen() {
         super.updateScreen();
-        /*
-    	this.mc.displayGuiScreen((GuiScreen)null);
-        this.mc.displayGuiScreen(new SAOIngameMenuGUI());
-        */
         if (flowY < height / 2) {
             flowY = (flowY + height / 2 - 32) / 2;
         }
@@ -150,23 +148,14 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
             //if (id == SAOID.OPT_CAT && ((SAOButtonGUI) element).caption.equals(StatCollector.translateToLocal("guiBack")))
             //    openOptCat = openOptCat.category;
             if (isMenuOpen(id)) {
-            	if (mc.theWorld.getTotalWorldTime() - 1000 > soundcooldown){
-            		element.click(mc.getSoundHandler(), false);
-            		soundcooldown = mc.theWorld.getTotalWorldTime();
-            	}
+            	element.click(mc.getSoundHandler(), false);
                 closeMenu(element, id);
             } else {
-            	if (mc.theWorld.getTotalWorldTime() - 1000 > soundcooldown){
-            		element.click(mc.getSoundHandler(), true);
-            		openMenu(element, id);
-            		soundcooldown = mc.theWorld.getTotalWorldTime();
-            	}
+            	element.click(mc.getSoundHandler(), true);
+            	openMenu(element, id);
             }
         } else if (id != SAOID.NONE) {
-        	if (mc.theWorld.getTotalWorldTime() - 1000 > soundcooldown){
-        		element.click(mc.getSoundHandler(), false);
-        		soundcooldown = mc.theWorld.getTotalWorldTime();
-        	}
+        	element.click(mc.getSoundHandler(), false);
             action(element, id, action, data);
         }
     }
@@ -238,7 +227,7 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
         } else if ((id == SAOID.MESSAGE) && (mc.ingameGUI instanceof SAOIngameGUI)) {
             //((SAOIngameGUI) mc.ingameGUI).viewMessageAuto();
         } else if ((id == SAOID.MESSAGE_BOX) && (element.parent instanceof SAOMenuGUI) && (((SAOMenuGUI) element.parent).parent instanceof SAOFriendGUI)) {
-            /*final String username = ((SAOFriendGUI) ((SAOMenuGUI) element.parent).parent).caption;
+        	/*final String username = ((SAOFriendGUI) ((SAOMenuGUI) element.parent).parent).caption;
 
             final String format = I18n.format("commands.message.usage");
             final String cmd = format.substring(0, format.indexOf(' '));
@@ -276,11 +265,11 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
                     break;
             }
         } else if ((id == SAOID.INVITE_PLAYER) && (element instanceof SAOButtonGUI)) {
-            /*final String name = ((SAOButtonGUI) element).caption;
+            final String name = ((SAOButtonGUI) element).caption;
 
             if (!SAOMod.isPartyMember(name)) {
                 SAOMod.inviteParty(mc, name);
-            }*/
+            }
         } else if (id == SAOID.CREATE) {
             element.enabled = false;//!SAOMod.createParty(mc, 2.5);
 
@@ -289,7 +278,7 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
                 mc.setIngameFocus();
             }
         } else if (id == SAOID.DISSOLVE) {
-            element.enabled = false;/*
+            element.enabled = false;
 
             final boolean isLeader = SAOMod.isPartyLeader(SAOMod.getName(mc));
 
@@ -309,7 +298,7 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
 					mc.setIngameFocus();
 				}
 
-			}));*/
+			}));
         } else if ((id == SAOID.SLOT) && (element instanceof SAOSlotGUI) && (element.parent instanceof SAOInventoryGUI)) {
             final SAOSlotGUI slot = (SAOSlotGUI) element;
             final SAOInventoryGUI inventory = (SAOInventoryGUI) element.parent;
@@ -469,15 +458,15 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
             menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
             menu.enabled = false;
 
-            //menu.elements.add(new SAOButtonGUI(menu, SAOID.GUILD, 0, 0, StatCollector.translateToLocal("guiGuild"), SAOIcon.GUILD));
+            menu.elements.add(new SAOButtonGUI(menu, SAOID.GUILD, 0, 0, StatCollector.translateToLocal("guiGuild"), SAOIcon.GUILD));
             menu.elements.add(new SAOButtonGUI(menu, SAOID.PARTY, 0, 0, StatCollector.translateToLocal("guiParty"), SAOIcon.PARTY));
             menu.elements.add(new SAOButtonGUI(menu, SAOID.FRIENDS, 0, 0, StatCollector.translateToLocal("guiFriends"), SAOIcon.FRIEND));
-            /*
+            
             sub = SAOSub.createSocialSub(mc, element, -189, menuOffsetY);
             info = SAOSub.addInfo(sub);
 
             infoCaption = null;
-            infoText = null;*/
+            infoText = null;
         } else if (id == SAOID.NAVIGATION) {
             menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
 
@@ -494,7 +483,7 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
             menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
 
             menu.elements.add(new SAOButtonGUI(menu, SAOID.OPTIONS, 0, 0, StatCollector.translateToLocal("guiOption"), SAOIcon.OPTION));
-            menu.elements.add(new SAOButtonGUI(menu, SAOID.MENU, 0, 0, StatCollector.translateToLocal("guiHelp"), SAOIcon.HELP));
+            menu.elements.add(new SAOButtonGUI(menu, SAOID.MENU, 0, 0, StatCollector.translateToLocal("guiMenu"), SAOIcon.HELP));
 			menu.elements.add(new SAOStateButtonGUI(menu, SAOID.LOGOUT, 0, 0, SAOOption.LOGOUT.value? StatCollector.translateToLocal("guiLogout") : "", SAOIcon.LOGOUT, new SAOStateHandler() {
 
 				public boolean isStateEnabled(Minecraft mc, SAOStateButtonGUI button) {
@@ -560,7 +549,7 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
 
             if (world.isRemote){
                 menu.enabled = false;
-            }/*
+            }
             menu.elements.add(new SAOPartyGUI(menu, SAOID.INVITE_LIST, 0, 0, StatCollector.translateToLocal("guiInvite"), SAOIcon.INVITE, true));
             menu.elements.add(new SAOPartyGUI(menu, SAOID.CREATE, 0, 0, StatCollector.translateToLocal("guiCreate"), SAOIcon.CREATE, false));
             menu.elements.add(new SAOPartyGUI(menu, SAOID.DISSOLVE, 0, 0, StatCollector.translateToLocal("guiDissolve"), SAOIcon.CANCEL, true));
@@ -569,10 +558,10 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
             info = SAOSub.addInfo(sub);
 
             infoCaption = null;
-            infoText = null;*/
+            infoText = null;
         } else if (id == SAOID.INVITE_LIST) {
             menu = new SAOListGUI(element, menuOffsetX, menuOffsetY, 100, 60);
-            menu.enabled = false;/*
+            menu.enabled = false;
             if (world.isRemote){
                 menu.enabled = false;
             }
@@ -600,7 +589,7 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
             		menu.elements.add(button);
 				
                 }
-            }*/
+            }
         } else if (id == SAOID.ITEMS) {
             menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.ITEMS);
         } else if (id == SAOID.SKILLS) {
@@ -627,7 +616,7 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
         } else if (id == SAOID.EQUIPPED) {
             menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.EQUIPMENT);
         } else if (id == SAOID.ACCESSORY) {
-            menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.ACCESSORY);/*
+            menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.ACCESSORY);
         } else if (id == SAOID.FRIENDS) {
             menu = new SAOFriendsGUI(mc, element, menuOffsetX, menuOffsetY, 150, 100);
             menu.enabled = false;
@@ -656,9 +645,9 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
 
                 //SAOMod.addFriendRequest(mc, ((SAOFriendGUI) element).caption);
                 element.enabled = false;
-            }*/
+            }
         } else if ((id == SAOID.OTHER_PROFILE) && (element.parent instanceof SAOMenuGUI) && (((SAOMenuGUI) element.parent).parent instanceof SAOFriendGUI)) {
-            menu = null;/*
+            menu = null;
 
             final EntityPlayer player = SAOMod.findOnlinePlayer(mc, ((SAOFriendGUI) ((SAOMenuGUI) element.parent).parent).caption);
 
@@ -672,9 +661,9 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
                 final SAOString[] profile = SAOSub.addProfileContent(player);
 
                 setInfo(profile[0], profile[1]);
-            }*/
+            }
         } else if ((id == SAOID.POSITION_CHECK) && (element.parent instanceof SAOMenuGUI) && (((SAOMenuGUI) element.parent).parent instanceof SAOFriendGUI)) {
-            menu = null;/*
+            menu = null;
 
             final EntityPlayer player = SAOMod.findOnlinePlayer(mc, ((SAOFriendGUI) ((SAOMenuGUI) element.parent).parent).caption);
 
@@ -688,7 +677,7 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
                 final SAOString[] position = SAOSub.addPositionContent(player, mc.thePlayer);
 
                 setInfo(position[0], position[1]);
-            }*/
+            }
         } else if (id == SAOID.QUESTS) {
             menu = null;
 

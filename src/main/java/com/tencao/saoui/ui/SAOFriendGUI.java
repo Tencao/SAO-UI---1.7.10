@@ -14,8 +14,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class SAOFriendGUI /*extends SAOButtonGUI*/ {
-	/*
+public class SAOFriendGUI extends SAOButtonGUI {
+	
 	private EntityPlayer friend;
 
 	public SAOFriendGUI(SAOParentGUI gui, int xPos, int yPos, int w, int h, String name) {
@@ -64,6 +64,6 @@ public class SAOFriendGUI /*extends SAOButtonGUI*/ {
 		}
 		
 		return null;
-	}*/
+	}
 
 }

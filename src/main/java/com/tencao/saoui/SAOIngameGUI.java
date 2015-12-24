@@ -338,7 +338,7 @@ public class SAOIngameGUI extends GuiIngameForge {
         }
 
         mc.mcProfiler.endSection();
-        /*
+        
         if (SAOMod.isPartyMember(username)) {
             mc.mcProfiler.startSection("party");
 
@@ -403,7 +403,7 @@ public class SAOIngameGUI extends GuiIngameForge {
             }
             
             mc.mcProfiler.endSection();
-        }*/
+        }
    	}
 
     @Override

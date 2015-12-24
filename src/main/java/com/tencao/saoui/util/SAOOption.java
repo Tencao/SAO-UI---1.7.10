@@ -12,7 +12,7 @@ public enum SAOOption {
     INTERFACES(StatCollector.translateToLocal("optCatInterf"), false, true, null),
     DEFAULT_UI(StatCollector.translateToLocal("optionDefaultUI"), false, false, UI),
     //DEFAULT_HEALTH(StatCollector.translateToLocal("optionDefaultHealth"), false, false, UI),
-    DEFAULT_INVENTORY(StatCollector.translateToLocal("optionDefaultInv"), false, false, INTERFACES),
+    DEFAULT_INVENTORY(StatCollector.translateToLocal("optionDefaultInv"), true, false, INTERFACES),
     DEFAULT_DEATH_SCREEN(StatCollector.translateToLocal("optionDefaultDeath"), false, false, UI),
     DEFAULT_HOTBAR(StatCollector.translateToLocal("optionDefaultHotbar"), false, false, UI),
     ALT_HOTBAR(StatCollector.translateToLocal("optionAltHotbar"), false, false, UI),

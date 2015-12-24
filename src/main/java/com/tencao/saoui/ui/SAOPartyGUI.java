@@ -12,8 +12,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class SAOPartyGUI /*extends SAOStateButtonGUI*/ {
-	/*
+public class SAOPartyGUI extends SAOStateButtonGUI {
+	
 	public SAOPartyGUI(SAOParentGUI gui, SAOID saoID, int xPos, int yPos, int w, int h, String string, SAOIcon saoIcon, boolean partyFlag) {
 		super(gui, saoID, xPos, yPos, w, h, string, saoIcon, new SAOPartyStateHandler(partyFlag));
 	}
@@ -38,6 +38,6 @@ public class SAOPartyGUI /*extends SAOStateButtonGUI*/ {
 			return (SAOMod.isPartyMember(mc.thePlayer.getDisplayName()) == flag);
 		}
 
-	}*/
+	}
 
 }
