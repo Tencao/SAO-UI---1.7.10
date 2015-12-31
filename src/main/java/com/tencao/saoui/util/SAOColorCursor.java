@@ -6,21 +6,15 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public final class SAOColorCursor {
 
-    public static final SAOColorCursor CREATIVE = new SAOColorCursor(SAOColorState.CREATIVE, false);
-
     private static final long STATE_TIME = 24 * 60 * 60 * 1000; // DAY IN MILLISECONDS
 
     private SAOColorState colorState;
     private long downgradeTime;
 
     public SAOColorCursor(SAOColorState defaultState, boolean set) {
-        if (set) {
-            colorState = defaultState;
-            set(defaultState);
-        } else {
-            colorState = defaultState;
-            downgradeTime = 0;
-        }
+        colorState = defaultState;
+        if (set) set(defaultState);
+        else downgradeTime = 0;
     }
 
     public SAOColorCursor() {
@@ -31,9 +25,7 @@ public final class SAOColorCursor {
         if (delay >= downgradeTime) {
             colorState = SAOColorState.INNOCENT;
             downgradeTime = 0;
-        } else {
-            downgradeTime -= delay;
-        }
+        } else downgradeTime -= delay;
     }
 
     public final void set(SAOColorState state) {

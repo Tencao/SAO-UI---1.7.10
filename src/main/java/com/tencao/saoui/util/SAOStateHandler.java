@@ -9,6 +9,6 @@ import net.minecraft.client.Minecraft;
 @SideOnly(Side.CLIENT)
 public interface SAOStateHandler {
 
-	public boolean isStateEnabled(Minecraft mc, SAOStateButtonGUI button);
+	boolean isStateEnabled(Minecraft mc, SAOStateButtonGUI button);
 
 }

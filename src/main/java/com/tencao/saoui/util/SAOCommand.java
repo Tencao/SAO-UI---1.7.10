@@ -21,21 +21,7 @@ public enum SAOCommand {
 	private static final String PREFIX = String.valueOf("SAO:");
 	private static final String SUFFIX = String.valueOf(";");
 
-	public final String[] getContent(String data) {
-		final int index = toString().length() + 1;
-		
-		if (index >= data.length()) {
-			return new String[0];
-		} else {
-			return data.substring(index).split(" ");
-		}
-	}
-
-	public final String toString() {
-		return (PREFIX + name() + SUFFIX).toLowerCase();
-	}
-
-	public static final SAOCommand getCommand(String data) {
+	public static SAOCommand getCommand(String data) {
 		if (data.startsWith(PREFIX.toLowerCase())) {
 			final int nextData = data.indexOf(SUFFIX, PREFIX.length());
 			final String id = data.substring(PREFIX.length(), nextData).toUpperCase();
@@ -45,9 +31,18 @@ public enum SAOCommand {
 			} catch (NumberFormatException e) {
 				return null;
 			}
-		} else {
-			return null;
-		}
+		} else return null;
+	}
+
+	public final String[] getContent(String data) {
+		final int index = toString().length() + 1;
+
+		if (index >= data.length()) return new String[0];
+		else return data.substring(index).split(" ");
+	}
+
+	public final String toString() {
+		return (PREFIX + name() + SUFFIX).toLowerCase();
 	}
 
 }

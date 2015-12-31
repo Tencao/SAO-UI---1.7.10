@@ -4,7 +4,7 @@ public final class SAOJ8String {
 
 	private SAOJ8String() {}
 
-	public static final String join(String s0, String... s1) {
+	public static String join(String s0, String... s1) {
 		final StringBuilder builder = new StringBuilder();
 		
 		if (s1.length > 1) {

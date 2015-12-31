@@ -45,7 +45,7 @@ public enum SAOIcon {
 		return (index() / 16) * SRC_SIZE;
 	}
 
-	private final int index() {
+	private int index() {
 		return (ordinal() - 1);
 	}
 

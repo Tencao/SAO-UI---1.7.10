@@ -37,6 +37,11 @@ public class SAOButtonGUI extends SAOElementGUI {
 		this(gui, saoID, xPos, yPos, 100, string, saoIcon);
 	}
 
+	public SAOButtonGUI(SAOParentGUI gui, SAOID saoID, int xPos, int yPos, String string, SAOIcon saoIcon, boolean highlighted) {
+		this(gui, saoID, xPos, yPos, 100, string, saoIcon);
+		highlight = highlighted;
+	}
+
 	public void draw(Minecraft mc, int cursorX, int cursorY) {
 		super.draw(mc, cursorX, cursorY);
 		
@@ -80,22 +85,11 @@ public class SAOButtonGUI extends SAOElementGUI {
 	}
 
 	int getColor(int hoverState, boolean bg) {
-		if (bg) {
-			return hoverState == 1? SAOColor.DEFAULT_COLOR : hoverState == 2? SAOColor.HOVER_COLOR : SAOColor.DEFAULT_COLOR & SAOColor.DISABLED_MASK;
-		} else {
-			return hoverState == 1? SAOColor.DEFAULT_FONT_COLOR : hoverState == 2? SAOColor.HOVER_FONT_COLOR : SAOColor.DEFAULT_FONT_COLOR & SAOColor.DISABLED_MASK;
-		}
+		return bg ? hoverState == 1 ? SAOColor.DEFAULT_COLOR.rgba : hoverState >= 2 ? SAOColor.HOVER_COLOR.rgba : SAOColor.DISABLED_MASK.rgba : hoverState == 1 ? SAOColor.DEFAULT_FONT_COLOR.rgba : hoverState >= 2 ? SAOColor.HOVER_FONT_COLOR.rgba : SAOColor.DEFAULT_FONT_COLOR.rgba & SAOColor.DISABLED_MASK.rgba;
 	}
 
 	public int hoverState(int cursorX, int cursorY) {
-		if ((highlight) || (mouseOver(cursorX, cursorY))) {
-			return 2;
-		} else
-		if (enabled) {
-			return 1;
-		} else {
-			return 0;
-		}
+		return mouseOver(cursorX, cursorY) ? 2 : highlight ? 3 : enabled ? 1 : 0;
 	}
 
 	public SAOID ID() {

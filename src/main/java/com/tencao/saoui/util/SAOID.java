@@ -3,6 +3,8 @@ package com.tencao.saoui.util;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+import java.util.stream.Stream;
+
 @SideOnly(Side.CLIENT)
 public enum SAOID {
 
@@ -55,17 +57,17 @@ public enum SAOID {
 	public final SAOID parent;
 	public final boolean menuFlag;
 
-	private SAOID(SAOID parentID, boolean menu) {
+	SAOID(SAOID parentID, boolean menu) {
 		parent = parentID;
 		menuFlag = menu;
 	}
 
-	private SAOID(boolean menu) {
+	SAOID(boolean menu) {
 		this(null, menu);
 	}
 
 	public boolean hasParent(SAOID id) {
-		return (parent == id) || ((parent != null) && (parent.hasParent(id)));
+		return parent == id || parent != null && parent.hasParent(id);
 	}
 
 }

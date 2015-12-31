@@ -8,29 +8,11 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public enum SAOAlign {
 
-	CENTER(new SAOPositioner() {
+	CENTER((SAOPositioner) (element, relative, width) -> element.getX(relative) + (element.width - width) / 2),
 
-		public int getX(SAOElementGUI element, boolean relative, int width) {
-			return element.getX(relative) + (element.width - width) / 2;
-		}
+	LEFT((SAOPositioner) (element, relative, width) -> element.getX(relative)),
 
-	}),
-
-	LEFT(new SAOPositioner() {
-
-		public int getX(SAOElementGUI element, boolean relative, int width) {
-			return element.getX(relative);
-		}
-
-	}),
-
-	RIGHT(new SAOPositioner() {
-
-		public int getX(SAOElementGUI element, boolean relative, int width) {
-			return element.getX(relative) + (element.width - width);
-		}
-
-	});
+	RIGHT((SAOPositioner) (element, relative, width) -> element.getX(relative) + (element.width - width));
 
 	private final SAOPositioner positioner;
 
@@ -43,9 +25,7 @@ public enum SAOAlign {
 	}
 
 	private interface SAOPositioner {
-
 		int getX(SAOElementGUI element, boolean relative, int width);
-
 	}
 
 }

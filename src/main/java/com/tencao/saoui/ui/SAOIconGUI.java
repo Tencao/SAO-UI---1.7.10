@@ -1,5 +1,6 @@
 package com.tencao.saoui.ui;
 
+import com.tencao.saoui.SAOSound;
 import net.minecraft.client.Minecraft;
 
 import com.tencao.saoui.util.SAOParentGUI;
@@ -11,15 +12,16 @@ import com.tencao.saoui.util.SAOResources;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.audio.SoundHandler;
 
 @SideOnly(Side.CLIENT)
 public class SAOIconGUI extends SAOElementGUI {
 
 	private final SAOID id;
 
-	public SAOIcon icon;
 	public boolean highlight;
-	public int bgColor, disabledMask;
+	public SAOColor bgColor, disabledMask;
+	private SAOIcon icon;
 
 	public SAOIconGUI(SAOParentGUI gui, SAOID saoID, int xPos, int yPos, SAOIcon saoIcon) {
 		super(gui, xPos, yPos, 20, 20);
@@ -56,43 +58,29 @@ public class SAOIconGUI extends SAOElementGUI {
 	}
 
 	protected int getColor(int hoverState, boolean bg) {
-		if (icon == SAOIcon.CONFIRM) {
-			if (bg) {
-				return hoverState == 1? SAOColor.CONFIRM_COLOR : hoverState == 2? SAOColor.CONFIRM_COLOR_LIGHT : SAOColor.CONFIRM_COLOR & disabledMask;
-			} else {
-				return hoverState > 0? SAOColor.HOVER_FONT_COLOR : SAOColor.HOVER_FONT_COLOR & disabledMask;
-			}
-		} else
-		if (icon == SAOIcon.CANCEL) {
-			if (bg) {
-				return hoverState == 1? SAOColor.CANCEL_COLOR : hoverState == 2? SAOColor.CANCEL_COLOR_LIGHT : SAOColor.CANCEL_COLOR & disabledMask;
-			} else {
-				return hoverState > 0? SAOColor.HOVER_FONT_COLOR : SAOColor.HOVER_FONT_COLOR & disabledMask;
-			}
-		} else {
-			if (bg) {
-				return hoverState == 1? bgColor : hoverState == 2? SAOColor.HOVER_COLOR : bgColor & disabledMask;
-			} else {
-				return hoverState == 1? SAOColor.DEFAULT_FONT_COLOR : hoverState == 2? SAOColor.HOVER_FONT_COLOR : SAOColor.DEFAULT_FONT_COLOR & disabledMask;
-			}
-		}
+		if (icon == SAOIcon.CONFIRM)
+			return bg ? hoverState == 1 ? SAOColor.CONFIRM_COLOR.rgba : hoverState == 2 ? SAOColor.CONFIRM_COLOR_LIGHT.rgba : SAOColor.CONFIRM_COLOR.rgba & disabledMask.rgba : hoverState > 0 ? SAOColor.HOVER_FONT_COLOR.rgba : disabledMask.rgba;
+		else if (icon == SAOIcon.CANCEL)
+			return bg ? hoverState == 1 ? SAOColor.CANCEL_COLOR.rgba : hoverState == 2 ? SAOColor.CANCEL_COLOR_LIGHT.rgba : SAOColor.CANCEL_COLOR.rgba & disabledMask.rgba : hoverState > 0 ? SAOColor.HOVER_FONT_COLOR.rgba : disabledMask.rgba;
+		else
+			return bg ? hoverState == 1 ? bgColor.rgba : hoverState == 2 ? SAOColor.HOVER_COLOR.rgba : bgColor.rgba & disabledMask.rgba : hoverState == 1 ? SAOColor.DEFAULT_FONT_COLOR.rgba : hoverState == 2 ? SAOColor.HOVER_FONT_COLOR.rgba : SAOColor.DEFAULT_FONT_COLOR.rgba & disabledMask.rgba;
 	}
 
 	public boolean mouseReleased(Minecraft mc, int cursorX, int cursorY, int button) {
 		return (button == 0);
 	}
 
-	public int hoverState(int cursorX, int cursorY) {
-		if ((highlight) || (mouseOver(cursorX, cursorY))) {
-			return 2;
-		} else
-		if (enabled) {
-			return 1;
-		} else {
-			return 0;
-		}
+	@Override
+	public void click(SoundHandler handler, boolean flag) {
+		if (icon == SAOIcon.CONFIRM) SAOSound.play(handler, SAOSound.CONFIRM);
+		else super.click(handler, flag);
 	}
 
+	public int hoverState(int cursorX, int cursorY) {
+		return highlight || mouseOver(cursorX, cursorY) ? 2 : enabled ? 1 : 0;
+	}
+
+	@Override
 	public SAOID ID() {
 		return id;
 	}

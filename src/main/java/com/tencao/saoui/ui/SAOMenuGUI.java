@@ -12,8 +12,8 @@ import net.minecraft.client.Minecraft;
 @SideOnly(Side.CLIENT)
 public class SAOMenuGUI extends SAOContainerGUI {
 
-	public boolean fullArrow;
 	public boolean innerMenu;
+	public boolean fullArrow;
 
 	public SAOMenuGUI(SAOParentGUI gui, int xPos, int yPos, int w, int h) {
 		super(gui, xPos, yPos, w, h);
@@ -24,10 +24,8 @@ public class SAOMenuGUI extends SAOContainerGUI {
 	protected int getOffset(int index) {
 		int start = 0;
 		int offset = 0;
-		
-		while ((start < elements.size()) && (start < index)) {
-			offset += getOffsetSize(elements.get(start++));
-		}
+
+		while ((start < elements.size()) && (start < index)) offset += getOffsetSize(elements.get(start++));
 		
 		return offset;
 	}
@@ -39,13 +37,8 @@ public class SAOMenuGUI extends SAOContainerGUI {
 	public void update(Minecraft mc) {
 		height = getSize();
 		
-		if (width <= 0) {
-			for (final SAOElementGUI element : elements) {
-				if (element.width > width) {
-					width = element.width;
-				}
-			}
-		}
+		if (width <= 0)
+			elements.stream().filter(element -> element.width > width).forEach(element -> width = element.width);
 		
 		super.update(mc);
 	}
@@ -62,10 +55,10 @@ public class SAOMenuGUI extends SAOContainerGUI {
 	}
 
 	public void draw(Minecraft mc, int cursorX, int cursorY) {
-		if ((visibility > 0) && (parent != null) && (height > 0)) {
+		if (visibility > 0 && parent != null && height > 0) {
 			if (x > 0) {
 				SAOGL.glBindTexture(SAOResources.gui);
-				SAOGL.glColorRGBA(SAOColor.multiplyAlpha(SAOColor.DEFAULT_COLOR, visibility));
+				SAOGL.glColorRGBA(SAOColor.DEFAULT_COLOR.multiplyAlpha(visibility));
 				
 				final int left = getX(false);
 				final int top = getY(false);
@@ -77,7 +70,7 @@ public class SAOMenuGUI extends SAOContainerGUI {
 			} else
 			if (x < 0) {
 				SAOGL.glBindTexture(SAOResources.gui);
-				SAOGL.glColorRGBA(SAOColor.multiplyAlpha(SAOColor.DEFAULT_COLOR, visibility));
+				SAOGL.glColorRGBA(SAOColor.DEFAULT_COLOR.multiplyAlpha(visibility));
 				
 				final int left = getX(false);
 				final int top = getY(false);

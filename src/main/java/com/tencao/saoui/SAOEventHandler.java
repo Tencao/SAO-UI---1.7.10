@@ -1,12 +1,12 @@
 package com.tencao.saoui;
 
+import cpw.mods.fml.common.gameevent.TickEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -15,6 +15,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class SAOEventHandler {
+
+    private final Minecraft mc = Minecraft.getMinecraft();
 
     @SubscribeEvent
     public void livingAttack(LivingAttackEvent e) {
@@ -73,4 +75,26 @@ public class SAOEventHandler {
         }
     }
 
+    @SubscribeEvent
+    public void colorstateupdate (LivingEvent.LivingUpdateEvent e){
+        long time = System.currentTimeMillis();
+        long lasttime = time;
+
+        long delay;
+
+        time = System.currentTimeMillis();
+        delay = Math.abs(time - lasttime);
+        if (e.entityLiving != null) SAOMod.colorStates.values().stream().forEach(cursor -> cursor.update(delay));
+    }
+
+    @SubscribeEvent
+    public void abilityCheck (TickEvent.ClientTickEvent e){
+        if (mc.thePlayer == null) {
+            SAOMod.IS_SPRINTING = false;
+            SAOMod.IS_SNEAKING = false;
+        } else if (mc.inGameHasFocus) {
+            if (SAOMod.IS_SPRINTING) KeyBinding.setKeyBindState(mc.gameSettings.keyBindSprint.getKeyCode(), true);
+            if (SAOMod.IS_SNEAKING) KeyBinding.setKeyBindState(mc.gameSettings.keyBindSneak.getKeyCode(), true);
+        }
+    }
 }

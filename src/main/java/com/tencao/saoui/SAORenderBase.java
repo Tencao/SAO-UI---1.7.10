@@ -29,7 +29,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-class SAORenderBase extends RenderPlayer {
+class SAORenderBase extends Render {
 
     private static final int HEALTH_COUNT = 32;
     private static final double HEALTH_ANGLE = 0.35F;
@@ -111,7 +111,7 @@ class SAORenderBase extends RenderPlayer {
     }
 
 	protected ResourceLocation getEntityTexture(Entity entity) {
-    	return getEntityTexture((AbstractClientPlayer)entity);
+    	return getEntityTexture(entity);
 	}
     
     protected void bindEntityTexture(Entity entity)
@@ -305,7 +305,7 @@ class SAORenderBase extends RenderPlayer {
 
     private void useColor(Minecraft mc, Entity entity, float time) {
         if (entity instanceof EntityLivingBase) {
-            SAOHealthStep.getStep(mc, (EntityLivingBase) entity, time).glColor((EntityLivingBase) entity);
+            SAOHealthStep.getStep(mc, (EntityLivingBase) entity, time).glColor();
         } else {
             SAOHealthStep.GOOD.glColor();
         }

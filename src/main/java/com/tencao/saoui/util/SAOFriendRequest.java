@@ -11,7 +11,7 @@ public final class SAOFriendRequest {
 	}
 
 	public final boolean equals(SAOFriendRequest request) {
-		return equals(request == null? (String) null : request.friendName);
+		return equals(request == null? null : request.friendName);
 	}
 
 	public final boolean equals(String name) {
@@ -19,11 +19,7 @@ public final class SAOFriendRequest {
 	}
 
 	public final boolean equals(Object object) {
-		if (object instanceof SAOFriendRequest) {
-			return equals((SAOFriendRequest) object);
-		} else {
-			return equals(String.valueOf(object));
-		}
+		return object instanceof SAOFriendRequest ? equals((SAOFriendRequest) object) : equals(String.valueOf(object));
 	}
 
 }

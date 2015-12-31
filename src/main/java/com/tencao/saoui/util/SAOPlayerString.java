@@ -30,28 +30,15 @@ public final class SAOPlayerString implements SAOString {
 
             final float maxHealth = attr(player.getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue());
             final float attackDamage = attr(player.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue());
-            // final float movementSpeed = attr(player.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue());
-            // final float knowbackResistance = attr(player.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).getAttributeValue());
 
             float itemDamage = 0.0F;
 
             if (player.getCurrentEquippedItem() != null) {
-				final Multimap map = player.getCurrentEquippedItem().getAttributeModifiers();
-                final Collection itemAttackDamage = map.get(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName());
+                @SuppressWarnings("unchecked") final Collection<?> itemAttackDamage = player.getCurrentEquippedItem().getAttributeModifiers().get(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName());
 
-                for (Object value : itemAttackDamage) {
-                    if (value instanceof AttributeModifier) {
-                        final AttributeModifier attrMod = (AttributeModifier) value;
+                itemDamage += itemAttackDamage.stream().filter(value -> value instanceof AttributeModifier).map(value -> (AttributeModifier) value)
+                        .filter(mod -> mod.getName().equals("Weapon modifier")).mapToDouble(AttributeModifier::getAmount).sum();
 
-                        if (attrMod.getName().equals("Weapon modifier")) {
-                            switch (attrMod.getOperation()) {
-                                default:
-                                    itemDamage += attrMod.getAmount();
-                                    break;
-                            }
-                        }
-                    }
-                }
             }
 
             final float strength = attr(attackDamage + itemDamage);

@@ -12,6 +12,7 @@ public final class SAOJString implements SAOString {
         string = "";
     }
 
+    @Override
     public final String toString() {
         return string;
     }

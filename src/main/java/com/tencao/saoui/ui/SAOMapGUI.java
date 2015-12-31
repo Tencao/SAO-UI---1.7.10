@@ -20,12 +20,12 @@ public class SAOMapGUI extends SAOElementGUI {
 	public static final int MAP_DATA_SIZE = (MAP_SIZE * 2 + 1);
 
 	private final EntityPlayer character;
+	public int zoom;
 	private int[][] map;
 	private long medium;
 	private int min, max;
 
 	public int scan;
-	public int zoom;
 
 	public SAOMapGUI(SAOParentGUI gui, int xPos, int yPos, int size, EntityPlayer player) {
 		super(gui, xPos, yPos, MAP_DATA_SIZE * size, MAP_DATA_SIZE * size + 16);
@@ -36,7 +36,7 @@ public class SAOMapGUI extends SAOElementGUI {
 	}
 
 	public final void scanMap() {
-		if ((character != null) && (character.worldObj != null)) {
+		if (character != null && character.worldObj != null) {
 			int i, j;
 			
 			map = new int[MAP_DATA_SIZE][MAP_DATA_SIZE];
@@ -56,60 +56,44 @@ public class SAOMapGUI extends SAOElementGUI {
 					int y = 0;
 					
 					do {
-						if ((originY + y < character.worldObj.getActualHeight()) &&
+						if (originY + y < character.worldObj.getActualHeight() &&
 							(character.worldObj.isAirBlock(x, originY + y, z) != character.worldObj.isAirBlock(x, originY + (y + 1), z))) {
 							break;
-						} else {
-							endScan |= 0x1;
-						}
-						
-						if ((originY - y > 0) &&
+						} else endScan |= 0x1;
+
+						if (originY - y > 0 &&
 							(character.worldObj.isAirBlock(x, originY - y, z) != character.worldObj.isAirBlock(x, originY - (y + 1), z))) {
 							y *= -1;
 							break;
-						} else {
-							endScan |= 0x2;
-						}
+						} else endScan |= 0x2;
 						
 						y++;
 					} while (y < scan);
-					
-					if (y == scan) {
-						map[16 + i][16 + j] = -endScan;
-					} else {
+
+					if (y == scan) map[16 + i][16 + j] = -endScan;
+					else {
 						map[16 + i][16 + j] = (originY + y);
 						
 						medium += map[16 + i][16 + j];
 						count++;
-						
-						if (map[16 + i][16 + j] < min) {
-							min = map[16 + i][16 + j];
-						}
-						
-						if (map[16 + i][16 + j] > max) {
-							max = map[16 + i][16 + j];
-						}
+
+						if (map[16 + i][16 + j] < min) min = map[16 + i][16 + j];
+
+						if (map[16 + i][16 + j] > max) max = map[16 + i][16 + j];
 					}
 				}
 			}
-			
-			for (i = -16; i <= 16; i++) {
-				for (j = -16; j <= 16; j++) {
+
+			for (i = -16; i <= 16; i++)
+				for (j = -16; j <= 16; j++)
 					if (map[16 + i][16 + j] < 0) {
 						map[16 + i][16 + j] = (map[16 + i][16 + j] == -2? min : max);
 						
 						medium += map[16 + i][16 + j];
 						count++;
 					}
-				}
-			}
-			
-			if (count > 0) {
-				medium /= count;
-			}
-		} else {
-			map = null;
-		}
+			if (count > 0) medium /= count;
+		} else map = null;
 	}
 
 	public void update(Minecraft mc) {
@@ -170,15 +154,8 @@ public class SAOMapGUI extends SAOElementGUI {
 						final int y = (int) (map[16 + x][16 + z] - medium);
 						
 						final float valueY;
-						
-						if ((y < 0) && (medium != min)) {
-							valueY = (float) y / (medium - min);
-						} else
-						if ((y >= 0) && (medium != max)) {
-							valueY = (float) y / (max - medium);
-						} else {
-							valueY = y;
-						}
+
+						valueY = (y < 0) && (medium != min) ? (float) y / (medium - min) : (y >= 0) && (medium != max) ? (float) y / (max - medium) : y;
 						
 						final float blue = (1.0F + valueY) / 2;
 						
@@ -193,36 +170,39 @@ public class SAOMapGUI extends SAOElementGUI {
 				SAOGL.glBindTexture(SAOResources.gui);
 				
 				if (mc.thePlayer != character) {
-					SAOGL.glColorRGBA(SAOColor.multiplyAlpha(SAOColor.CANCEL_COLOR, visibility));
+					SAOGL.glColorRGBA(SAOColor.CANCEL_COLOR.multiplyAlpha(visibility));
 					SAOGL.glTexturedRect(left - size, top - size, size * 2, size * 2, 0, 25, 20, 20);
 					
 					final int offsetX = (int) ((character.posZ - mc.thePlayer.posZ) / zoom);
 					final int offsetY = (int) ((character.posX - mc.thePlayer.posX) / zoom);
 					
 					final int x, y;
-					
-					if (direction == 0) {
-						x = offsetY;
-						y = offsetX;
-					} else 
-					if (direction == 1) {
-						x = offsetX;
-						y = -offsetY;
-					} else
-					if (direction == 2) {
-						x = -offsetY;
-						y = -offsetX;
-					} else {
-						x = -offsetX;
-						y = offsetY;
+
+					switch (direction) {
+						case 0:
+							x = offsetY;
+							y = offsetX;
+							break;
+						case 1:
+							x = offsetX;
+							y = -offsetY;
+							break;
+						case 2:
+							x = -offsetY;
+							y = -offsetX;
+							break;
+						default:
+							x = -offsetX;
+							y = offsetY;
+							break;
 					}
 					
 					if ((Math.abs(x) < MAP_SIZE) && (Math.abs(y) < MAP_SIZE)) {
-						SAOGL.glColorRGBA(SAOColor.multiplyAlpha(SAOColor.HOVER_COLOR, visibility));
+						SAOGL.glColorRGBA(SAOColor.HOVER_COLOR.multiplyAlpha(visibility));
 						SAOGL.glTexturedRect(left - size + x * size, top - size + y * size, size * 2, size * 2, 0, 25, 20, 20);
 					}
 				} else {
-					SAOGL.glColorRGBA(SAOColor.multiplyAlpha(SAOColor.HOVER_COLOR, visibility));
+					SAOGL.glColorRGBA(SAOColor.HOVER_COLOR.multiplyAlpha(visibility));
 					SAOGL.glTexturedRect(left - size, top - size, size * 2, size * 2, 0, 25, 20, 20);
 				}
 			}

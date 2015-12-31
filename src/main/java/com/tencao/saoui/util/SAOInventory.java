@@ -28,60 +28,40 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public enum SAOInventory {
 
-	EQUIPMENT(new ItemFilter() {
+	EQUIPMENT((ItemFilter) (stack, state) -> {
+        final Item item = stack.getItem();
 
-		public boolean filter(ItemStack stack, boolean state) {
-			final Item item = stack.getItem();
-			
-			return (item instanceof ItemArmor) || ((item instanceof ItemBlock) && (((ItemBlock) item).field_150939_a instanceof BlockPumpkin));
-		}
+        return (item instanceof ItemArmor) || ((item instanceof ItemBlock) && (((ItemBlock) item).field_150939_a instanceof BlockPumpkin));
+    }),
 
+	WEAPONS((ItemFilter) (stack, state) -> {
+        final Item item = stack.getItem();
 
-	}),
+        return (item instanceof ItemSword) || (item instanceof ItemTool) || (item instanceof ItemBow);
+    }),
 
-	WEAPONS(new ItemFilter() {
+	ACCESSORY((ItemFilter) (stack, state) -> {
+        final Item item = stack.getItem();
 
-		public boolean filter(ItemStack stack, boolean state) {
-			final Item item = stack.getItem();
-			
-			return (item instanceof ItemSword) || (item instanceof ItemTool) || (item instanceof ItemBow);
-		}
+        return (
+            (item instanceof ItemExpBottle) ||
+            (item instanceof ItemBucket) ||
+            (item instanceof ItemPotion) ||
+            (item instanceof ItemFishingRod) ||
+            (item instanceof ItemCarrotOnAStick) ||
+            (item instanceof ItemEnchantedBook) ||
+            (item instanceof ItemEditableBook) ||
+            (item instanceof ItemMapBase) ||
+            (item instanceof ItemNameTag) ||
+            (item instanceof ItemSaddle) ||
+            (item instanceof ItemWritableBook) ||
+            (item instanceof ItemLead) ||
+            (item instanceof ItemFlintAndSteel) ||
+            (item instanceof ItemShears)
+        );
+    }),
 
-	}),
-
-	ACCESSORY(new ItemFilter() {
-
-		public boolean filter(ItemStack stack, boolean state) {
-			final Item item = stack.getItem();
-			
-			return (
-				(item instanceof ItemExpBottle) ||
-				(item instanceof ItemBucket) ||
-				(item instanceof ItemPotion) ||
-				(item instanceof ItemFishingRod) ||
-				(item instanceof ItemCarrotOnAStick) ||
-				(item instanceof ItemEnchantedBook) ||
-				(item instanceof ItemEditableBook) ||
-				(item instanceof ItemMapBase) ||
-				(item instanceof ItemNameTag) ||
-				(item instanceof ItemSaddle) ||
-				(item instanceof ItemWritableBook) ||
-				(item instanceof ItemLead) ||
-				(item instanceof ItemFlintAndSteel) ||
-				(item instanceof ItemShears)
-			);
-		}
-
-	}),
-
-	ITEMS(new ItemFilter() {
-
-        @Override
-		public boolean filter(ItemStack stack, boolean state) {
-			return (!EQUIPMENT.isFine(stack, state)) && (!WEAPONS.isFine(stack, state) && (!ACCESSORY.isFine(stack, state)));
-		}
-
-	});
+	ITEMS((stack, state) -> !state || (!EQUIPMENT.isFine(stack, state)));
 
 	private final ItemFilter itemFilter;
 

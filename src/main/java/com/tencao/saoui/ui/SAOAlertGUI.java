@@ -11,14 +11,14 @@ import net.minecraft.client.Minecraft;
 
 public class SAOAlertGUI extends SAOElementGUI {
 
-    private int alertColor;
+    private SAOColor alertColor;
 
-    private SAOAlertGUI(SAOParentGUI gui, int xPos, int yPos, int w, String string, int color) {
+    private SAOAlertGUI(SAOParentGUI gui, int xPos, int yPos, int w, String string, SAOColor color) {
         super(gui, xPos, yPos, w, 32);
         alertColor = color;
     }
 
-    public SAOAlertGUI(SAOParentGUI gui, int xPos, int yPos, String string, int color) {
+    public SAOAlertGUI(SAOParentGUI gui, int xPos, int yPos, String string, SAOColor color) {
         this(gui, xPos, yPos, autoWidth(string), string, color);
     }
 
@@ -36,7 +36,7 @@ public class SAOAlertGUI extends SAOElementGUI {
         if (visibility > 0) {
             SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value? SAOResources.gui: SAOResources.guiCustom);
 
-            final int color = mouseOver(cursorX, cursorY) ? SAOColor.mediumColor(alertColor, SAOColor.DEFAULT_FONT_COLOR) : alertColor;
+            final int color = mouseOver(cursorX, cursorY) ? alertColor.mediumColor(SAOColor.DEFAULT_FONT_COLOR) : alertColor.rgba;
 
             SAOGL.glColorRGBA(SAOColor.multiplyAlpha(color, visibility));
 

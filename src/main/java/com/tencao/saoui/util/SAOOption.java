@@ -4,6 +4,8 @@ import net.minecraft.util.StatCollector;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+import java.util.stream.Stream;
+
 @SideOnly(Side.CLIENT)
 public enum SAOOption {
 
@@ -50,8 +52,7 @@ public enum SAOOption {
     }
 
     public static SAOOption fromString(String str) {
-        for (final SAOOption option: values()) if (option.toString().equals(str)) return option;
-        return null;
+        return Stream.of(values()).filter(option -> option.toString().equals(str)).findAny().orElse(null);
     }
 
 }

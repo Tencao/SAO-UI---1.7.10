@@ -1,6 +1,7 @@
 package com.tencao.saoui.ui;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,10 +26,8 @@ public class SAOFriendsGUI extends SAOListGUI {
 		if (list.contains(mc.thePlayer)) {
 			list.remove(mc.thePlayer);
 		}
-		
-		for (final EntityPlayer player : list) {
-			elements.add(new SAOFriendGUI(this, 0, 0, SAOMod.getName(player)));
-		}
+
+		elements.addAll(list.stream().map(player -> new SAOFriendGUI(this, 0, 0, SAOMod.getName(player))).collect(Collectors.toList()));
 	}
 
 }

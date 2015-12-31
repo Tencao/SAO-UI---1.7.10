@@ -8,6 +8,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public interface SAOActionHandler {
 
-	public void actionPerformed(SAOElementGUI element, SAOAction action, int data);
+	void actionPerformed(SAOElementGUI element, SAOAction action, int data);
 
 }
