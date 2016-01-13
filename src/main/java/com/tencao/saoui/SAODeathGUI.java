@@ -5,15 +5,11 @@ import org.lwjgl.opengl.GL11;
 import com.tencao.saoui.ui.SAOAlertGUI;
 import com.tencao.saoui.ui.SAOElementGUI;
 import com.tencao.saoui.ui.SAOScreenGUI;
-import com.tencao.saoui.util.SAOAction;
-import com.tencao.saoui.util.SAOColor;
-import com.tencao.saoui.util.SAOCursorStatus;
-import com.tencao.saoui.util.SAOID;
+import com.tencao.saoui.util.*;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.GuiGameOver;
-import net.minecraft.client.gui.GuiMainMenu;
 
 import java.io.IOException;
 
@@ -35,7 +31,7 @@ public class SAODeathGUI extends SAOScreenGUI {
     protected void init() {
         super.init();
 
-        elements.add(new SAOAlertGUI(this, 0, 0, SAOMod._DEAD_ALERT, this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled() ? SAOColor.HARDCORE_DEAD_COLOR : SAOColor.DEAD_COLOR));
+        elements.add(new SAOAlertGUI(this, 0, 0, ConfigHandler._DEAD_ALERT, this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled() ? SAOColor.HARDCORE_DEAD_COLOR : SAOColor.DEAD_COLOR));
     }
 
     @Override
@@ -82,6 +78,11 @@ public class SAODeathGUI extends SAOScreenGUI {
     public void close() {
         super.close();
         CURSOR_STATUS = oldCursorStatus;
+    }
+
+    @Override
+    public boolean doesGuiPauseGame() {
+        return true;
     }
 
 }

@@ -51,14 +51,14 @@ public enum SAOIcon {
 
 	public final void glDraw(int x, int y, float z) {
 		if (index() >= 0) {
-			SAOGL.glBindTexture(SAOResources.icons);
+			SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.icons : SAOResources.iconsCustom);
 			SAOGL.glTexturedRect(x, y, z, getSrcX(), getSrcY(), SRC_SIZE, SRC_SIZE);
 		}
 	}
 
 	public final void glDraw(int x, int y) {
 		if (index() >= 0) {
-			SAOGL.glBindTexture(SAOResources.icons);
+			SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.icons : SAOResources.iconsCustom);
 			SAOGL.glTexturedRect(x, y, getSrcX(), getSrcY(), SRC_SIZE, SRC_SIZE);
 		}
 	}

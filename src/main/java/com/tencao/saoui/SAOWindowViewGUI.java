@@ -10,7 +10,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class SAOWindowViewGUI extends SAOScreenGUI {
+public abstract class SAOWindowViewGUI extends SAOScreenGUI {
 
 	private final int windowWidth, windowHeight;
 
@@ -24,9 +24,7 @@ public class SAOWindowViewGUI extends SAOScreenGUI {
 		elements.add(createWindow(windowWidth, windowHeight));
 	}
 
-	public SAOWindowGUI createWindow(int width, int height) {
-		return null;
-	}
+	protected abstract SAOWindowGUI createWindow(int width, int height);
 
 	public final SAOWindowGUI getWindow() {
 		return (SAOWindowGUI) elements.get(0);
@@ -51,7 +49,8 @@ public class SAOWindowViewGUI extends SAOScreenGUI {
 	public static SAOWindowViewGUI viewMessage(final String username, final String message) {
 		return new SAOWindowViewGUI(200, 40) {
 
-			public SAOWindowGUI createWindow(int width, int height) {
+			@Override
+			protected SAOWindowGUI createWindow(int width, int height) {
 				return new SAOMessageGUI(this, 0, 0, width, height, message, username);
 			}
 
@@ -61,7 +60,8 @@ public class SAOWindowViewGUI extends SAOScreenGUI {
 	public static SAOWindowViewGUI viewConfirm(final String title, final String message, final SAOActionHandler handler) {
 		return new SAOWindowViewGUI(200, 60) {
 
-			public SAOWindowGUI createWindow(int width, int height) {
+			@Override
+			protected SAOWindowGUI createWindow(int width, int height) {
 				return new SAOConfirmGUI(this, 0, 0, width, height, title, message, handler);
 			}
 

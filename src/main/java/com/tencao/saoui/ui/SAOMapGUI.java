@@ -1,14 +1,10 @@
 package com.tencao.saoui.ui;
 
+import com.tencao.saoui.util.*;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-
-import com.tencao.saoui.util.SAOColor;
-import com.tencao.saoui.util.SAOGL;
-import com.tencao.saoui.util.SAOParentGUI;
-import com.tencao.saoui.util.SAOResources;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -166,8 +162,8 @@ public class SAOMapGUI extends SAOElementGUI {
 				
 				GL11.glEnable(GL11.GL_TEXTURE_2D);
 				GL11.glEnable(GL11.GL_BLEND);
-				
-				SAOGL.glBindTexture(SAOResources.gui);
+
+				SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
 				
 				if (mc.thePlayer != character) {
 					SAOGL.glColorRGBA(SAOColor.CANCEL_COLOR.multiplyAlpha(visibility));

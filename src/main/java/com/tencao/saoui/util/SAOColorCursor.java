@@ -6,7 +6,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public final class SAOColorCursor {
 
-    private static final long STATE_TIME = 24 * 60 * 60 * 1000; // DAY IN MILLISECONDS
+    private static final long STATE_TIME = 24 * 60 * 60 * 20; // DAY IN TICKS
 
     private SAOColorState colorState;
     private long downgradeTime;
@@ -21,11 +21,9 @@ public final class SAOColorCursor {
         this(SAOColorState.INNOCENT, false);
     }
 
-    public final void update(long delay) {
-        if (delay >= downgradeTime) {
-            colorState = SAOColorState.INNOCENT;
-            downgradeTime = 0;
-        } else downgradeTime -= delay;
+    public final void update() {
+        if (downgradeTime == 0) colorState = SAOColorState.INNOCENT;
+        else downgradeTime--;
     }
 
     public final void set(SAOColorState state) {

@@ -3,6 +3,7 @@ package com.tencao.saoui.ui;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.tencao.saoui.util.StaticPlayerHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -21,13 +22,13 @@ public class SAOFriendsGUI extends SAOListGUI {
 	}
 
 	private void init(Minecraft mc) {
-		final List<EntityPlayer> list = SAOMod.listOnlinePlayers(mc);
+		final List<EntityPlayer> list = StaticPlayerHelper.listOnlinePlayers(mc);
 		
 		if (list.contains(mc.thePlayer)) {
 			list.remove(mc.thePlayer);
 		}
 
-		elements.addAll(list.stream().map(player -> new SAOFriendGUI(this, 0, 0, SAOMod.getName(player))).collect(Collectors.toList()));
+		elements.addAll(list.stream().map(player -> new SAOFriendGUI(this, 0, 0, StaticPlayerHelper.getName(player))).collect(Collectors.toList()));
 	}
 
 }

@@ -1,9 +1,15 @@
 package com.tencao.saoui;
 
+import com.tencao.saoui.ui.SAOCharacterView;
+import com.tencao.saoui.util.*;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
@@ -14,30 +20,22 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-
 import org.lwjgl.opengl.GL11;
 
-import com.tencao.saoui.util.SAOColorState;
-import com.tencao.saoui.util.SAOGL;
-import com.tencao.saoui.util.SAOHealthStep;
-import com.tencao.saoui.util.SAOOption;
-import com.tencao.saoui.util.SAOResources;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 @SideOnly(Side.CLIENT)
-class SAORenderBase extends Render {
+class SAORenderBase extends RenderPlayer {
 
     private static final int HEALTH_COUNT = 32;
     private static final double HEALTH_ANGLE = 0.35F;
     private static final double HEALTH_RANGE = 0.975F;
     private static final float HEALTH_OFFSET = 0.75F;
     @SuppressWarnings("unused")
-	private static final float HEALTH_OFFSET_PLAYER = -0.125F;
+    private static final float HEALTH_OFFSET_PLAYER = -0.125F;
     private static final double HEALTH_HEIGHT = 0.21F;
+    RenderManager manager;
 
     @SuppressWarnings("unused")
     private static final double PIECES_X_OFFSET = 0.02;
@@ -53,17 +51,13 @@ class SAORenderBase extends Render {
     private final Render parent;
 
     public SAORenderBase(Render render) {
+        this.manager = RenderManager.instance;
         parent = render;
+        super.setRenderManager(manager);
     }
-    /*
-    @Override
-	public void renderFirstPersonArm(EntityPlayer player) {
-		if (parent instanceof RenderPlayer) {
-			((RenderPlayer) parent).renderFirstPersonArm(player);
-		}
-	}*/
 
-	public void doRender(Entity entity, double x, double y, double z, float f0, float f1) {
+    @Override
+    public void doRender(Entity entity, double x, double y, double z, float f0, float f1) {
         final Minecraft mc = Minecraft.getMinecraft();
 
         boolean dead = false, deadStart = false, deadExactly = false;
@@ -71,7 +65,7 @@ class SAORenderBase extends Render {
         if (entity instanceof EntityLivingBase) {
             final EntityLivingBase living = (EntityLivingBase) entity;
 
-            dead = SAOMod.getHealth(mc, living, SAOMod.UNKNOWN_TIME_DELAY) <= 0;
+            dead = StaticPlayerHelper.getHealth(mc, living, SAOMod.UNKNOWN_TIME_DELAY) <= 0;
             deadStart = (living.deathTime == 1);
             deadExactly = (living.deathTime >= 18);
 
@@ -87,17 +81,17 @@ class SAORenderBase extends Render {
 
         parent.doRender(entity, x, y, z, f0, f1);
 
-        if ((entity instanceof EntityLivingBase) && (!dead) && (!entity.isInvisibleToPlayer(mc.thePlayer))) {
-            if (SAOOption.COLOR_CURSOR.value) {
+        if (!SAOCharacterView.IS_VIEWING && entity instanceof EntityLivingBase && !dead && !entity.isInvisibleToPlayer(mc.thePlayer)) {
+            if (SAOOption.COLOR_CURSOR.getValue()) {
                 doRenderColorCursor(mc, entity, x, y, z, 64);
             }
 
-            if ((SAOOption.HEALTH_BARS.value) && (!entity.equals(mc.thePlayer))) {
+            if ((SAOOption.HEALTH_BARS.getValue()) && (!entity.equals(mc.thePlayer))) {
                 doRenderHealthBar(mc, entity, x, y, z, f0, f1);
             }
         }
 
-        if (SAOOption.PARTICLES.value) {
+        if (SAOOption.PARTICLES.getValue()) {
             if (deadStart && entity instanceof EntityLivingBase) {
                 SAOSound.playAtEntity(entity, SAOSound.PARTICLES_DEATH);
             }
@@ -110,33 +104,29 @@ class SAORenderBase extends Render {
         }
     }
 
-	protected ResourceLocation getEntityTexture(Entity entity) {
-    	return getEntityTexture(entity);
-	}
-    
-    protected void bindEntityTexture(Entity entity)
-    {
-        this.bindTexture(this.getEntityTexture(entity));
+    @Override
+    public void bindTexture(ResourceLocation location) {
+        super.bindTexture(location);
     }
 
     @Override
-	public void doRenderShadowAndFire(Entity p_76979_1_, double p_76979_2_, double p_76979_4_, double p_76979_6_, float p_76979_8_, float p_76979_9_) {
+    public void doRenderShadowAndFire(Entity p_76979_1_, double p_76979_2_, double p_76979_4_, double p_76979_6_, float p_76979_8_, float p_76979_9_) {
         parent.doRenderShadowAndFire(p_76979_1_, p_76979_2_, p_76979_4_, p_76979_6_, p_76979_8_, p_76979_9_);
     }
 
     @Override
-	public FontRenderer getFontRendererFromRenderManager() {
+    public FontRenderer getFontRendererFromRenderManager() {
         return parent.getFontRendererFromRenderManager();
     }
 
-	public void setRenderManager(RenderManager render) {
-		parent.setRenderManager(render);
-		super.setRenderManager(render);
-	}
+    @Override
+    public void setRenderManager(RenderManager render) {
+        super.renderManager = render;
+    }
 
     private void doRenderColorCursor(Minecraft mc, Entity entity, double x, double y, double z, int distance) {
         if (entity.riddenByEntity != null) return;
-        if (SAOOption.LESS_VISUALS.value && !(entity instanceof IMob || SAOMod.getHealth(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) != SAOMod.getMaxHealth(entity)) && !(entity instanceof EntityPlayer)) return;
+        if (SAOOption.LESS_VISUALS.getValue() && !(entity instanceof IMob || StaticPlayerHelper.getHealth(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) != StaticPlayerHelper.getMaxHealth(entity)) && !(entity instanceof EntityPlayer))            return;
 
         double d3 = entity.getDistanceSqToEntity(renderManager.livingPlayer);
 
@@ -158,16 +148,16 @@ class SAORenderBase extends Render {
             SAOGL.glBlend(true);
             SAOGL.tryBlendFuncSeparate(770, 771, 1, 0);
 
-
-            SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value ? SAOResources.entities : SAOResources.entitiesCustom);
+            SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.entities : SAOResources.entitiesCustom);
 
             Tessellator tessellator = Tessellator.instance;
 
             tessellator.startDrawingQuads();
-            if (entity instanceof EntityLiving || entity instanceof EntityPlayer){
-            SAOColorState.getColorState(mc, entity, SAOMod.UNKNOWN_TIME_DELAY).glColor();}
+            if (entity instanceof EntityLiving || entity instanceof EntityPlayer) {
+                SAOColorState.getColorState(mc, entity, SAOMod.UNKNOWN_TIME_DELAY).glColor();
+            }
 
-            if (SAOOption.SPINNING_CRYSTALS.value) {
+            if (SAOOption.SPINNING_CRYSTALS.getValue()) {
                 double a = (entity.worldObj.getTotalWorldTime() % 40) / 20.0D  * Math.PI;
                 double cos = Math.cos(a);//Math.PI / 3 * 2);
                 double sin = Math.sin(a);//Math.PI / 3 * 2);
@@ -219,12 +209,13 @@ class SAORenderBase extends Render {
 
     private void doRenderHealthBar(Minecraft mc, Entity entity, double x, double y, double z, float f0, float f1) {
         if (entity.riddenByEntity != null && entity.riddenByEntity == mc.thePlayer) return;
-        if (entity instanceof EntityPlayer && SAOMod.isCreative((AbstractClientPlayer) entity)) return;
-        if (SAOOption.LESS_VISUALS.value && !(entity instanceof IMob || SAOMod.getHealth(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) != SAOMod.getMaxHealth(entity)) && !(entity instanceof EntityPlayer)) return;
-        SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value ? SAOResources.entities : SAOResources.entitiesCustom);
+        //if (entity instanceof EntityOtherPlayerMP && SAOMod.isMPCreative((EntityOtherPlayerMP) entity)) return;
+        if (entity instanceof EntityPlayer && StaticPlayerHelper.isCreative((AbstractClientPlayer) entity)) return;
+        if (SAOOption.LESS_VISUALS.getValue() && !(entity instanceof IMob || StaticPlayerHelper.getHealth(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) != StaticPlayerHelper.getMaxHealth(entity)) && !(entity instanceof EntityPlayer))
+            return;
+        SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.entities : SAOResources.entitiesCustom);
 
         Tessellator tessellator = Tessellator.instance;
-
         SAOGL.glDepthTest(true);
         SAOGL.glCullFace(false);
         SAOGL.glBlend(true);
@@ -312,9 +303,19 @@ class SAORenderBase extends Render {
     }
 
     private float getHealthFactor(Minecraft mc, Entity entity, float time) {
-        final float normalFactor = SAOMod.getHealth(mc, entity, time) / SAOMod.getMaxHealth(entity);
+        final float normalFactor = StaticPlayerHelper.getHealth(mc, entity, time) / StaticPlayerHelper.getMaxHealth(entity);
         final float delta = 1.0F - normalFactor;
 
         return normalFactor + (delta * delta / 2) * normalFactor;
+    }
+    /*
+    @Override
+    public void renderName(Entity entity, double x, double y, double z) {
+        if (entity instanceof EntityLivingBase) super.renderManager(entity, x, y, z);
+    }*/
+
+    @Override
+    protected ResourceLocation getEntityTexture(Entity entity) {
+        return null;
     }
 }

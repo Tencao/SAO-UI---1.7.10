@@ -22,8 +22,10 @@ public class SAOSlotGUI extends SAOButtonGUI {
 	private Slot buttonSlot;
 
 	public SAOSlotGUI(SAOParentGUI gui, int xPos, int yPos, int w, int h, Slot slot) {
-		super(gui, SAOID.SLOT, xPos, yPos, w, h, getCaption(slot), getIcon(slot));
+		super(gui, SAOID.SLOT, xPos, yPos, w, h);
 		buttonSlot = slot;
+		super.caption = this.getCaption();
+		super.icon = this.getIcon();
 	}
 
 	public SAOSlotGUI(SAOParentGUI gui, int xPos, int yPos, int w, Slot slot) {
@@ -36,34 +38,19 @@ public class SAOSlotGUI extends SAOButtonGUI {
 
 	static SAOIcon getIcon(ItemStack stack) {
 		if (stack != null) {
-			if (SAOInventory.WEAPONS.isFine(stack, false)) {
-				return SAOIcon.EQUIPMENT;
-			} else if (SAOInventory.EQUIPMENT.isFine(stack, false)) {
-				return SAOIcon.ARMOR;
-			} else if (SAOInventory.ACCESSORY.isFine(stack, false)) {
-				return SAOIcon.ACCESSORY;
-			} else {
-				return SAOIcon.ITEMS;
-			}
-		} else {
-			return SAOIcon.NONE;
-		}
+			if (SAOInventory.WEAPONS.isFine(stack, false)) return SAOIcon.EQUIPMENT;
+			else if (SAOInventory.EQUIPMENT.isFine(stack, false)) return SAOIcon.ARMOR;
+			else if (SAOInventory.ACCESSORY.isFine(stack, false)) return SAOIcon.ACCESSORY;
+			else return SAOIcon.ITEMS;
+		} else return SAOIcon.HELP;
 	}
 
-	private static SAOIcon getIcon(Slot slot) {
-		if ((slot.getHasStack()) && (slot.getStack().getItem() != null)) {
-			return getIcon(slot.getStack());
-		} else {
-			return SAOIcon.HELP;
-		}
+	protected SAOIcon getIcon() {
+		return getIcon(buttonSlot.getStack());
 	}
 
-	private static String getCaption(Slot slot) {
-		if ((slot.getHasStack()) && (slot.getStack().getItem() != null)) {
-			return slot.getStack().getDisplayName();
-		} else {
-			return UNKNOWN;
-		}
+	protected String getCaption() {
+		return buttonSlot.getHasStack() && buttonSlot.getStack().getItem() != null ? buttonSlot.getStack().getDisplayName() : UNKNOWN;
 	}
 	
 	@Override
@@ -76,29 +63,24 @@ public class SAOSlotGUI extends SAOButtonGUI {
 
             final ItemStack stack = getStack();
 
-            if (stack != null) {
-                final String sizeString = "x" + stack.stackSize;
-
-                SAOGL.glString(sizeString, left + width + 2, top + height - 16, SAOColor.multiplyAlpha(getColor(hoverState(cursorX, cursorY), false), visibility), true);
-            }
+			if (stack != null)
+				SAOGL.glString("x" + stack.stackSize, left + width + 2, top + height - 16, SAOColor.multiplyAlpha(getColor(hoverState(cursorX, cursorY), false), visibility), true);
         }
     }
 	
 	public void refreshSlot(Slot slot) {
 		if (slot != null) {
 			buttonSlot = slot;
-			
-			caption = getCaption(buttonSlot);
-			icon = getIcon(buttonSlot);
+
+			caption = getCaption();
+			icon = getIcon();
 		}
-		
-		if (isEmpty()) {
-			remove();
-		}
+
+		if (isEmpty()) remove();
 	}
 
-	public boolean isEmpty() {
-		return (!buttonSlot.getHasStack()) || (buttonSlot.getStack() == null);
+	protected boolean isEmpty() {
+		return (!buttonSlot.getHasStack());
 	}
 
 	public Slot getSlot() {
@@ -110,22 +92,14 @@ public class SAOSlotGUI extends SAOButtonGUI {
 	}
 
 	public ItemStack getStack() {
-		if (isEmpty()) {
-			return null;
-		} else {
-			return buttonSlot.getStack();
-		}
+		return buttonSlot.getStack();
 	}
 
     @Override
 	int getColor(int hoverState, boolean bg) {
 		final int color = super.getColor(hoverState, bg);
-		
-		if (highlight) {
-			return SAOColor.mediumColor(color, SAOColor.DEFAULT_COLOR.mediumColor(0xFF));
-		} else {
-			return color;
-		}
+
+		return highlight && hoverState != 2 ? SAOColor.mediumColor(color, SAOColor.DEFAULT_COLOR.mediumColor(0xFF)) : color;
 	}
 
     @Override
@@ -135,12 +109,12 @@ public class SAOSlotGUI extends SAOButtonGUI {
 
     @Override
 	public boolean mouseOver(int cursorX, int cursorY, int flag) {
-		return (focus = super.mouseOver(cursorX, cursorY, flag));
+		return focus = super.mouseOver(cursorX, cursorY, flag);
 	}
 
     @Override
 	public boolean mouseReleased(Minecraft mc, int cursorX, int cursorY, int button) {
-		return super.mouseReleased(mc, cursorX, cursorY, button) || (button == 1) || (button == 2);
+		return super.mouseReleased(mc, cursorX, cursorY, button) || button == 1 || button == 2;
 	}
 
 

@@ -44,9 +44,7 @@ public class SAOInventoryGUI extends SAOListGUI {
 				boolean found = false;
 				
 				for (int j = elements.size() - 1; j >= 0; j--) {
-					if (j >= elements.size()) {
-						continue;
-					}
+					if (j >= elements.size()) continue;
 					
 					if (elements.get(j) instanceof SAOSlotGUI) {
 						final SAOSlotGUI gui = (SAOSlotGUI) elements.get(j);
@@ -55,24 +53,23 @@ public class SAOInventoryGUI extends SAOListGUI {
 							gui.refreshSlot(slot);
 							
 							if (!gui.removed()) {
-                                if (filter.isFine(gui.getStack(), state)) {
-									found = true;
-								} else {
-									gui.remove();
-								}
+								if (filter.isFine(gui.getStack(), state)) found = true;
+								else gui.remove();
 							}
 						}
 					}
 				}
 
-                if ((!found) && (stack != null) && (filter.isFine(stack, state))) {
-                    if (state) {
-                        elements.add(0, new SAOSlotGUI(this, 0, getOffset(elements.size()), slot));
-                    } else {
-                        elements.add(new SAOSlotGUI(this, 0, getOffset(elements.size()), slot));
-                    }
+				if (!found && stack != null && filter.isFine(stack, state)) {
+					if (state) elements.add(0, new SAOSlotGUI(this, 0, getOffset(elements.size()), slot));
+					else elements.add(new SAOSlotGUI(this, 0, getOffset(elements.size()), slot));
 				}
 			}
+		}
+		if (elements.isEmpty()) elements.add(new SAOEmptySlot(this, 0, getOffset(elements.size())));
+		else {
+			final SAOSlotGUI slot = (SAOSlotGUI) elements.get(elements.size() - 1);
+			if (slot.getSlotNumber() == -1) slot.remove();
 		}
 		
 		slots.detectAndSendChanges();
@@ -81,11 +78,8 @@ public class SAOInventoryGUI extends SAOListGUI {
     private boolean equipped(int number) {
         final boolean state;
 
-        if (filter.equals(SAOInventory.EQUIPMENT)) {
-            state = (number >= 5) && (number < 9);
-        } else {
-            state = (number >= 36) && (number < 45);
-        }
+		if (filter.equals(SAOInventory.EQUIPMENT)) state = (number >= 5) && (number < 9);
+		else state = (number >= 36) && (number < 45);
 
         return state;
     }
@@ -102,19 +96,15 @@ public class SAOInventoryGUI extends SAOListGUI {
 	}
 
 	public void handleMouseClick(Minecraft mc, Slot slot, int slotNumber, int flag, int method) {
-		if (slot != null) {
-			slotNumber = slot.slotNumber;
-		}
+		if (slot != null) slotNumber = slot.slotNumber;
 		
 		mc.playerController.windowClick(slots.windowId, slotNumber, flag, method, mc.thePlayer);
 	}
 
 	public void close(Minecraft mc) {
 		super.close(mc);
-		
-		if (mc.thePlayer != null) {
-			slots.onContainerClosed(mc.thePlayer);
-		}
+
+		if (mc.thePlayer != null) slots.onContainerClosed(mc.thePlayer);
 	}
 
 }

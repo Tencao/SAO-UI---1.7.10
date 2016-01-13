@@ -2,6 +2,7 @@ package com.tencao.saoui.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import net.minecraft.client.Minecraft;
 
@@ -80,19 +81,11 @@ public class SAOTextGUI extends SAOElementGUI {
 
 	@Override
 	public void update(Minecraft mc) {
-		for (String line : lines) {
-			final int strWidth = SAOGL.glStringWidth(line) + 16;
-
-			if (strWidth > width) {
-				width = strWidth;
-			}
-		}
+		int w = lines.length > 0 ? Stream.of(lines).mapToInt(SAOGL::glStringWidth).max().getAsInt() + 16 : 0;
+		if (w > width) width = w;
 
 		final int linesHeight = lines.length * SAOGL.glStringHeight() + 16;
-
-		if (linesHeight > height) {
-			height = linesHeight;
-		}
+		if (linesHeight > height) height = linesHeight;
 	}
 
 	@Override

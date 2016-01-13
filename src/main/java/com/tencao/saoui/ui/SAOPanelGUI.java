@@ -1,11 +1,7 @@
 package com.tencao.saoui.ui;
 
+import com.tencao.saoui.util.*;
 import net.minecraft.client.Minecraft;
-
-import com.tencao.saoui.util.SAOColor;
-import com.tencao.saoui.util.SAOGL;
-import com.tencao.saoui.util.SAOParentGUI;
-import com.tencao.saoui.util.SAOResources;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -22,7 +18,7 @@ public class SAOPanelGUI extends SAOMenuGUI {
 
 	public void draw(Minecraft mc, int cursorX, int cursorY) {
 		if ((visibility > 0) && (height > 0)) {
-			SAOGL.glBindTexture(SAOResources.gui);
+			SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
 			
 			final int left = getX(false);
 			final int top = getY(false);

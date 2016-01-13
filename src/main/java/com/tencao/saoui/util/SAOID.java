@@ -37,7 +37,6 @@ public enum SAOID {
 	ACCESSORY(EQUIPMENT, true),
 
 	INVITE_LIST(PARTY, true), INVITE_PLAYER(INVITE_LIST, false),
-	CREATE(PARTY, false),
 	DISSOLVE(PARTY, false),
 
 	SLOT(false), FRIEND(FRIENDS, true), QUEST(false),

@@ -2,13 +2,11 @@ package com.tencao.saoui.ui;
 
 import java.util.List;
 
+import com.tencao.saoui.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 
 import com.tencao.saoui.SAOMod;
-import com.tencao.saoui.util.SAOID;
-import com.tencao.saoui.util.SAOIcon;
-import com.tencao.saoui.util.SAOParentGUI;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -28,14 +26,14 @@ public class SAOFriendGUI extends SAOButtonGUI {
 	}
 
 	public SAOFriendGUI(SAOParentGUI gui, int xPos, int yPos, String name) {
-		this(gui, xPos, yPos, 150, name);
+		this(gui, xPos, yPos, 100, name);
 	}
 
 	public void update(Minecraft mc) {
 		final EntityPlayer player = getPlayer(mc);
 		enabled = (player != null);
-		
-		if ((enabled) && (SAOMod.isFriend(player))) {
+
+		if (enabled && FriendsHandler.instance().isFriend(player)) {
 			highlight = true;
 			icon = SAOIcon.NONE;
 		} else {
@@ -47,18 +45,16 @@ public class SAOFriendGUI extends SAOButtonGUI {
 	}
 
 	public final EntityPlayer getPlayer(Minecraft mc) {
-		if ((friend == null) || (friend.isDead) || (!friend.isEntityAlive())) {
-			friend = findPlayer(mc);
-		}
+		if (friend == null || friend.isDead || !friend.isEntityAlive()) friend = findPlayer(mc);
 		
 		return friend;
 	}
 
 	public final EntityPlayer findPlayer(Minecraft mc) {
-		final List<EntityPlayer> players = SAOMod.listOnlinePlayers(mc);
+		final List<EntityPlayer> players = StaticPlayerHelper.listOnlinePlayers(mc);
 		
 		for (final EntityPlayer player : players) {
-			if (SAOMod.getName(player).equals(caption)) {
+			if (StaticPlayerHelper.getName(player).equals(caption)) {
 				return player;
 			}
 		}

@@ -12,7 +12,6 @@ guiMessageTitle=Message
 guiMessageFrom=from %s
 guiDeadAlert=You are Dead
 guiInvite=Invite
-guiCreate=Create
 guiDissolve=Dissolve
 guiMessageBox=Message Box
 guiGuild=Guild
@@ -27,6 +26,7 @@ guiAccessory=Accessory
 guiProfile=Profile
 guiEquipment=Equipment
 guiItems=Items
+gui.empty=empty
 
 
 #Skills
@@ -80,10 +80,13 @@ optionForceHud=Force HUD (gm 1)
 optionLightHud=Lighter HUD
 optionBossBar=Force Boss HP bar
 optionAltAbsorbPos=Alt Absorb Value Pos
+optionGuiPause=GUIs pause the game
+optionCustomFont=Use SAO Font
 
 optCatUI=UI category
 optCatRend=Renderer category
 optCatInterf=Interface category
+
 
 # Display
 displayLvShort=LV
@@ -94,3 +97,11 @@ displayHpLong=Health
 displayStrLong=Strength
 displayDexLong=Agility
 displayResLong=Resistance
+
+# PT
+ptLeave=You left your party.
+ptDissolve=You dissolved your party.
+ptJoin=%s joined your party.
+ptDecline=%s declined the party invite.
+ptLeft=%s left your party.
+ptNew=You joined a new party.

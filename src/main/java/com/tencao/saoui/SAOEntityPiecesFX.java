@@ -1,5 +1,9 @@
 package com.tencao.saoui;
 
+import com.tencao.saoui.util.SAOGL;
+import com.tencao.saoui.util.SAOResources;
+import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraft.client.particle.EntityAuraFX;
 import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.relauncher.Side;
@@ -9,9 +13,9 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
 
 @SideOnly(Side.CLIENT)
-public class SAOEntityPiecesFX extends EntityFX {
+public class SAOEntityPiecesFX extends EntityAuraFX {
 
-	float smokeParticleScale;
+	float ParticleScale;
 
     public SAOEntityPiecesFX(World world, double xCoord, double yCoord, double zCoord, float redValue, float greenValue, float blueValue) {
     	this(world, xCoord, yCoord, zCoord, redValue, greenValue, blueValue, 1.0F);
@@ -27,12 +31,13 @@ public class SAOEntityPiecesFX extends EntityFX {
         this.particleBlue = blueVale;
         this.particleScale *= 0.75F;
         this.particleScale *= scale;
-        this.smokeParticleScale = this.particleScale;
+        this.ParticleScale = this.particleScale;
         this.particleMaxAge = (int) (8.0D / (Math.random() * 0.8D + 0.2D));
         this.particleMaxAge = (int) ((float) this.particleMaxAge * scale);
         this.noClip = false;
     }
 
+    @Override
     public void renderParticle(Tessellator tessellator, float time, float x, float y, float z, float f0, float f1) {
         float particle = ((float)this.particleAge + time) / (float)this.particleMaxAge * 32.0F;
 
@@ -49,9 +54,26 @@ public class SAOEntityPiecesFX extends EntityFX {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
 
-        this.particleScale = this.smokeParticleScale * particle;
-        
-        super.renderParticle(tessellator, time, x, y, z, f0, f1);
+        this.particleScale = this.ParticleScale * particle;
+
+        renderParticles(tessellator, time, x, y, z, f0, f1);
+    }
+
+    private void renderParticles(Tessellator par1Tessellator, float par2, float par3, float par4, float par5, float par6, float par7)
+    {
+        FMLClientHandler.instance().getClient().renderEngine.bindTexture(SAOResources.particleLarge);
+
+        float scale = 0.1F * this.particleScale;
+        float xPos = (float) (this.prevPosX + (this.posX - this.prevPosX) * (double) par2 - interpPosX);
+        float yPos = (float) (this.prevPosY + (this.posY - this.prevPosY) * (double) par2 - interpPosY);
+        float zPos = (float) (this.prevPosZ + (this.posZ - this.prevPosZ) * (double) par2 - interpPosZ);
+        float colorIntensity = 1.0F;
+        par1Tessellator.setColorOpaque_F(this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity);//, 1.0F);
+
+        par1Tessellator.addVertexWithUV((double) (xPos - par3 * scale - par6 * scale), (double) (yPos - par4 * scale), (double) (zPos - par5 * scale - par7 * scale), 0D, 1D);
+        par1Tessellator.addVertexWithUV((double) (xPos - par3 * scale + par6 * scale), (double) (yPos + par4 * scale), (double) (zPos - par5 * scale + par7 * scale), 1D, 1D);
+        par1Tessellator.addVertexWithUV((double) (xPos + par3 * scale + par6 * scale), (double) (yPos + par4 * scale), (double) (zPos + par5 * scale + par7 * scale), 1D, 0D);
+        par1Tessellator.addVertexWithUV((double) (xPos + par3 * scale - par6 * scale), (double) (yPos - par4 * scale), (double) (zPos + par5 * scale - par7 * scale), 0D, 0D);
     }
 
 

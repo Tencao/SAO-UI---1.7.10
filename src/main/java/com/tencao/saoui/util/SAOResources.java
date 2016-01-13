@@ -17,6 +17,7 @@ public final class SAOResources {
     public static final ResourceLocation effectsCustom = new ResourceLocation(SAOMod.MODID, "textures/guiCustom.png");
     public static final ResourceLocation entities = new ResourceLocation(SAOMod.MODID, "textures/entities.png");
     public static final ResourceLocation entitiesCustom = new ResourceLocation(SAOMod.MODID, "textures/entitiesCustom.png");
+    public static final ResourceLocation particleLarge = new ResourceLocation(SAOMod.MODID, "textures/particleLarge.png");
 
     private SAOResources() {
     }

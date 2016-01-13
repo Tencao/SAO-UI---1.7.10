@@ -2,20 +2,23 @@ package com.tencao.saoui.util;
 
 import com.tencao.saoui.SAOMod;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.IEntityOwnable;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
+import net.minecraft.entity.*;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.event.entity.EntityEvent;
+import sun.font.TrueTypeFont;
 
 import java.util.stream.Stream;
 
@@ -26,7 +29,7 @@ public enum SAOColorState{
     VIOLENT(0xF49B00FF),
     KILLER(0xBD0000FF),
 
-    CREATIVE(0x4cedc5FF),
+    CREATIVE(0x4CEDC5FF),
     OP(0xFFFFFFFF),
     INVALID(0x8B8B8BFF),
     GAMEMASTER(0x79139EFF);
@@ -59,11 +62,15 @@ public enum SAOColorState{
     }
 
 	private static SAOColorState getPlayerColorState(Minecraft mc, EntityPlayer player, float time) {
-        if (isDev(SAOMod.getName(player))) return GAMEMASTER;
-        /*} else if (FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().func_152596_g(((EntityPlayerMP)player).getGameProfile())){
-        	return OP;*/
-        else if (SAOMod.isCreative((AbstractClientPlayer) player)) return CREATIVE;
-        else return SAOMod.getColorState(player);
+        if (isDev(StaticPlayerHelper.getName(player))) return GAMEMASTER;
+        else if (StaticPlayerHelper.isCreative((AbstractClientPlayer) player)) return CREATIVE;
+        else return ColorStateHandler.instance().get(player);
+    }
+
+    private static boolean getCreative(EntityPlayer player){
+        NBTTagCompound c = player.getEntityData();
+        if (c.hasKey("playerGameType", 1)) return true;
+        else return false;
     }
 
     private static boolean isDev(final String pl) {

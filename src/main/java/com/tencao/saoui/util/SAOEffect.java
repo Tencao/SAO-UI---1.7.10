@@ -59,14 +59,14 @@ public enum SAOEffect {
 			else if (potionEffect.getPotionID() == Potion.weakness.getId()) effects.add(WEAK);
 			else if (potionEffect.getPotionID() == Potion.wither.getId()) effects.add(CURSED);
 			else if (potionEffect.getPotionID() == Potion.blindness.getId()) effects.add(BLIND);
-			//else if (potionEffect.getPotionID() == Potion.saturation.getId()) effects.add(SATURATION);
+			else if (potionEffect.getPotionID() == Potion.field_76443_y.getId()) effects.add(SATURATION);
 			else if (potionEffect.getPotionID() == Potion.moveSpeed.getId()) effects.add(SPEED_BOOST);
 			else if (potionEffect.getPotionID() == Potion.waterBreathing.getId()) effects.add(WATER_BREATH);
 			else if (potionEffect.getPotionID() == Potion.damageBoost.getId()) effects.add(STRENGTH);
-			//else if (potionEffect.getPotionID() == Potion.absorption.getId()) effects.add(ABSORPTION);
+			else if (potionEffect.getPotionID() == Potion.field_76444_x.getId()) effects.add(ABSORPTION);
 			else if (potionEffect.getPotionID() == Potion.fireResistance.getId()) effects.add(FIRE_RES);
 			else if (potionEffect.getPotionID() == Potion.digSpeed.getId()) effects.add(HASTE);
-			//else if (potionEffect.getPotionID() == Potion.healthBoost.getId()) effects.add(HEALTH_BOOST);
+			else if (potionEffect.getPotionID() == Potion.field_76434_w.getId()) effects.add(HEALTH_BOOST);
 			else if (potionEffect.getPotionID() == Potion.heal.getId()) effects.add(INST_HEALTH);
 			else if (potionEffect.getPotionID() == Potion.invisibility.getId()) effects.add(INVISIBILITY);
 			else if (potionEffect.getPotionID() == Potion.jump.getId()) effects.add(JUMP_BOOST);
@@ -97,12 +97,12 @@ public enum SAOEffect {
 	}
 
 	public final void glDraw(int x, int y, float z) {
-		SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value ? SAOResources.effects : SAOResources.effectsCustom);
+		SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.effects : SAOResources.effectsCustom);
 		SAOGL.glTexturedRect(x, y, z, getSrcX(), getSrcY(), SRC_WIDTH, SRC_HEIGHT);
 	}
 
 	public final void glDraw(int x, int y) {
-		SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value ? SAOResources.effects : SAOResources.effectsCustom);
+		SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.effects : SAOResources.effectsCustom);
 		SAOGL.glTexturedRect(x, y, getSrcX(), getSrcY(), SRC_WIDTH, SRC_HEIGHT);
 	}
 

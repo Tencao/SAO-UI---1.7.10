@@ -21,9 +21,13 @@ version = "${saoui_version}"
 group= "com.tencao.saoui" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "saoui"
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 minecraft {
     version = "${minecraft_version}-${forge_version}"
     runDir = "eclipse"
+    //mappings = "snapshot_20140925"
 }
 
 dependencies {

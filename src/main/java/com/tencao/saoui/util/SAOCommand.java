@@ -18,17 +18,18 @@ public enum SAOCommand {
 	ACCEPT_ADD_FRIEND,
 	CANCEL_ADD_FRIEND;
 
-	private static final String PREFIX = String.valueOf("SAO:");
-	private static final String SUFFIX = String.valueOf(";");
+	private static final String PREFIX = "[SAOUI ";
+	private static final String SUFFIX = "]";
 
+	// TODO: add info (for non-saoui users) and data (parser)
 	public static SAOCommand getCommand(String data) {
-		if (data.startsWith(PREFIX.toLowerCase())) {
+		if (data.startsWith(PREFIX)) {
 			final int nextData = data.indexOf(SUFFIX, PREFIX.length());
-			final String id = data.substring(PREFIX.length(), nextData).toUpperCase();
+			final String id = data.substring(PREFIX.length(), nextData);
 			
 			try {
 				return valueOf(id);
-			} catch (NumberFormatException e) {
+			} catch (IllegalArgumentException e) {
 				return null;
 			}
 		} else return null;
@@ -42,7 +43,7 @@ public enum SAOCommand {
 	}
 
 	public final String toString() {
-		return (PREFIX + name() + SUFFIX).toLowerCase();
+		return (PREFIX + name() + SUFFIX);
 	}
 
 }

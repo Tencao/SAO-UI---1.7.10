@@ -1,14 +1,8 @@
 package com.tencao.saoui.ui;
 
 import com.tencao.saoui.SAOSound;
+import com.tencao.saoui.util.*;
 import net.minecraft.client.Minecraft;
-
-import com.tencao.saoui.util.SAOParentGUI;
-import com.tencao.saoui.util.SAOColor;
-import com.tencao.saoui.util.SAOGL;
-import com.tencao.saoui.util.SAOID;
-import com.tencao.saoui.util.SAOIcon;
-import com.tencao.saoui.util.SAOResources;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -36,7 +30,7 @@ public class SAOIconGUI extends SAOElementGUI {
 		super.draw(mc, cursorX, cursorY);
 		
 		if (visibility > 0) {
-			SAOGL.glBindTexture(SAOResources.gui);
+			SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
 			
 			final int hoverState = hoverState(cursorX, cursorY);
 			

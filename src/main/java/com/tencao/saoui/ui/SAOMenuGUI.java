@@ -1,9 +1,6 @@
 package com.tencao.saoui.ui;
 
-import com.tencao.saoui.util.SAOColor;
-import com.tencao.saoui.util.SAOGL;
-import com.tencao.saoui.util.SAOParentGUI;
-import com.tencao.saoui.util.SAOResources;
+import com.tencao.saoui.util.*;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -22,12 +19,7 @@ public class SAOMenuGUI extends SAOContainerGUI {
 	}
 
 	protected int getOffset(int index) {
-		int start = 0;
-		int offset = 0;
-
-		while ((start < elements.size()) && (start < index)) offset += getOffsetSize(elements.get(start++));
-		
-		return offset;
+		return elements.stream().limit(index).mapToInt(this::getOffsetSize).sum();
 	}
 
 	protected int getOffsetSize(SAOElementGUI element) {
@@ -36,9 +28,8 @@ public class SAOMenuGUI extends SAOContainerGUI {
 
 	public void update(Minecraft mc) {
 		height = getSize();
-		
-		if (width <= 0)
-			elements.stream().filter(element -> element.width > width).forEach(element -> width = element.width);
+
+		if (width <= 0) width = elements.stream().mapToInt(el -> el.width).max().orElse(width);
 		
 		super.update(mc);
 	}
@@ -57,27 +48,27 @@ public class SAOMenuGUI extends SAOContainerGUI {
 	public void draw(Minecraft mc, int cursorX, int cursorY) {
 		if (visibility > 0 && parent != null && height > 0) {
 			if (x > 0) {
-				SAOGL.glBindTexture(SAOResources.gui);
+				SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
 				SAOGL.glColorRGBA(SAOColor.DEFAULT_COLOR.multiplyAlpha(visibility));
 				
 				final int left = getX(false);
-				final int top = getY(false);
+				final int top = getY(false) + 1;
 				
 				final int arrowTop = super.getY(false) - height / 2;
-				
-				SAOGL.glTexturedRect(left - 2, top, 2, height, 40, 41, 2, 4);
+
+				SAOGL.glTexturedRect(left - 2, top, 2, height - 1, 40, 41, 2, 4);
 				SAOGL.glTexturedRect(left - 10, arrowTop + (height - 10) / 2, 20, 25 + (fullArrow? 10 : 0), 10, 10);
 			} else
 			if (x < 0) {
-				SAOGL.glBindTexture(SAOResources.gui);
+				SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
 				SAOGL.glColorRGBA(SAOColor.DEFAULT_COLOR.multiplyAlpha(visibility));
 				
 				final int left = getX(false);
-				final int top = getY(false);
+				final int top = getY(false) + 1;
 				
 				final int arrowTop = super.getY(false) - height / 2;
-				
-				SAOGL.glTexturedRect(left + width, top, 2, height, 40, 41, 2, 4);
+
+				SAOGL.glTexturedRect(left + width, top, 2, height - 1, 40, 41, 2, 4);
 				SAOGL.glTexturedRect(left + width, arrowTop + (height - 10) / 2, 30, 25 + (fullArrow? 10 : 0), 10, 10);
 			}
 		}

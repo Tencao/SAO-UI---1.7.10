@@ -29,9 +29,7 @@ public class SAOStateButtonGUI extends SAOButtonGUI {
 	}
 
 	public void update(Minecraft mc) {
-		if (state != null) {
-			enabled = state.isStateEnabled(mc, this);
-		}
+		if (state != null) enabled = state.isStateEnabled(mc, this);
 		
 		super.update(mc);
 	}
