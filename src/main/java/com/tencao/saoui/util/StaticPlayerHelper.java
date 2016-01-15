@@ -1,10 +1,9 @@
 package com.tencao.saoui.util;
 
-import com.mojang.realmsclient.dto.PlayerInfo;
+import com.google.common.collect.Lists;
 import com.tencao.saoui.SAOMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,18 +21,20 @@ public class StaticPlayerHelper {
 
         if (!search) range = SAOMod.MAX_RANGE;
 
-        final AxisAlignedBB box = AxisAlignedBB.getBoundingBox (
+        final AxisAlignedBB box = AxisAlignedBB.getBoundingBox(
                 mc.thePlayer.posX - range, mc.thePlayer.posY - range, mc.thePlayer.posZ - range,
                 mc.thePlayer.posX + range, mc.thePlayer.posY + range, mc.thePlayer.posZ + range
         );
 
-        final List<EntityPlayer> entities = mc.theWorld.getEntitiesWithinAABB(EntityPlayer.class, box);
-
-        return entities;
+        return mc.theWorld.getEntitiesWithinAABB(EntityPlayer.class, box);
     }
 
     public static List<EntityPlayer> listOnlinePlayers(Minecraft mc) {
-        return mc.theWorld.getEntities(EntityPlayer.class, (o) -> true);
+        ArrayList<EntityPlayer> arraylist = Lists.newArrayList();
+        //noinspection unchecked
+        mc.theWorld.loadedEntityList.stream().filter(ent -> EntityPlayer.class.isAssignableFrom(ent.getClass())).forEach(ent -> arraylist.add((EntityPlayer) ent));
+
+        return arraylist;
     }
 
     public static EntityPlayer findOnlinePlayer(Minecraft mc, String username) {

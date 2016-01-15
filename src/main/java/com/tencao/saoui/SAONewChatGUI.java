@@ -1,17 +1,7 @@
 package com.tencao.saoui;
 
-import com.tencao.saoui.util.SAOCommand;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiNewChat;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.IChatComponent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SideOnly(Side.CLIENT)
 class SAONewChatGUI /*extends GuiNewChat*/ {/*

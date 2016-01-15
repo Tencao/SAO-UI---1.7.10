@@ -49,6 +49,6 @@ public final class SAOEmptySlot extends SAOSlotGUI {
 
     @Override
     int getColor(int hoverState, boolean bg) {
-        return bg? SAOColor.DEFAULT_COLOR.rgba: SAOColor.DEFAULT_FONT_COLOR.rgba;
+        return bg ? SAOColor.DEFAULT_COLOR.rgba : SAOColor.DEFAULT_FONT_COLOR.rgba;
     }
 }

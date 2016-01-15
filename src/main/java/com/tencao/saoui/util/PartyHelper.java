@@ -8,11 +8,9 @@ import com.tencao.saoui.ui.SAOConfirmGUI;
 import com.tencao.saoui.ui.SAOWindowGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 public class PartyHelper {
@@ -95,7 +93,8 @@ public class PartyHelper {
 
             if (resized.length > 1) {
                 party = resized;
-                if (isLeader(StaticPlayerHelper.getName(mc))) Stream.of(party).filter(pl -> !pl.equals(StaticPlayerHelper.getName(mc))).forEach(member -> new Command(CommandType.UPDATE_PARTY, member, '-' + username).send(mc));
+                if (isLeader(StaticPlayerHelper.getName(mc)))
+                    Stream.of(party).filter(pl -> !pl.equals(StaticPlayerHelper.getName(mc))).forEach(member -> new Command(CommandType.UPDATE_PARTY, member, '-' + username).send(mc));
             } else party = null;
             mc.thePlayer.addChatMessage(new ChatComponentText(StatCollector.translateToLocalFormatted("ptLeft", username)));
         }
@@ -103,7 +102,7 @@ public class PartyHelper {
 
     public void receiveUpdate(Minecraft mc, String username, String[] args) {
         if (isLeader(username)) {
-            for(String a: args) {
+            for (String a : args) {
                 if (a.charAt(0) == '+') addPlayer(mc, a.substring(1));
                 else if (a.charAt(0) == '-') removePlayer(mc, a.substring(1));
             }
@@ -125,7 +124,7 @@ public class PartyHelper {
             if (isLeader(StaticPlayerHelper.getName(mc))) {
                 Stream.of(party).skip(1).forEach(member -> new Command(CommandType.DISSOLVE_PARTY, member).send(mc));
                 mc.thePlayer.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("ptDissolve")));
-            }else{
+            } else {
                 new Command(CommandType.DISSOLVE_PARTY, party[0]).send(mc);
                 mc.thePlayer.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("ptLeave")));
             }

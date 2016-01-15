@@ -1,12 +1,6 @@
 package com.tencao.saoui.ui;
 
-import com.tencao.saoui.util.SAOColor;
-import com.tencao.saoui.util.SAOGL;
-import com.tencao.saoui.util.SAOID;
-import com.tencao.saoui.util.SAOOption;
-import com.tencao.saoui.util.SAOParentGUI;
-import com.tencao.saoui.util.SAOResources;
-
+import com.tencao.saoui.util.*;
 import net.minecraft.client.Minecraft;
 
 public class SAOAlertGUI extends SAOElementGUI {
@@ -23,14 +17,14 @@ public class SAOAlertGUI extends SAOElementGUI {
     }
 
 
-	private static int autoWidth(String string) {
+    private static int autoWidth(String string) {
         final int defValue = SAOGL.glStringWidth(string);
 
         return Math.max(0, defValue - 20);
     }
 
     @Override
-	public void draw(Minecraft mc, int cursorX, int cursorY) {
+    public void draw(Minecraft mc, int cursorX, int cursorY) {
         super.draw(mc, cursorX, cursorY);
 
         if (visibility > 0) {
@@ -57,23 +51,23 @@ public class SAOAlertGUI extends SAOElementGUI {
     }
 
     @Override
-	public boolean mouseReleased(Minecraft mc, int cursorX, int cursorY, int button) {
+    public boolean mouseReleased(Minecraft mc, int cursorX, int cursorY, int button) {
         return (button == 0);
     }
 
     @Override
-	public int getX(boolean relative) {
+    public int getX(boolean relative) {
         return super.getX(relative) - width / 2;
     }
 
     @Override
-	public int getY(boolean relative) {
+    public int getY(boolean relative) {
         return super.getY(relative) - height / 2;
     }
 
     @Override
-	public SAOID ID() {
-    return SAOID.ALERT;
+    public SAOID ID() {
+        return SAOID.ALERT;
     }
 
 }

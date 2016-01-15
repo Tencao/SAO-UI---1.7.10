@@ -6,10 +6,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
@@ -20,7 +18,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
@@ -35,8 +32,6 @@ class SAORenderBase extends RenderPlayer {
     @SuppressWarnings("unused")
     private static final float HEALTH_OFFSET_PLAYER = -0.125F;
     private static final double HEALTH_HEIGHT = 0.21F;
-    RenderManager manager;
-
     @SuppressWarnings("unused")
     private static final double PIECES_X_OFFSET = 0.02;
     @SuppressWarnings("unused")
@@ -47,8 +42,8 @@ class SAORenderBase extends RenderPlayer {
     private static final double PIECES_SPEED = 1.4;
     @SuppressWarnings("unused")
     private static final double PIECES_GRAVITY = 0.4;
-
     private final Render parent;
+    RenderManager manager;
 
     public SAORenderBase(Render render) {
         this.manager = RenderManager.instance;
@@ -81,7 +76,7 @@ class SAORenderBase extends RenderPlayer {
 
         parent.doRender(entity, x, y, z, f0, f1);
 
-        if (!SAOCharacterView.IS_VIEWING && entity instanceof EntityLivingBase && !dead && !entity.isInvisibleToPlayer(mc.thePlayer)) {
+        if (!SAOCharacterView.IS_VIEWING && entity instanceof EntityLivingBase && !dead && !entity.isInvisibleToPlayer(mc.thePlayer) && entity != mc.thePlayer) {
             if (SAOOption.COLOR_CURSOR.getValue()) {
                 doRenderColorCursor(mc, entity, x, y, z, 64);
             }
@@ -126,12 +121,13 @@ class SAORenderBase extends RenderPlayer {
 
     private void doRenderColorCursor(Minecraft mc, Entity entity, double x, double y, double z, int distance) {
         if (entity.riddenByEntity != null) return;
-        if (SAOOption.LESS_VISUALS.getValue() && !(entity instanceof IMob || StaticPlayerHelper.getHealth(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) != StaticPlayerHelper.getMaxHealth(entity)) && !(entity instanceof EntityPlayer))            return;
+        if (SAOOption.LESS_VISUALS.getValue() && !(entity instanceof IMob || StaticPlayerHelper.getHealth(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) != StaticPlayerHelper.getMaxHealth(entity)) && !(entity instanceof EntityPlayer))
+            return;
 
         double d3 = entity.getDistanceSqToEntity(renderManager.livingPlayer);
 
         if (d3 <= (double) (distance * distance)) {
-            final float sizeMult = ((EntityLivingBase) entity).isChild() && entity instanceof EntityMob? 0.5F: 1.0F;
+            final float sizeMult = ((EntityLivingBase) entity).isChild() && entity instanceof EntityMob ? 0.5F : 1.0F;
 
             float f = 1.6F;
             float f1 = 0.016666668F * f;
@@ -158,11 +154,11 @@ class SAORenderBase extends RenderPlayer {
             }
 
             if (SAOOption.SPINNING_CRYSTALS.getValue()) {
-                double a = (entity.worldObj.getTotalWorldTime() % 40) / 20.0D  * Math.PI;
+                double a = (entity.worldObj.getTotalWorldTime() % 40) / 20.0D * Math.PI;
                 double cos = Math.cos(a);//Math.PI / 3 * 2);
                 double sin = Math.sin(a);//Math.PI / 3 * 2);
 
-                if (a > Math.PI / 2 && a <= Math.PI * 3 / 2 ) {
+                if (a > Math.PI / 2 && a <= Math.PI * 3 / 2) {
                     tessellator.addVertexWithUV(9.0D * cos, -1, 9.0D * sin, 0.125F, 0.25F);
                     tessellator.addVertexWithUV(9.0D * cos, 17, 9.0D * sin, 0.125F, 0.375F);
                     tessellator.addVertexWithUV(-9.0D * cos, 17, -9.0D * sin, 0F, 0.375F);
@@ -227,7 +223,7 @@ class SAORenderBase extends RenderPlayer {
 
         tessellator.startDrawing(GL11.GL_TRIANGLE_STRIP);
 
-        final float sizeMult = ((EntityLivingBase) entity).isChild() && entity instanceof EntityMob? 0.5F: 1.0F;
+        final float sizeMult = ((EntityLivingBase) entity).isChild() && entity instanceof EntityMob ? 0.5F : 1.0F;
 
         for (int i = 0; i <= hitPoints; i++) {
             final double value = (double) (i + HEALTH_COUNT - hitPoints) / HEALTH_COUNT;

@@ -1,11 +1,9 @@
 package com.tencao.saoui.commands;
 
-import com.tencao.saoui.SAOMod;
 import com.tencao.saoui.util.SAOOption;
 import com.tencao.saoui.util.StaticPlayerHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.StatCollector;
 
 import java.util.Arrays;
 import java.util.MissingFormatArgumentException;
@@ -14,7 +12,7 @@ import java.util.MissingFormatArgumentException;
  * Part of the SAOUI project.
  *
  * @author Bluexin
- * Ported by Tencao
+ *         Ported by Tencao
  */
 public class Command {
     private final CommandType type;
@@ -23,7 +21,8 @@ public class Command {
     private final String[] args;
 
     private Command(String raw) {
-        if (!raw.contains("<") || !raw.contains(">")) throw new MissingFormatArgumentException("<username> not found in \"" + raw + '"');
+        if (!raw.contains("<") || !raw.contains(">"))
+            throw new MissingFormatArgumentException("<username> not found in \"" + raw + '"');
         this.from = raw.substring(raw.indexOf('<') + 1, raw.indexOf('>'));
         this.type = CommandType.getCommand(raw.substring(raw.indexOf(CommandType.PREFIX) + CommandType.PREFIX.length(), raw.indexOf(CommandType.SUFFIX)));
         this.to = StaticPlayerHelper.getName(Minecraft.getMinecraft());

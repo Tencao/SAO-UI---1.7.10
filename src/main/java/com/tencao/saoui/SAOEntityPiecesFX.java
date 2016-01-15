@@ -1,24 +1,21 @@
 package com.tencao.saoui;
 
-import com.tencao.saoui.util.SAOGL;
 import com.tencao.saoui.util.SAOResources;
 import cpw.mods.fml.client.FMLClientHandler;
-import net.minecraft.client.particle.EntityAuraFX;
-import org.lwjgl.opengl.GL11;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.EntityAuraFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
+import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class SAOEntityPiecesFX extends EntityAuraFX {
 
-	float ParticleScale;
+    float ParticleScale;
 
     public SAOEntityPiecesFX(World world, double xCoord, double yCoord, double zCoord, float redValue, float greenValue, float blueValue) {
-    	this(world, xCoord, yCoord, zCoord, redValue, greenValue, blueValue, 1.0F);
+        this(world, xCoord, yCoord, zCoord, redValue, greenValue, blueValue, 1.0F);
     }
 
     private SAOEntityPiecesFX(World world, double xCoord, double yCoord, double zCoord, float redValue, float greenValue, float blueVale, float scale) {
@@ -39,18 +36,16 @@ public class SAOEntityPiecesFX extends EntityAuraFX {
 
     @Override
     public void renderParticle(Tessellator tessellator, float time, float x, float y, float z, float f0, float f1) {
-        float particle = ((float)this.particleAge + time) / (float)this.particleMaxAge * 32.0F;
+        float particle = ((float) this.particleAge + time) / (float) this.particleMaxAge * 32.0F;
 
-        if (particle < 0.0F)
-        {
+        if (particle < 0.0F) {
             particle = 0.0F;
         }
 
-        if (particle > 1.0F)
-        {
+        if (particle > 1.0F) {
             particle = 1.0F;
         }
-        
+
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
 
@@ -59,8 +54,7 @@ public class SAOEntityPiecesFX extends EntityAuraFX {
         renderParticles(tessellator, time, x, y, z, f0, f1);
     }
 
-    private void renderParticles(Tessellator par1Tessellator, float par2, float par3, float par4, float par5, float par6, float par7)
-    {
+    private void renderParticles(Tessellator par1Tessellator, float par2, float par3, float par4, float par5, float par6, float par7) {
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(SAOResources.particleLarge);
 
         float scale = 0.1F * this.particleScale;
@@ -81,8 +75,7 @@ public class SAOEntityPiecesFX extends EntityAuraFX {
      * Called to update the entity's position/logic.
      */
     @Override
-    public void onUpdate()
-    {
+    public void onUpdate() {
         this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
@@ -90,10 +83,9 @@ public class SAOEntityPiecesFX extends EntityAuraFX {
         if (this.particleAge++ >= this.particleMaxAge) this.setDead();
 
         this.setParticleTextureIndex(7 - this.particleAge * 8 / this.particleMaxAge);
-        this.motionY -= 0.04D * (double)this.particleGravity;
+        this.motionY -= 0.04D * (double) this.particleGravity;
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
-        if (this.posY == this.prevPosY)
-        {
+        if (this.posY == this.prevPosY) {
             this.motionX *= 1.1D;
             this.motionZ *= 1.1D;
         }
@@ -101,8 +93,7 @@ public class SAOEntityPiecesFX extends EntityAuraFX {
         this.motionY *= 0.9599999785423279D;
         this.motionZ *= 0.9599999785423279D;
 
-        if (this.onGround)
-        {
+        if (this.onGround) {
             this.motionX *= 0.699999988079071D;
             this.motionZ *= 0.699999988079071D;
         }

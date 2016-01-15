@@ -1,9 +1,9 @@
 package com.tencao.saoui.util;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.StatCollector;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.StatCollector;
 
 import java.util.stream.Stream;
 
@@ -39,24 +39,24 @@ public enum SAOOption {
     CUSTOM_FONT(StatCollector.translateToLocal("optionCustomFont"), false, false, null);
 
     public final String name;
-    private boolean value;
     public final boolean isCategory;
     public final SAOOption category;
+    private boolean value;
 
     SAOOption(String optionName, boolean defaultValue, boolean isCat, SAOOption category) {
         name = optionName;
         value = defaultValue;
         isCategory = isCat;
-        this.category= category;
+        this.category = category;
+    }
+
+    public static SAOOption fromString(String str) {
+        return Stream.of(values()).filter(option -> option.toString().equals(str)).findAny().orElse(null);
     }
 
     @Override
     public final String toString() {
         return name;
-    }
-
-    public static SAOOption fromString(String str) {
-        return Stream.of(values()).filter(option -> option.toString().equals(str)).findAny().orElse(null);
     }
 
     public boolean flip() {

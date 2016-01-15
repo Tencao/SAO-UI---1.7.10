@@ -1,19 +1,14 @@
 package com.tencao.saoui.util;
 
-import com.tencao.saoui.ui.SAOCharacterView;
-import com.tencao.saoui.ui.SAOMenuGUI;
-import com.tencao.saoui.ui.SAOQuestGUI;
-import com.tencao.saoui.SAOMod;
 import com.tencao.saoui.ui.*;
-
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.stats.Achievement;
 import net.minecraft.stats.AchievementList;
 import net.minecraft.stats.StatFileWriter;
 import net.minecraft.util.StatCollector;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -140,9 +135,9 @@ public final class SAOSub {
     public static SAOMenuGUI setProfileSub(Minecraft mc, SAOMenuGUI sub, EntityPlayer player) {
         if (player != null) sub.elements.add(new SAOCharacterView(sub, 0, 0, sub.width, 150, player));
         else setEmptySub(mc, sub);
-		
-		return sub;
-	}
+
+        return sub;
+    }
 
     private static SAOMenuGUI setCheckPositionSub(Minecraft mc, SAOMenuGUI sub, EntityPlayer player, int zoom, String title) {
         if (player != null) {
@@ -167,10 +162,10 @@ public final class SAOSub {
 
         if (stats != null) {
             @SuppressWarnings("unchecked") final List<Object> ach = AchievementList.achievementList;
-                ach.stream()
-                        .filter(obj0 -> obj0 instanceof Achievement).map(obj0 -> (Achievement) obj0)
-                        .filter(ach0 -> ach0.isAchievement() && !stats.hasAchievementUnlocked(ach0) && stats.canUnlockAchievement(ach0))
-                        .forEach(ach0 -> questList.elements.add(new SAOQuestGUI(questList, 0, 0, questList.width, ach0)));
+            ach.stream()
+                    .filter(obj0 -> obj0 instanceof Achievement).map(obj0 -> (Achievement) obj0)
+                    .filter(ach0 -> ach0.isAchievement() && !stats.hasAchievementUnlocked(ach0) && stats.canUnlockAchievement(ach0))
+                    .forEach(ach0 -> questList.elements.add(new SAOQuestGUI(questList, 0, 0, questList.width, ach0)));
         }
 
         sub.elements.add(questList);

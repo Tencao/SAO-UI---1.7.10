@@ -1,8 +1,6 @@
 package com.tencao.saoui;
 
-import com.tencao.saoui.SAOMod;
 import com.tencao.saoui.util.SAOOption;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.audio.SoundHandler;

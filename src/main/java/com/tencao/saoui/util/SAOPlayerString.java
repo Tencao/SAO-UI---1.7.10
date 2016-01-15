@@ -1,13 +1,11 @@
 package com.tencao.saoui.util;
 
-import java.util.Collection;
-
-import com.google.common.collect.Multimap;
-
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.StatCollector;
+
+import java.util.Collection;
 
 
 public final class SAOPlayerString implements SAOString {
@@ -18,7 +16,11 @@ public final class SAOPlayerString implements SAOString {
         player = entityPlayer;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static float attr(double attributeValue) {
+        return (float) ((int) (attributeValue * 1000)) / 1000;
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public final String toString() {
         final StringBuilder builder = new StringBuilder();
 
@@ -55,10 +57,6 @@ public final class SAOPlayerString implements SAOString {
         }
 
         return builder.toString();
-    }
-
-    private static float attr(double attributeValue) {
-        return (float) ((int) (attributeValue * 1000)) / 1000;
     }
 
 }

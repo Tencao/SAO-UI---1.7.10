@@ -1,22 +1,25 @@
 package com.tencao.saoui;
 
-import com.tencao.saoui.commands.CommandTypeCompat;
+import com.tencao.saoui.commands.Command;
 import com.tencao.saoui.util.ColorStateHandler;
 import com.tencao.saoui.util.SAOColorState;
 import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
-import com.tencao.saoui.commands.Command;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class SAOEventHandler {
@@ -34,12 +37,12 @@ public class SAOEventHandler {
 
     @SubscribeEvent
     public void livingAttack(LivingAttackEvent e) {
-     	this.livingHit(e.entityLiving, e.source.getEntity());
+        this.livingHit(e.entityLiving, e.source.getEntity());
     }
 
     @SubscribeEvent
     public void livingHurt(LivingHurtEvent e) {
-     	this.livingHit(e.entityLiving, e.source.getEntity());
+        this.livingHit(e.entityLiving, e.source.getEntity());
     }
 
     private void livingHit(EntityLivingBase target, Entity source) {
@@ -49,8 +52,9 @@ public class SAOEventHandler {
             } else {
                 onDamagePlayer((EntityPlayer) source);
             }
-         }
-     }
+        }
+    }
+
     @SubscribeEvent
     public void livingDeath(LivingDeathEvent e) {
         if (e.entityLiving instanceof EntityPlayer && e.source.getEntity() instanceof EntityPlayer)
@@ -79,7 +83,7 @@ public class SAOEventHandler {
     }
 
     @SubscribeEvent
-    public void abilityCheck (TickEvent.ClientTickEvent e){
+    public void abilityCheck(TickEvent.ClientTickEvent e) {
         if (mc.thePlayer == null) {
             SAOMod.IS_SPRINTING = false;
             SAOMod.IS_SNEAKING = false;
@@ -90,9 +94,10 @@ public class SAOEventHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void chatEvent(CommandTypeCompat evt) {
+    public void chatEvent(ClientChatReceivedEvent evt) {
         //System.out.println("Got a ClientChatReceivedEvent type " + evt.type);
         //System.out.println("getUnformattedText() " + evt.message.getUnformattedText());
-        if (Command.processCommand(evt.message.getUnformattedText())) evt.setCanceled(true);// TODO: add pm feature and PT chat
+        if (Command.processCommand(evt.message.getUnformattedText()))
+            evt.setCanceled(true);// TODO: add pm feature and PT chat
     }
 }

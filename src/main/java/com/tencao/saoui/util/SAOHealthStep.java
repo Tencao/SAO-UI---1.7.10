@@ -1,13 +1,10 @@
 package com.tencao.saoui.util;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-
-import com.tencao.saoui.SAOMod;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public enum SAOHealthStep {
@@ -20,13 +17,13 @@ public enum SAOHealthStep {
     GOOD(1.0F, 0x93F43EFF),
     CREATIVE(-1.0F, 0xB32DE3FF);
 
-	private final float healthLimit;
-	private final int color;
+    private final float healthLimit;
+    private final int color;
 
-	SAOHealthStep(float limit, int argb) {
-		healthLimit = limit;
-		color = argb;
-	}
+    SAOHealthStep(float limit, int argb) {
+        healthLimit = limit;
+        color = argb;
+    }
 
     public static SAOHealthStep getStep(Minecraft mc, EntityLivingBase entity, float time) {
         if (entity instanceof EntityPlayer && (((EntityPlayer) entity).capabilities.isCreativeMode)) return CREATIVE;

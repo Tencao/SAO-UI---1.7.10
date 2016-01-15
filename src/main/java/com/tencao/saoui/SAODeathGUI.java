@@ -1,17 +1,13 @@
 package com.tencao.saoui;
 
-import org.lwjgl.opengl.GL11;
-
 import com.tencao.saoui.ui.SAOAlertGUI;
 import com.tencao.saoui.ui.SAOElementGUI;
 import com.tencao.saoui.ui.SAOScreenGUI;
 import com.tencao.saoui.util.*;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.GuiGameOver;
-
-import java.io.IOException;
+import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class SAODeathGUI extends SAOScreenGUI {
@@ -72,7 +68,8 @@ public class SAODeathGUI extends SAOScreenGUI {
     }
 
     @Override
-    protected void backgroundClicked(int cursorX, int cursorY, int button) {}
+    protected void backgroundClicked(int cursorX, int cursorY, int button) {
+    }
 
     @Override
     public void close() {
