@@ -35,6 +35,7 @@ public enum SAOOption {
     FORCE_HUD(StatCollector.translateToLocal("optionForceHud"), false, false, UI),
     REMOVE_HPXP(StatCollector.translateToLocal("optionLightHud"), false, false, UI),
     ALT_ABSORB_POS(StatCollector.translateToLocal("optionAltAbsorbPos"), false, false, UI),
+    MOUNT_STAT_VIEW(StatCollector.translateToLocal("optionMountStatView"), true, false, UI),
     GUI_PAUSE(StatCollector.translateToLocal("optionGuiPause"), true, false, INTERFACES),
     CUSTOM_FONT(StatCollector.translateToLocal("optionCustomFont"), false, false, null);
 

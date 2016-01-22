@@ -7,6 +7,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.Entity;
@@ -75,7 +76,6 @@ public class SAOIngameGUI extends GuiIngameForge {
             if (renderFood) renderFood(width, height);
             if (renderHealthMount) renderHealthMount(width, height);
             if (renderAir) renderAir(width, height);
-            renderJumpBar = false;
             renderArmor = false;
             renderHealthMount = false;
             mc.entityRenderer.setupOverlayRendering();
@@ -491,6 +491,7 @@ public class SAOIngameGUI extends GuiIngameForge {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     protected void renderJumpBar(int width, int height) {
         if (replaceEvent(JUMPBAR)) return;
+        renderExperience(width, height);
         // Nothing happens here (not implemented yet)
         post(JUMPBAR);
     }
