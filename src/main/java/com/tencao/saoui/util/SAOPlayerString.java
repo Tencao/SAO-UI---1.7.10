@@ -1,10 +1,15 @@
 package com.tencao.saoui.util;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.StatCollector;
 
+import java.text.DecimalFormat;
 import java.util.Collection;
 
 
@@ -23,37 +28,59 @@ public final class SAOPlayerString implements SAOString {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public final String toString() {
         final StringBuilder builder = new StringBuilder();
+        EntityLivingBase mount = (EntityLivingBase)player.ridingEntity;
 
         if (player != null) {
-            final int level = player.experienceLevel;
-            final int experience = (int) (player.experience * 100);
 
-            final float health = attr(player.getHealth());
+            if (player.isRiding() && mount instanceof EntityLivingBase){
+                final String name = ((EntityLiving)mount).getCustomNameTag();
+                final float maxHealth = mount.getMaxHealth();
+                final double health = mount.getHealth();
+                final double speed = mount.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue();
+                final double jump;
+                DecimalFormat df = new DecimalFormat("0.000");
+                String speedFormated = df.format(speed);
 
-            final float maxHealth = attr(player.getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue());
-            final float attackDamage = attr(player.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue());
 
-            float itemDamage = 0.0F;
+                builder.append(StatCollector.translateToLocal("displayName")).append(": ").append(name).append('\n');
+                builder.append(StatCollector.translateToLocal("displayHpLong")).append(": ").append(health).append("/").append(maxHealth).append('\n');
+                builder.append(StatCollector.translateToLocal("displaySpdLong")).append(": ").append(speedFormated).append('\n');
+                if (mount instanceof EntityHorse) {
+                    jump = ((EntityHorse) mount).getHorseJumpStrength();
+                    String jumpFormated = df.format(jump);
+                    builder.append(StatCollector.translateToLocal("displayJmpLong")).append(": ").append(jumpFormated).append('\n');
+                }
+            } else {
+                final int level = player.experienceLevel;
+                final int experience = (int) (player.experience * 100);
 
-            if (player.getCurrentEquippedItem() != null) {
-                @SuppressWarnings("unchecked") final Collection<?> itemAttackDamage = player.getCurrentEquippedItem().getAttributeModifiers().get(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName());
+                final float health = attr(player.getHealth());
 
-                itemDamage += itemAttackDamage.stream().filter(value -> value instanceof AttributeModifier).map(value -> (AttributeModifier) value)
-                        .filter(mod -> mod.getName().equals("Weapon modifier")).mapToDouble(AttributeModifier::getAmount).sum();
+                final float maxHealth = attr(player.getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue());
+                final float attackDamage = attr(player.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue());
 
+                float itemDamage = 0.0F;
+
+                if (player.getCurrentEquippedItem() != null) {
+                    @SuppressWarnings("unchecked") final Collection<?> itemAttackDamage = player.getCurrentEquippedItem().getAttributeModifiers().get(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName());
+
+                    itemDamage += itemAttackDamage.stream().filter(value -> value instanceof AttributeModifier).map(value -> (AttributeModifier) value)
+                            .filter(mod -> mod.getName().equals("Weapon modifier")).mapToDouble(AttributeModifier::getAmount).sum();
+
+                }
+
+                final float strength = attr(attackDamage + itemDamage);
+                final float agility = attr(player.getAIMoveSpeed());
+                final float resistance = attr(player.getTotalArmorValue());
+
+                builder.append(StatCollector.translateToLocal("displayLvLong")).append(": ").append(level).append('\n');
+                builder.append(StatCollector.translateToLocal("displayXpLong")).append(": ").append(experience).append("%\n");
+
+                builder.append(StatCollector.translateToLocal("displayHpLong")).append(": ").append(health).append("/").append(maxHealth).append('\n');
+                builder.append(StatCollector.translateToLocal("displayStrLong")).append(": ").append(strength).append('\n');
+                builder.append(StatCollector.translateToLocal("displayDexLong")).append(": ").append(agility).append('\n');
+                builder.append(StatCollector.translateToLocal("displayResLong")).append(": ").append(resistance).append("\n");
             }
-
-            final float strength = attr(attackDamage + itemDamage);
-            final float agility = attr(player.getAIMoveSpeed());
-            final float resistance = attr(player.getTotalArmorValue());
-
-            builder.append(StatCollector.translateToLocal("displayLvLong")).append(": ").append(level).append('\n');
-            builder.append(StatCollector.translateToLocal("displayXpLong")).append(": ").append(experience).append("%\n");
-
-            builder.append(StatCollector.translateToLocal("displayHpLong")).append(": ").append(health).append("/").append(maxHealth).append('\n');
-            builder.append(StatCollector.translateToLocal("displayStrLong")).append(": ").append(strength).append('\n');
-            builder.append(StatCollector.translateToLocal("displayDexLong")).append(": ").append(agility).append('\n');
-            builder.append(StatCollector.translateToLocal("displayResLong")).append(": ").append(resistance).append("\n");
         }
 
         return builder.toString();

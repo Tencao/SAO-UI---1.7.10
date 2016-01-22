@@ -97,6 +97,9 @@ displayHpLong=Health
 displayStrLong=Strength
 displayDexLong=Agility
 displayResLong=Resistance
+displaySpdLong=Speed
+displayJmpLong=Jump Strength
+displayName=Name
 
 # PT
 ptLeave=You left your party.
