@@ -46,7 +46,7 @@ public enum SAOColorState {
     private static SAOColorState getState(Minecraft mc, EntityLiving entity, float time) {
         if (entity instanceof EntityWolf && ((EntityWolf) entity).isAngry()) return KILLER;
         else if (entity instanceof EntityTameable && ((EntityTameable) entity).isTamed())
-            return ((EntityTameable) entity).getOwner() != mc.thePlayer ? SAOColorState.getColorState(mc, ((EntityTameable) entity).getOwner(), time) : INNOCENT;
+            return ((EntityTameable) entity).getOwner() != mc.thePlayer ? VIOLENT : INNOCENT;
         else if (entity instanceof IBossDisplayData) return BOSS;
         else if (entity instanceof IMob) return KILLER;
         else if (entity instanceof IAnimals) return INNOCENT;
