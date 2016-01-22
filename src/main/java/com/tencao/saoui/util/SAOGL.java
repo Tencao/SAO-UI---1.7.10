@@ -27,7 +27,7 @@ public final class SAOGL {
     public static FontRenderer glFont() {
         final Minecraft mc = glMinecraft();
 
-        return mc != null ? mc.fontRenderer : null;
+        return mc != null ? mc.fontRendererObj : null;
     }
 
     public static TextureManager glTextureManager() {
@@ -79,15 +79,15 @@ public final class SAOGL {
     }
 
     public static void setFont(Minecraft mc, boolean custom) {
-        if (mc.fontRenderer == null) return;
+        if (mc.fontRendererObj == null) return;
         ResourceLocation fontLocation = custom ? new ResourceLocation(SAOMod.MODID, "textures/ascii.png") : new ResourceLocation("textures/font/ascii.png");
         GameSettings gs = mc.gameSettings;
-        mc.fontRenderer = new FontRenderer(gs, fontLocation, mc.getTextureManager(), false);
+        mc.fontRendererObj = new FontRenderer(gs, fontLocation, mc.getTextureManager(), false);
         if (gs.language != null) {
-            mc.fontRenderer.setUnicodeFlag(mc.func_152349_b()); // May need to be rechecked
-            mc.fontRenderer.setBidiFlag(mc.getLanguageManager().isCurrentLanguageBidirectional());
+            mc.fontRendererObj.setUnicodeFlag(mc.isUnicode()); // May need to be rechecked
+            mc.fontRendererObj.setBidiFlag(mc.getLanguageManager().isCurrentLanguageBidirectional());
         }
-        ((IReloadableResourceManager) mc.getResourceManager()).registerReloadListener(mc.fontRenderer);
+        ((IReloadableResourceManager) mc.getResourceManager()).registerReloadListener(mc.fontRendererObj);
     }
 
     public static int glStringWidth(FontRenderer font, String string) {
@@ -116,7 +116,7 @@ public final class SAOGL {
         glBindTexture(glTextureManager(), location);
     }
 
-    public static void glTexturedRect(int x, int y, float z, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight) {
+    public static void glTexturedRect(int x, int y, float z, double width, double height, int srcX, int srcY, int srcWidth, int srcHeight) {
         float f = 0.00390625F;
         float f1 = 0.00390625F;
         Tessellator tessellator = Tessellator.instance;

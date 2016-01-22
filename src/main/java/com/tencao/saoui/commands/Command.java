@@ -21,8 +21,7 @@ public class Command {
     private final String[] args;
 
     private Command(String raw) {
-        if (!raw.contains("<") || !raw.contains(">"))
-            throw new MissingFormatArgumentException("<username> not found in \"" + raw + '"');
+        if (!raw.contains("<") || !raw.contains(">")) throw new MissingFormatArgumentException("<username> not found in \"" + raw + '"');
         this.from = raw.substring(raw.indexOf('<') + 1, raw.indexOf('>'));
         this.type = CommandType.getCommand(raw.substring(raw.indexOf(CommandType.PREFIX) + CommandType.PREFIX.length(), raw.indexOf(CommandType.SUFFIX)));
         this.to = StaticPlayerHelper.getName(Minecraft.getMinecraft());

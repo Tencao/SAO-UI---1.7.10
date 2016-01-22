@@ -11,7 +11,7 @@ public enum SAOInventory {
     EQUIPMENT((ItemFilter) (stack, state) -> {
         final Item item = stack.getItem();
 
-        return (item instanceof ItemArmor) || ((item instanceof ItemBlock) && (((ItemBlock) item).field_150939_a instanceof BlockPumpkin));
+        return (item instanceof ItemArmor) || ((item instanceof ItemBlock) && (((ItemBlock) item).blockInstance instanceof BlockPumpkin));
     }),
 
     WEAPONS((ItemFilter) (stack, state) -> {

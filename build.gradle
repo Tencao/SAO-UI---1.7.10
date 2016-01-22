@@ -27,7 +27,7 @@ targetCompatibility = 1.8
 minecraft {
     version = "${minecraft_version}-${forge_version}"
     runDir = "eclipse"
-    //mappings = "snapshot_20140925"
+    mappings = "stable_12"
 }
 
 dependencies {
@@ -65,3 +65,17 @@ processResources
         exclude 'mcmod.info'
     }
 }
+
+// Dev jar (deobfuscated)
+//task devJar(type: Jar) {
+ //   from sourceSets.main.output
+ //   classifier = 'dev'
+ //   version = "${saoui_version}"
+//}
+
+//artifacts {
+  //  archives devJar
+//}
+
+
+idea { module { inheritOutputDirs = true } }

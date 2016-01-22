@@ -2,6 +2,7 @@ package com.tencao.saoui.util;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -45,10 +46,10 @@ public enum SAOEffect {
     private static final int SRC_HEIGHT = 10;
 
     @SuppressWarnings("unchecked")
-    public static List<SAOEffect> getEffects(EntityPlayer player) {
+    public static List<SAOEffect> getEffects(EntityLivingBase entity) {
         final List<SAOEffect> effects = new ArrayList<>();
 
-        player.getActivePotionEffects().stream().filter(potionEffect0 -> potionEffect0 instanceof PotionEffect).forEach(potionEffect0 -> {
+        entity.getActivePotionEffects().stream().filter(potionEffect0 -> potionEffect0 instanceof PotionEffect).forEach(potionEffect0 -> {
             final PotionEffect potionEffect = (PotionEffect) potionEffect0;
 
             if (potionEffect.getPotionID() == Potion.moveSlowdown.getId() && potionEffect.getAmplifier() > 5)
@@ -59,14 +60,14 @@ public enum SAOEffect {
             else if (potionEffect.getPotionID() == Potion.weakness.getId()) effects.add(WEAK);
             else if (potionEffect.getPotionID() == Potion.wither.getId()) effects.add(CURSED);
             else if (potionEffect.getPotionID() == Potion.blindness.getId()) effects.add(BLIND);
-            else if (potionEffect.getPotionID() == Potion.field_76443_y.getId()) effects.add(SATURATION);
+            else if (potionEffect.getPotionID() == Potion.saturation.getId()) effects.add(SATURATION);
             else if (potionEffect.getPotionID() == Potion.moveSpeed.getId()) effects.add(SPEED_BOOST);
             else if (potionEffect.getPotionID() == Potion.waterBreathing.getId()) effects.add(WATER_BREATH);
             else if (potionEffect.getPotionID() == Potion.damageBoost.getId()) effects.add(STRENGTH);
-            else if (potionEffect.getPotionID() == Potion.field_76444_x.getId()) effects.add(ABSORPTION);
+            else if (potionEffect.getPotionID() == Potion.absorption.getId()) effects.add(ABSORPTION);
             else if (potionEffect.getPotionID() == Potion.fireResistance.getId()) effects.add(FIRE_RES);
             else if (potionEffect.getPotionID() == Potion.digSpeed.getId()) effects.add(HASTE);
-            else if (potionEffect.getPotionID() == Potion.field_76434_w.getId()) effects.add(HEALTH_BOOST);
+            else if (potionEffect.getPotionID() == Potion.healthBoost.getId()) effects.add(HEALTH_BOOST);
             else if (potionEffect.getPotionID() == Potion.heal.getId()) effects.add(INST_HEALTH);
             else if (potionEffect.getPotionID() == Potion.invisibility.getId()) effects.add(INVISIBILITY);
             else if (potionEffect.getPotionID() == Potion.jump.getId()) effects.add(JUMP_BOOST);
@@ -75,15 +76,19 @@ public enum SAOEffect {
             else if (potionEffect.getPotionID() == Potion.resistance.getId()) effects.add(RESIST);
         });
 
-        if (player.getFoodStats().getFoodLevel() <= 6) effects.add(STARVING);
-        else if (player.getFoodStats().getFoodLevel() <= 18) effects.add(HUNGRY);
-
-        if (player.isInWater()) {
-            if (player.getAir() <= 0) effects.add(DROWNING);
-            else if (player.getAir() < 300) effects.add(WET);
+        if (entity instanceof EntityPlayer) {
+            if (((EntityPlayer) entity).getFoodStats().getFoodLevel() <= 6)
+                effects.add(STARVING);
+            else if (((EntityPlayer) entity).getFoodStats().getFoodLevel() <= 18)
+                effects.add(HUNGRY);
         }
 
-        if (player.isBurning()) effects.add(BURNING);
+        if (entity.isInWater()) {
+            if (entity.getAir() <= 0) effects.add(DROWNING);
+            else if (entity.getAir() < 300) effects.add(WET);
+        }
+
+        if (entity.isBurning()) effects.add(BURNING);
 
         return effects;
     }

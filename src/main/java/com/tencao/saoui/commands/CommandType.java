@@ -45,7 +45,6 @@ public enum CommandType {
     }
 
     public final String key() {
-
         return "saouiCommand" + this.name().replace("_", "");
     }
 

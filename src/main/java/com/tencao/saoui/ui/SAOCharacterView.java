@@ -27,7 +27,7 @@ public class SAOCharacterView extends SAOElementGUI {
         final float mouseY = (float) y - size * 1.67F - cursorY;
 
         IS_VIEWING = true;
-        GuiInventory.func_147046_a(x, y, size, mouseX, mouseY, character);
+        GuiInventory.drawEntityOnScreen(x, y, size, mouseX, mouseY, character);
         IS_VIEWING = false;
 
         SAOGL.glRescaleNormal(true);

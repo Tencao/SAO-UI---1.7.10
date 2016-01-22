@@ -1,6 +1,7 @@
 package com.tencao.saoui.util;
 
 import com.tencao.saoui.SAOMod;
+import com.tencao.saoui.SAORenderHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
@@ -19,7 +20,7 @@ public enum SAOSkill {
     CRAFTING(SAOIcon.CRAFTING, () -> false, (mc, parent) -> {
         if (parent != null) mc.displayGuiScreen(parent);
         else {
-            SAOMod.REPLACE_GUI_DELAY = 1;
+            SAORenderHandler.REPLACE_GUI_DELAY = 1;
             mc.displayGuiScreen(null);
 
             final int invKeyCode = mc.gameSettings.keyBindInventory.getKeyCode();

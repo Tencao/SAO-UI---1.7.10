@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
@@ -21,6 +22,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
+
+import java.util.List;
 
 @SideOnly(Side.CLIENT)
 class SAORenderBase extends RenderPlayer {
@@ -220,45 +223,82 @@ class SAORenderBase extends RenderPlayer {
 
         final int hitPoints = (int) (getHealthFactor(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) * HEALTH_COUNT);
         useColor(mc, entity, SAOMod.UNKNOWN_TIME_DELAY);
+        if (entity instanceof IBossDisplayData){
+            tessellator.startDrawing(GL11.GL_TRIANGLE_STRIP);
+            final float sizeMult = ((EntityLivingBase) entity).isChild() && entity instanceof EntityMob ? 0.5F : 1.0F;
+            for (int i = 0; i <= hitPoints; i++) {
+                final double value = (double) (i + HEALTH_COUNT - hitPoints) / HEALTH_COUNT;
+                final double rad = Math.toRadians(renderManager.playerViewY - 135) + (value - 0.5) * Math.PI * HEALTH_ANGLE;
 
-        tessellator.startDrawing(GL11.GL_TRIANGLE_STRIP);
+                final double x0 = x + sizeMult * entity.width * HEALTH_RANGE * Math.cos(rad);
+                final double y0 = y + sizeMult * entity.height * HEALTH_OFFSET;
+                final double z0 = z + sizeMult * entity.width * HEALTH_RANGE * Math.sin(rad);
 
-        final float sizeMult = ((EntityLivingBase) entity).isChild() && entity instanceof EntityMob ? 0.5F : 1.0F;
+                final double uv_value = value - (double) (HEALTH_COUNT - hitPoints) / HEALTH_COUNT;
 
-        for (int i = 0; i <= hitPoints; i++) {
-            final double value = (double) (i + HEALTH_COUNT - hitPoints) / HEALTH_COUNT;
-            final double rad = Math.toRadians(renderManager.playerViewY - 135) + (value - 0.5) * Math.PI * HEALTH_ANGLE;
+                tessellator.addVertexWithUV(x0, y0 + HEALTH_HEIGHT, z0, (1.0 - uv_value), 0);
+                tessellator.addVertexWithUV(x0, y0, z0, (1.0 - uv_value), 0.125);
+            }
+            tessellator.draw();
 
-            final double x0 = x + sizeMult * entity.width * HEALTH_RANGE * Math.cos(rad);
-            final double y0 = y + sizeMult * entity.height * HEALTH_OFFSET;
-            final double z0 = z + sizeMult * entity.width * HEALTH_RANGE * Math.sin(rad);
+            SAOGL.glColor(1, 1, 1, 1);
+            tessellator.startDrawing(GL11.GL_TRIANGLE_STRIP);
 
-            final double uv_value = value - (double) (HEALTH_COUNT - hitPoints) / HEALTH_COUNT;
+            for (int i = 0; i <= HEALTH_COUNT; i++) {
+                final double value = (double) i / HEALTH_COUNT;
+                final double rad = Math.toRadians(renderManager.playerViewY - 135) + (value - 0.5) * Math.PI * HEALTH_ANGLE;
 
-            tessellator.addVertexWithUV(x0, y0 + HEALTH_HEIGHT, z0, (1.0 - uv_value), 0);
-            tessellator.addVertexWithUV(x0, y0, z0, (1.0 - uv_value), 0.125);
+                final double x0 = x + sizeMult * entity.width * HEALTH_RANGE * Math.cos(rad);
+                final double y0 = y + sizeMult * entity.height * HEALTH_OFFSET;
+                final double z0 = z + sizeMult * entity.width * HEALTH_RANGE * Math.sin(rad);
+
+                tessellator.addVertexWithUV(x0, y0 + HEALTH_HEIGHT, z0, (1.0 - value), 0.125);
+                tessellator.addVertexWithUV(x0, y0, z0, (1.0 - value), 0.25);
+            }
+
+            tessellator.draw();
+
+            SAOGL.glCullFace(true);
+        }
+        else {
+            tessellator.startDrawing(GL11.GL_TRIANGLE_STRIP);
+
+            final float sizeMult = ((EntityLivingBase) entity).isChild() && entity instanceof EntityMob ? 0.5F : 1.0F;
+
+            for (int i = 0; i <= hitPoints; i++) {
+                final double value = (double) (i + HEALTH_COUNT - hitPoints) / HEALTH_COUNT;
+                final double rad = Math.toRadians(renderManager.playerViewY - 135) + (value - 0.5) * Math.PI * HEALTH_ANGLE;
+
+                final double x0 = x + sizeMult * entity.width * HEALTH_RANGE * Math.cos(rad);
+                final double y0 = y + sizeMult * entity.height * HEALTH_OFFSET;
+                final double z0 = z + sizeMult * entity.width * HEALTH_RANGE * Math.sin(rad);
+
+                final double uv_value = value - (double) (HEALTH_COUNT - hitPoints) / HEALTH_COUNT;
+
+                tessellator.addVertexWithUV(x0, y0 + HEALTH_HEIGHT, z0, (1.0 - uv_value), 0);
+                tessellator.addVertexWithUV(x0, y0, z0, (1.0 - uv_value), 0.125);
+            }
+
+            tessellator.draw();
+
+            SAOGL.glColor(1, 1, 1, 1);
+            tessellator.startDrawing(GL11.GL_TRIANGLE_STRIP);
+
+            for (int i = 0; i <= HEALTH_COUNT; i++) {
+                final double value = (double) i / HEALTH_COUNT;
+                final double rad = Math.toRadians(renderManager.playerViewY - 135) + (value - 0.5) * Math.PI * HEALTH_ANGLE;
+
+                final double x0 = x + sizeMult * entity.width * HEALTH_RANGE * Math.cos(rad);
+                final double y0 = y + sizeMult * entity.height * HEALTH_OFFSET;
+                final double z0 = z + sizeMult * entity.width * HEALTH_RANGE * Math.sin(rad);
+
+                tessellator.addVertexWithUV(x0, y0 + HEALTH_HEIGHT, z0, (1.0 - value), 0.125);
+                tessellator.addVertexWithUV(x0, y0, z0, (1.0 - value), 0.25);
+            }
+
+            tessellator.draw();
         }
 
-        tessellator.draw();
-
-        SAOGL.glColor(1, 1, 1, 1);
-        tessellator.startDrawing(GL11.GL_TRIANGLE_STRIP);
-
-        for (int i = 0; i <= HEALTH_COUNT; i++) {
-            final double value = (double) i / HEALTH_COUNT;
-            final double rad = Math.toRadians(renderManager.playerViewY - 135) + (value - 0.5) * Math.PI * HEALTH_ANGLE;
-
-            final double x0 = x + sizeMult * entity.width * HEALTH_RANGE * Math.cos(rad);
-            final double y0 = y + sizeMult * entity.height * HEALTH_OFFSET;
-            final double z0 = z + sizeMult * entity.width * HEALTH_RANGE * Math.sin(rad);
-
-            tessellator.addVertexWithUV(x0, y0 + HEALTH_HEIGHT, z0, (1.0 - value), 0.125);
-            tessellator.addVertexWithUV(x0, y0, z0, (1.0 - value), 0.25);
-        }
-
-        tessellator.draw();
-
-        SAOGL.glCullFace(true);
     }
 
     private void doSpawnDeathParticles(Minecraft mc, Entity entity) {

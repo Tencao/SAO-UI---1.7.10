@@ -10,6 +10,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Cursor;
 import org.lwjgl.input.Mouse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
 
     private static final float ROTATION_FACTOR = 0.25F;
     protected static SAOCursorStatus CURSOR_STATUS = SAOCursorStatus.SHOW;
-    public final List<SAOElementGUI> elements;
+    protected final List<SAOElementGUI> elements;
     private final Cursor emptyCursor;
     private int mouseX, mouseY;
     private int mouseDown;
@@ -26,8 +27,7 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
     private float[] rotationYaw, rotationPitch;
     private boolean cursorHidden = false;
 
-
-    public SAOScreenGUI() {
+    protected SAOScreenGUI() {
         super();
         elements = new ArrayList<>();
         Cursor cursor = null;
@@ -78,7 +78,6 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
     public void updateScreen() {
         if (this.elements == null) return;
         for (int i = elements.size() - 1; i >= 0; i--) {
-
             if (elements.get(i).removed()) {
                 elements.get(i).close(mc);
                 elements.remove(i);
@@ -92,7 +91,7 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
     @Override
     public void drawScreen(int cursorX, int cursorY, float f) {
         if (this.elements == null) return;
-        for (SAOElementGUI el : this.elements) if (el == null) return;
+        for (SAOElementGUI el: this.elements) if (el == null) return;
         mouseX = cursorX;
         mouseY = cursorY;
 
@@ -149,6 +148,8 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
     @Override
     protected void mouseClicked(int cursorX, int cursorY, int button) {
         super.mouseClicked(cursorX, cursorY, button);
+        mouseDown |= (0x1 << button);
+
         boolean clickedElement = false;
 
         for (int i = elements.size() - 1; i >= 0; i--) {
@@ -156,9 +157,11 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
                 if (elements.size() > 0) i = elements.size() - 1;
                 else break;
             }
+
             if (elements.get(i).mouseOver(cursorX, cursorY)) {
                 if (elements.get(i).mousePressed(mc, cursorX, cursorY, button))
                     actionPerformed(elements.get(i), SAOAction.getAction(button, true), button);
+
                 clickedElement = true;
             }
         }
@@ -167,8 +170,8 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
     }
 
     @Override
-    protected void mouseMovedOrUp(int cursorX, int cursorY, int button) {
-        super.mouseMovedOrUp(cursorX, cursorY, button);
+    protected void mouseReleased(int cursorX, int cursorY, int button) {
+        super.mouseReleased(cursorX, cursorY, button);
         mouseDown &= ~(0x1 << button);
 
         for (int i = elements.size() - 1; i >= 0; i--) {
@@ -188,7 +191,7 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
         }
     }
 
-    protected void mouseWheel(int cursorX, int cursorY, int delta) {
+    private void mouseWheel(int cursorX, int cursorY, int delta) {
         elements.stream().filter(element -> element.mouseOver(cursorX, cursorY) && element.mouseWheel(mc, cursorX, cursorY, delta)).forEach(element -> actionPerformed(element, SAOAction.MOUSE_WHEEL, delta));
     }
 
@@ -218,10 +221,11 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
     @Override
     public void onGuiClosed() {
         showCursor();
+
         close();
     }
 
-    public void close() {
+    protected void close() {
         elements.stream().forEach(el -> el.close(mc));
         elements.clear();
     }
@@ -237,9 +241,7 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
     protected void toggleHideCursor() {
         cursorHidden = !cursorHidden;
         try {
-            Mouse.setNativeCursor(cursorHidden ? emptyCursor : null);
-        } catch (LWJGLException ignored) {
-        }
+            Mouse.setNativeCursor(cursorHidden ? emptyCursor: null);
+        } catch (LWJGLException ignored) {}
     }
-
 }

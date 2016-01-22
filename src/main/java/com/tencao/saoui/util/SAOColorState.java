@@ -7,6 +7,7 @@ import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityOwnable;
+import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityWolf;
@@ -22,6 +23,7 @@ public enum SAOColorState {
     INNOCENT(0x93F43EFF),
     VIOLENT(0xF49B00FF),
     KILLER(0xBD0000FF),
+    BOSS(0xBD0000FF),
 
     CREATIVE(0x4CEDC5FF),
     OP(0xFFFFFFFF),
@@ -45,10 +47,12 @@ public enum SAOColorState {
         if (entity instanceof EntityWolf && ((EntityWolf) entity).isAngry()) return KILLER;
         else if (entity instanceof EntityTameable && ((EntityTameable) entity).isTamed())
             return ((EntityTameable) entity).getOwner() != mc.thePlayer ? SAOColorState.getColorState(mc, ((EntityTameable) entity).getOwner(), time) : INNOCENT;
+        else if (entity instanceof IBossDisplayData) return BOSS;
         else if (entity instanceof IMob) return KILLER;
         else if (entity instanceof IAnimals) return INNOCENT;
         else if (entity instanceof IEntityOwnable) return VIOLENT;
         else return INVALID;
+
     }
 
     private static SAOColorState getPlayerColorState(Minecraft mc, EntityPlayer player, float time) {

@@ -17,13 +17,15 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.GuiIngameForge;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.EntityEvent;
 
 @SideOnly(Side.CLIENT)
 public class SAORenderHandler {
 
     private final Minecraft mc = Minecraft.getMinecraft();
-    private boolean replaceGUI = SAOMod.replaceGUI;
+    public static int REPLACE_GUI_DELAY = 0;
+    public static boolean replaceGUI;
 
     @SubscribeEvent
     public void checkingameGUI(TickEvent.RenderTickEvent e) {
@@ -37,7 +39,7 @@ public class SAORenderHandler {
         if ((mc.currentScreen == null) && (mc.inGameHasFocus)) replaceGUI = true;
         else if (replaceGUI) {
             if (mc.currentScreen != null && !(mc.currentScreen instanceof SAOScreenGUI)) {
-                if (SAOMod.REPLACE_GUI_DELAY > 0) SAOMod.REPLACE_GUI_DELAY--;
+                if (REPLACE_GUI_DELAY > 0) REPLACE_GUI_DELAY--;
                 else if ((mc.currentScreen instanceof GuiIngameMenu) || ((mc.currentScreen instanceof GuiInventory) && (!SAOOption.DEFAULT_INVENTORY.getValue()))) {
                     final boolean inv = (mc.currentScreen instanceof GuiInventory);
 
@@ -85,25 +87,7 @@ public class SAORenderHandler {
                     render.setRenderManager(manager);
                 }
             }
-        });/*
-        try {
-            Class<? extends RenderManager> mgCl = manager.getClass();
-            Field skinField = mgCl.getDeclaredField("skinMap");
-            skinField.setAccessible(true);
-            Map skinMap = (Map) skinField.get(manager);
-            skinMap.keySet().stream().forEach(key -> {
-                final Object value = skinMap.get(key);
-
-                if (value instanceof Render && !(value instanceof SAORenderPlayer)) {
-                    final Render render = new SAORenderPlayer((Render) value);
-                    skinMap.put(key, render);
-                    render.setRenderManager(manager);
-                }
-            });
-        } catch (NoSuchFieldException | IllegalAccessException er) {
-            er.printStackTrace();
-            System.err.println("SAOUI Couldn't change the PlayerRenderer!");
-        }*/
+        });
     }
 
 }

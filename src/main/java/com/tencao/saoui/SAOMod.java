@@ -30,8 +30,6 @@ public class SAOMod {
     public static final float UNKNOWN_TIME_DELAY = -1F;
     public static boolean IS_SPRINTING = false; // TODO: move somewhere else, maybe make skills have a activate/deactivate thing
     public static boolean IS_SNEAKING = false;
-    public static int REPLACE_GUI_DELAY = 0;
-    public static boolean replaceGUI;
 
     @Mod.Instance(MODID)
     public static SAOMod instance;
@@ -53,7 +51,7 @@ public class SAOMod {
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        replaceGUI = true;
+        SAORenderHandler.replaceGUI = true;
     }
 
     @EventHandler

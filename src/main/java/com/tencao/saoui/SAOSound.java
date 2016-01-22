@@ -42,13 +42,13 @@ public class SAOSound {
 
     public static void play(SoundHandler handler, String name) {
         if ((SAOOption.SOUND_EFFECTS.getValue()) && (handler != null)) {
-            handler.playSound(PositionedSoundRecord.func_147673_a(getResource(name)));
+            handler.playSound(PositionedSoundRecord.createPositionedSoundRecord(getResource(name)));
         }
     }
 
     private static void play(SoundHandler handler, String name, float x, float y, float z) {
         if ((SAOOption.SOUND_EFFECTS.getValue()) && (handler != null)) {
-            handler.playSound(PositionedSoundRecord.func_147675_a(getResource(name), x, y, z));
+            handler.playSound(PositionedSoundRecord.createRecordSoundAtPosition(getResource(name), x, y, z));
         }
     }
 

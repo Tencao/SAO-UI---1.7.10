@@ -1,25 +1,31 @@
 package com.tencao.saoui;
 
 import com.tencao.saoui.commands.Command;
-import com.tencao.saoui.util.ColorStateHandler;
-import com.tencao.saoui.util.SAOColorState;
+import com.tencao.saoui.util.*;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
+import org.lwjgl.opengl.GL11;
+
+import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class SAOEventHandler {
@@ -95,9 +101,7 @@ public class SAOEventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void chatEvent(ClientChatReceivedEvent evt) {
-        //System.out.println("Got a ClientChatReceivedEvent type " + evt.type);
-        //System.out.println("getUnformattedText() " + evt.message.getUnformattedText());
-        if (Command.processCommand(evt.message.getUnformattedText()))
-            evt.setCanceled(true);// TODO: add pm feature and PT chat
+        if (Command.processCommand(evt.message.getUnformattedText())) evt.setCanceled(true);// TODO: add pm feature and PT chat
     }
+
 }
