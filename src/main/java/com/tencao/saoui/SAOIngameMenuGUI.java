@@ -108,57 +108,8 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
     }
 
     private void action(SAOElementGUI element, SAOID id, SAOAction action, int data) {
-        if (id == SAOID.LOGOUT) {
-            if (SAOOption.LOGOUT.getValue()) {
-                element.enabled = false;
-                mc.theWorld.sendQuittingDisconnectingPacket();
-
-                mc.loadWorld(null);
-                mc.displayGuiScreen(new GuiMainMenu());
-            }
-        } else if (id == SAOID.MENU) {
+        if (id == SAOID.MENU) {
             mc.displayGuiScreen(new GuiIngameMenu());
-        } else if (id == SAOID.OPTION && element instanceof OptionButton) {
-            final OptionButton button = (OptionButton) element;
-
-            if (button.getOption() == SAOOption.VANILLA_OPTIONS) {
-                mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
-            } else {
-                button.action();
-            }
-        } else if (id == SAOID.MESSAGE && mc.ingameGUI instanceof SAOIngameGUI) {
-            // ((SAOIngameGUI) mc.ingameGUI).viewMessageAuto();
-        } else if (id == SAOID.MESSAGE_BOX && element.parent instanceof SAOMenuGUI && ((SAOMenuGUI) element.parent).parent instanceof SAOFriendGUI) {
-            final String username = ((SAOFriendGUI) ((SAOMenuGUI) element.parent).parent).caption;
-
-            final String format = I18n.format("commands.message.usage");
-            final String cmd = format.substring(0, format.indexOf(' '));
-
-            final String message = SAOJ8String.join(" ", cmd, username, "");
-
-            mc.displayGuiScreen(new GuiChat(message));
-        } else if (id == SAOID.SKILL && element instanceof SkillButton) {
-            ((SkillButton) element).action(mc, parentInv);
-        } else if (id == SAOID.INVITE_PLAYER && element instanceof SAOButtonGUI) {
-            final String name = ((SAOButtonGUI) element).caption;
-
-            PartyHelper.instance().invite(mc, name);
-        } else if (id == SAOID.DISSOLVE) {
-            element.enabled = false;
-
-            final boolean isLeader = PartyHelper.instance().isLeader(StaticPlayerHelper.getName(mc));
-
-            final String title = isLeader ? ConfigHandler._PARTY_DISSOLVING_TITLE : ConfigHandler._PARTY_LEAVING_TITLE;
-            final String text = isLeader ? ConfigHandler._PARTY_DISSOLVING_TEXT : ConfigHandler._PARTY_LEAVING_TEXT;
-
-            mc.displayGuiScreen(SAOWindowViewGUI.viewConfirm(title, text, (element1, action1, data1) -> {
-                final SAOID id1 = element1.ID();
-
-                if (id1 == SAOID.CONFIRM) PartyHelper.instance().sendDissolve(mc);
-
-                mc.displayGuiScreen(null);
-                mc.setIngameFocus();
-            }));
         } else if (id == SAOID.SLOT && element instanceof SAOSlotGUI && element.parent instanceof SAOInventoryGUI) {
             final SAOSlotGUI slot = (SAOSlotGUI) element;
             final SAOInventoryGUI inventory = (SAOInventoryGUI) element.parent;
@@ -190,11 +141,60 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
                 } else if (action == SAOAction.KEY_TYPED && data == mc.gameSettings.keyBindDrop.getKeyCode())
                     inventory.handleMouseClick(mc, slot.getSlot(), slot.getSlotNumber(), 0, 4);
             }
+        } else if (id == SAOID.SKILL && element instanceof SkillButton) {
+            ((SkillButton) element).action(mc, parentInv);
+        } else if (id == SAOID.INVITE_PLAYER && element instanceof SAOButtonGUI) {
+            final String name = ((SAOButtonGUI) element).caption;
+
+            PartyHelper.instance().invite(mc, name);
+        } else if (id == SAOID.DISSOLVE) {
+            element.enabled = false;
+
+            final boolean isLeader = PartyHelper.instance().isLeader(StaticPlayerHelper.getName(mc));
+
+            final String title = isLeader ? ConfigHandler._PARTY_DISSOLVING_TITLE : ConfigHandler._PARTY_LEAVING_TITLE;
+            final String text = isLeader ? ConfigHandler._PARTY_DISSOLVING_TEXT : ConfigHandler._PARTY_LEAVING_TEXT;
+
+            mc.displayGuiScreen(SAOWindowViewGUI.viewConfirm(title, text, (element1, action1, data1) -> {
+                final SAOID id1 = element1.ID();
+
+                if (id1 == SAOID.CONFIRM) PartyHelper.instance().sendDissolve(mc);
+
+                mc.displayGuiScreen(null);
+                mc.setIngameFocus();
+            }));
+        } else if (id == SAOID.MESSAGE && mc.ingameGUI instanceof SAOIngameGUI) {
+            // ((SAOIngameGUI) mc.ingameGUI).viewMessageAuto();
+        } else if (id == SAOID.MESSAGE_BOX && element.parent instanceof SAOMenuGUI && ((SAOMenuGUI) element.parent).parent instanceof SAOFriendGUI) {
+            final String username = ((SAOFriendGUI) ((SAOMenuGUI) element.parent).parent).caption;
+
+            final String format = I18n.format("commands.message.usage");
+            final String cmd = format.substring(0, format.indexOf(' '));
+
+            final String message = SAOJ8String.join(" ", cmd, username, "");
+
+            mc.displayGuiScreen(new GuiChat(message));
         } else if ((id == SAOID.QUEST) && (element instanceof SAOQuestGUI)) {
             final SAOQuestGUI quest = (SAOQuestGUI) element;
             final Achievement ach0 = quest.getAchievement();
 
             setInfo(new SAOJString(quest.caption), new SAOJString(ach0.getDescription()));
+        } else if (id == SAOID.OPTION && element instanceof OptionButton) {
+            final OptionButton button = (OptionButton) element;
+
+            if (button.getOption() == SAOOption.VANILLA_OPTIONS) {
+                mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
+            } else {
+                button.action();
+            }
+        } else if (id == SAOID.LOGOUT) {
+            if (SAOOption.LOGOUT.getValue()) {
+                element.enabled = false;
+                mc.theWorld.sendQuittingDisconnectingPacket();
+
+                mc.loadWorld(null);
+                mc.displayGuiScreen(new GuiMainMenu());
+            }
         }
     }
 
@@ -209,12 +209,22 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
             }
         } else if (type == SAOInventory.WEAPONS) {
             return swap.slotNumber >= 36 ? findEmptySlot(container, 9) : container.getSlot(36);
+        } else if (type == SAOInventory.BOWS) {
+            return swap.slotNumber >= 37 ? findEmptySlot(container, 9) : container.getSlot(37);
+        } else if (type == SAOInventory.PICKAXE) {
+            return swap.slotNumber >= 38 ? findEmptySlot(container, 9) : container.getSlot(38);
+        } else if (type == SAOInventory.AXE) {
+            return swap.slotNumber >= 39 ? findEmptySlot(container, 9) : container.getSlot(39);
+        } else if (type == SAOInventory.SHOVEL) {
+            return swap.slotNumber >= 40 ? findEmptySlot(container, 9) : container.getSlot(40);
         } else if (type == SAOInventory.ACCESSORY) {
-            return swap.slotNumber >= 36 ? findEmptySlot(container, 9) : container.getSlot(37);
+            return swap.slotNumber >= 44 ? findEmptySlot(container, 9) : container.getSlot(44);
+        } else if (type == SAOInventory.CONSUMABLES) {
+            return swap.slotNumber <= 9 ? findEmptySlot(container, 9) : container.getSlot(9);
         } else if (type == SAOInventory.ITEMS) {
-            if (swap.slotNumber >= 36) return findEmptySlot(container, 9);
+            if (swap.slotNumber >= 42) return findEmptySlot(container, 9);
             else {
-                Slot slot = findEmptySlot(container, 36);
+                Slot slot = findEmptySlot(container, 42);
 
                 return slot == null ? currentSlot(container) : slot;
             }
@@ -260,7 +270,7 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
 
         SAOMenuGUI menu = null;
         SAOMenuGUI subMenu = sub;
-
+        // Core Menu
         if (id == SAOID.PROFILE) {
             menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
 
@@ -281,6 +291,17 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
             menu.elements.add(new SAOButtonGUI(menu, SAOID.GUILD, 0, 0, StatCollector.translateToLocal("guiGuild"), SAOIcon.GUILD));
             menu.elements.add(new SAOButtonGUI(menu, SAOID.PARTY, 0, 0, StatCollector.translateToLocal("guiParty"), SAOIcon.PARTY));
             menu.elements.add(new SAOButtonGUI(menu, SAOID.FRIENDS, 0, 0, StatCollector.translateToLocal("guiFriends"), SAOIcon.FRIEND));
+
+            sub = SAOSub.createSocialSub(mc, element, -189, menuOffsetY);
+            info = SAOSub.addInfo(sub);
+
+            infoCaption = null;
+            infoText = null;
+        } else if (id == SAOID.MESSAGE) {
+            setInfo(null, null);
+            menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
+
+            menu.elements.add(new SAOButtonGUI(menu, SAOID.MESSAGE_BOX, 0, 0, StatCollector.translateToLocal("guiMessageBox"), SAOIcon.MESSAGE));
 
             sub = SAOSub.createSocialSub(mc, element, -189, menuOffsetY);
             info = SAOSub.addInfo(sub);
@@ -310,24 +331,51 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
 
                 return button.enabled;
             }));
-        } else if (id == SAOID.OPTIONS) {
-            menu = new SAOListGUI(element, menuOffsetX, menuOffsetY, 130, 100);
+        }
+        //Profile
+        else if (id == SAOID.EQUIPMENT) {
+            menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
+
+            menu.elements.add(new SAOButtonGUI(menu, SAOID.TOOLS, 0, 0, StatCollector.translateToLocal("guiTools"), SAOIcon.EQUIPMENT));
+            menu.elements.add(new SAOButtonGUI(menu, SAOID.ARMOR, 0, 0, StatCollector.translateToLocal("guiEquipped"), SAOIcon.ARMOR));
+            menu.elements.add(new SAOButtonGUI(menu, SAOID.ACCESSORY, 0, 0, StatCollector.translateToLocal("guiAccessory"), SAOIcon.ACCESSORY));
+            menu.elements.add(new SAOButtonGUI(menu, SAOID.CONSUMABLES, 0, 0, StatCollector.translateToLocal("guiConsumable"), SAOIcon.ITEMS));
+        } else if (id == SAOID.ITEMS) {
+            menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.ITEMS);
+        } else if (id == SAOID.SKILLS) {
+            menu = new SAOListGUI(element, menuOffsetX, menuOffsetY, 100, 60);
 
             final SAOMenuGUI mnu = menu;
-            Stream.of(SAOOption.values()).filter(opt -> opt.category == null).forEach(option -> mnu.elements.add(new OptionButton(mnu, 0, 0, option)));
-        } else if (id == SAOID.OPT_CAT) {
-            openOptCat = ((OptionButton) element).getOption();
-            menu = new SAOListGUI(element, menuOffsetX, menuOffsetY, 130, 100);
-
-            final SAOMenuGUI mnu = menu;
-            Stream.of(SAOOption.values()).filter(opt -> opt.category == openOptCat).forEach(option -> mnu.elements.add((new OptionButton(mnu, 0, 0, option))));
-        } else if (id == SAOID.EQUIPMENT) {
+            Stream.of(SAOSkill.values()).forEach(skill -> mnu.elements.add(new SkillButton(mnu, 0, 0, skill)));
+        }
+        //Profile -> Equipment
+        else if (id == SAOID.TOOLS) { // TODO: Some optimization could be done here. Laterz.
             menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
 
             menu.elements.add(new SAOButtonGUI(menu, SAOID.WEAPONS, 0, 0, StatCollector.translateToLocal("guiWeapons"), SAOIcon.EQUIPMENT));
-            menu.elements.add(new SAOButtonGUI(menu, SAOID.EQUIPPED, 0, 0, StatCollector.translateToLocal("guiEquipped"), SAOIcon.ARMOR));
-            menu.elements.add(new SAOButtonGUI(menu, SAOID.ACCESSORY, 0, 0, StatCollector.translateToLocal("guiAccessory"), SAOIcon.ACCESSORY));
-        } else if (id == SAOID.PARTY) {
+            menu.elements.add(new SAOButtonGUI(menu, SAOID.BOWS, 0, 0, StatCollector.translateToLocal("guiBows"), SAOIcon.EQUIPMENT));
+            menu.elements.add(new SAOButtonGUI(menu, SAOID.PICKAXE, 0, 0, StatCollector.translateToLocal("guiPickaxes"), SAOIcon.EQUIPMENT));
+            menu.elements.add(new SAOButtonGUI(menu, SAOID.AXE, 0, 0, StatCollector.translateToLocal("guiAxes"), SAOIcon.EQUIPMENT));
+            menu.elements.add(new SAOButtonGUI(menu, SAOID.SHOVEL, 0, 0, StatCollector.translateToLocal("guiShovels"), SAOIcon.EQUIPMENT));
+        } else if (id == SAOID.WEAPONS) {
+            menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.WEAPONS);
+        } else if (id == SAOID.BOWS) {
+            menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.BOWS);
+        } else if (id == SAOID.PICKAXE) {
+            menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.PICKAXE);
+        } else if (id == SAOID.AXE) {
+            menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.AXE);
+        } else if (id == SAOID.SHOVEL) {
+            menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.SHOVEL);
+        } else if (id == SAOID.ARMOR) {
+            menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.EQUIPMENT);
+        } else if (id == SAOID.ACCESSORY) {
+            menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.ACCESSORY);
+        } else if (id == SAOID.CONSUMABLES) {
+            menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.CONSUMABLES);
+        }
+        //Social
+        else if (id == SAOID.PARTY) {
             menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
 
             menu.elements.add(new SAOPartyGUI(menu, SAOID.INVITE_LIST, 0, 0, StatCollector.translateToLocal("guiInvite"), SAOIcon.INVITE));
@@ -336,7 +384,18 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
             sub = SAOSub.resetPartySub(mc, sub);
             info = SAOSub.addInfo(sub);
 
-        } else if (id == SAOID.INVITE_LIST) { // TODO: make all of these update in real-time (whole class needs probs massive rewrite)
+        } else if (id == SAOID.FRIENDS) {
+            setInfo(null, null);
+            menu = new SAOFriendsGUI(mc, element, menuOffsetX, menuOffsetY, 100, 100);
+
+            sub = SAOSub.resetFriendsSub(mc, sub);
+            info = SAOSub.addInfo(sub);
+
+            infoCaption = null;
+            infoText = null;
+        }
+        //Social -> Party
+        else if (id == SAOID.INVITE_LIST) { // TODO: make all of these update in real-time (whole class needs probs massive rewrite)
             menu = new SAOListGUI(element, menuOffsetX, menuOffsetY, 100, 60);
 
             final SAOMenuGUI mnu = menu;
@@ -347,35 +406,13 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
                     mnu.elements.add(button);
                 });
 
-        } else if (id == SAOID.ITEMS) {
-            menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.ITEMS);
-        } else if (id == SAOID.SKILLS) {
-            menu = new SAOListGUI(element, menuOffsetX, menuOffsetY, 100, 60);
-
-            final SAOMenuGUI mnu = menu;
-            Stream.of(SAOSkill.values()).forEach(skill -> mnu.elements.add(new SkillButton(mnu, 0, 0, skill)));
-
-        } else if (id == SAOID.WEAPONS) { // TODO: Some optimization could be done here. Laterz.
-            menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.WEAPONS);
-        } else if (id == SAOID.EQUIPPED) {
-            menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.EQUIPMENT);
-        } else if (id == SAOID.ACCESSORY) {
-            menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.ACCESSORY);
-        } else if (id == SAOID.FRIENDS) {
-            setInfo(null, null);
-            menu = new SAOFriendsGUI(mc, element, menuOffsetX, menuOffsetY, 100, 100);
-
-            sub = SAOSub.resetFriendsSub(mc, sub);
-            info = SAOSub.addInfo(sub);
-
-            infoCaption = null;
-            infoText = null;
-        } else if ((id == SAOID.FRIEND) && (element instanceof SAOFriendGUI)) {
+        }
+        //Social -> Friends
+        else if ((id == SAOID.FRIEND) && (element instanceof SAOFriendGUI)) {
             setInfo(null, null);
             if (((SAOFriendGUI) element).highlight) {
                 System.out.println("Add friends menu request");
                 menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
-                menu.elements.add(new SAOButtonGUI(menu, SAOID.MESSAGE_BOX, 0, 0, StatCollector.translateToLocal("guiMessageBox"), SAOIcon.MESSAGE));
                 menu.elements.add(new SAOButtonGUI(menu, SAOID.POSITION_CHECK, 0, 0, StatCollector.translateToLocal("guiPositionCheck"), SAOIcon.FIELD_MAP));
                 menu.elements.add(new SAOButtonGUI(menu, SAOID.OTHER_PROFILE, 0, 0, StatCollector.translateToLocal("guiProfile"), SAOIcon.PARTY));
             } else {
@@ -412,7 +449,9 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
 
                 setInfo(position[0], position[1]);
             } else setInfo(null, null);
-        } else if (id == SAOID.QUESTS) {
+        }
+        //Navigation
+        else if (id == SAOID.QUESTS) {
             setInfo(null, null);
             menu = null;
 
@@ -438,7 +477,20 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
 
             setInfo(position[0], position[1]);
         }
+        //Options
+        else if (id == SAOID.OPTIONS) {
+            menu = new SAOListGUI(element, menuOffsetX, menuOffsetY, 130, 100);
 
+            final SAOMenuGUI mnu = menu;
+            Stream.of(SAOOption.values()).filter(opt -> opt.category == null).forEach(option -> mnu.elements.add(new OptionButton(mnu, 0, 0, option)));
+        } else if (id == SAOID.OPT_CAT) {
+            openOptCat = ((OptionButton) element).getOption();
+            menu = new SAOListGUI(element, menuOffsetX, menuOffsetY, 130, 100);
+
+            final SAOMenuGUI mnu = menu;
+            Stream.of(SAOOption.values()).filter(opt -> opt.category == openOptCat).forEach(option -> mnu.elements.add((new OptionButton(mnu, 0, 0, option))));
+        }
+        //Misc
         if (sub != subMenu && subMenu != null) {
             menus.removeIf(entry -> entry.getValue() == subMenu);
 
@@ -471,6 +523,7 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
 
             if (sub != subMenu && sub != null) openMenu(id, sub);
         }
+
     }
 
     private void moveX(final int mode, final SAOMenuGUI menu) {

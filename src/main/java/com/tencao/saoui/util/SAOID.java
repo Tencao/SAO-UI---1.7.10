@@ -30,9 +30,16 @@ public enum SAOID {
     MENU(SETTINGS, false),
     LOGOUT(SETTINGS, false),
 
-    WEAPONS(EQUIPMENT, true),
-    EQUIPPED(EQUIPMENT, true),
+    TOOLS(EQUIPMENT, true),
+    ARMOR(EQUIPMENT, true),
+    CONSUMABLES(EQUIPMENT, true),
     ACCESSORY(EQUIPMENT, true),
+
+    WEAPONS(TOOLS, true),
+    BOWS(TOOLS, true),
+    PICKAXE(TOOLS, true),
+    AXE(TOOLS, true),
+    SHOVEL(TOOLS, true),
 
     INVITE_LIST(PARTY, true), INVITE_PLAYER(INVITE_LIST, false),
     DISSOLVE(PARTY, false),
