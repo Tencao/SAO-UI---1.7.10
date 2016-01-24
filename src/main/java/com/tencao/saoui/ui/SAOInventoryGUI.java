@@ -99,6 +99,12 @@ public class SAOInventoryGUI extends SAOListGUI {
         mc.playerController.windowClick(slots.windowId, slotNumber, flag, method, mc.thePlayer);
     }
 
+    public void handleBaubleMouseClick(Minecraft mc, int windowId, Slot slot, int slotNumber, int flag, int method) {
+        if (slot != null) slotNumber = slot.slotNumber;
+
+        mc.playerController.windowClick(slots.windowId, slotNumber, flag, method, mc.thePlayer);
+    }
+
     public void close(Minecraft mc) {
         super.close(mc);
 

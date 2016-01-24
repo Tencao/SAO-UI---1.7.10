@@ -185,7 +185,7 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
     }
 
     protected void backgroundClicked(int cursorX, int cursorY, int button) {
-        if (button == 0 && ((SAOIngameGUI) mc.ingameGUI).backgroundClicked(cursorX, cursorY, button)) {
+        if (button == 0 /*&& ((SAOIngameGUI) mc.ingameGUI).backgroundClicked(cursorX, cursorY, button)*/) {
             mc.displayGuiScreen(null);
             mc.setIngameFocus();
         }

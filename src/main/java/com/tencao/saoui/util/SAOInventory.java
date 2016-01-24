@@ -1,13 +1,15 @@
 package com.tencao.saoui.util;
 
+import baubles.api.BaubleType;
 import baubles.api.IBauble;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.BlockPumpkin;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.*;
 
 @SideOnly(Side.CLIENT)
-public enum SAOInventory {
+public enum SAOInventory{
 
     EQUIPMENT((ItemFilter) (stack, state) -> {
         final Item item = stack.getItem();

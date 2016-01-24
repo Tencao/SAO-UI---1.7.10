@@ -1,7 +1,12 @@
 package com.tencao.saoui;
 
+import baubles.api.BaubleType;
+import baubles.api.BaublesApi;
+import baubles.api.IBauble;
 import com.tencao.saoui.ui.*;
 import com.tencao.saoui.util.*;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.GuiChat;
@@ -10,21 +15,24 @@ import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.Achievement;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
+import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 @SideOnly(Side.CLIENT)
+@cpw.mods.fml.common.Optional.Interface(iface = "baubles.api.IBauble", modid = "Baubles")
 public class SAOIngameMenuGUI extends SAOScreenGUI {
 
     private final List<Entry<SAOID, SAOMenuGUI>> menus;
@@ -116,17 +124,34 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
 
             final SAOInventory type = inventory.filter;
             final Container container = inventory.slots;
+            final Container baublecontainer = (Container)BaublesApi.getBaubles(mc.thePlayer);
             final ItemStack stack = slot.getStack();
 
             if (stack != null) {
                 if (action == SAOAction.LEFT_RELEASED) {
-                    final Slot current = findSwapSlot(container, slot.getSlot(), type);
 
-                    if (current != null && current.slotNumber != slot.getSlotNumber()) {
-                        inventory.handleMouseClick(mc, slot.getSlot(), slot.getSlotNumber(), 0, 0);
-                        inventory.handleMouseClick(mc, current, current.slotNumber, 0, 0);
-                        inventory.handleMouseClick(mc, slot.getSlot(), slot.getSlotNumber(), 0, 0);
+
+                    if (stack.getItem() instanceof IBauble) {
+                        final Slot current = baubleSlot(baublecontainer, slot.getSlot());
+
+                        if (current != null && current.slotNumber != slot.getSlotNumber()) {
+                            inventory.handleBaubleMouseClick(mc, baublecontainer.windowId, slot.getSlot(), slot.getSlotNumber(), 0, 0);
+                            if (current.inventory == baublecontainer)
+                                inventory.handleBaubleMouseClick(mc, baublecontainer.windowId, current, current.slotNumber, 0, 0);
+                            else inventory.handleBaubleMouseClick(mc, container.windowId, current, current.slotNumber, 0, 0);
+                            inventory.handleBaubleMouseClick(mc, baublecontainer.windowId, slot.getSlot(), slot.getSlotNumber(), 0, 0);
+                        }
                     }
+                    else {
+                        final Slot current = findSwapSlot(container, slot.getSlot(), type);
+
+                        if (current != null && current.slotNumber != slot.getSlotNumber()) {
+                            inventory.handleMouseClick(mc, slot.getSlot(), slot.getSlotNumber(), 0, 0);
+                            inventory.handleMouseClick(mc, current, current.slotNumber, 0, 0);
+                            inventory.handleMouseClick(mc, slot.getSlot(), slot.getSlotNumber(), 0, 0);
+                        }
+                    }
+
                 } else if (action == SAOAction.RIGHT_RELEASED) {
                     inventory.handleMouseClick(mc, slot.getSlot(), slot.getSlotNumber(), 1, 4);
                 } else if (action == SAOAction.MIDDLE_RELEASED || action == SAOAction.KEY_TYPED && data == mc.gameSettings.keyBindPickBlock.getKeyCode()) {
@@ -198,6 +223,19 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
         }
     }
 
+    @cpw.mods.fml.common.Optional.Method(modid = "Baubles")
+    private Slot baubleSlot(Container container, Slot swap){
+        if(canEquip(swap.getStack(), mc.thePlayer)) {
+            IInventory baubles = BaublesApi.getBaubles(mc.thePlayer);
+            for(int i = 0; i < baubles.getSizeInventory(); i++) {
+                if(baubles.isItemValidForSlot(i, swap.getStack())) {
+                    return container.getSlot(i);
+                }
+            }
+        }
+        return null;
+    }
+
     private Slot findSwapSlot(Container container, Slot swap, SAOInventory type) {
         if (type == SAOInventory.EQUIPMENT) {
             if (swap.slotNumber < 9) return findEmptySlot(container, 9);
@@ -219,20 +257,30 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
             return swap.slotNumber >= 40 ? findEmptySlot(container, 9) : container.getSlot(40);
         } else if (type == SAOInventory.ACCESSORY) {
             return swap.slotNumber >= 44 ? findEmptySlot(container, 9) : container.getSlot(44);
-        } else if (type == SAOInventory.CONSUMABLES) {
-            return swap.slotNumber <= 9 ? findEmptySlot(container, 9) : container.getSlot(9);
         } else if (type == SAOInventory.ITEMS) {
             if (swap.slotNumber >= 42) return findEmptySlot(container, 9);
             else {
                 Slot slot = findEmptySlot(container, 42);
 
-                return slot == null ? currentSlot(container) : slot;
+                if (slot == null){
+                    return currentSlot(container) == null ? currentBaubleSlot((Container)BaublesApi.getBaubles(mc.thePlayer)) : currentSlot(container);
+                } else return slot;
             }
         } else return null;
     }
 
+    @cpw.mods.fml.common.Optional.Method(modid = "Baubles")
+    public boolean canEquip(ItemStack itemstack, EntityLivingBase player){
+        return canEquip(itemstack, player);
+    }
+
     private Slot currentSlot(Container container) {
         return container.getSlotFromInventory(mc.thePlayer.inventory, mc.thePlayer.inventory.currentItem);
+    }
+
+    @cpw.mods.fml.common.Optional.Method(modid = "Baubles")
+    private Slot currentBaubleSlot(Container container) {
+        return container.getSlotFromInventory(BaublesApi.getBaubles(mc.thePlayer), mc.thePlayer.inventory.currentItem);
     }
 
     private Slot findEmptySlot(Container container, int startIndex) {
