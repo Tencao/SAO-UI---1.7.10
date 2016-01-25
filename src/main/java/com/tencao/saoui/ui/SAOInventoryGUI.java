@@ -1,5 +1,6 @@
 package com.tencao.saoui.ui;
 
+import baubles.api.BaublesApi;
 import com.tencao.saoui.util.SAOInventory;
 import com.tencao.saoui.util.SAOParentGUI;
 import cpw.mods.fml.relauncher.Side;
@@ -99,10 +100,9 @@ public class SAOInventoryGUI extends SAOListGUI {
         mc.playerController.windowClick(slots.windowId, slotNumber, flag, method, mc.thePlayer);
     }
 
-    public void handleBaubleMouseClick(Minecraft mc, int windowId, Slot slot, int slotNumber, int flag, int method) {
+    public void handleMouseClick(Minecraft mc, int windowID, Slot slot, int slotNumber, int flag, int method) {
         if (slot != null) slotNumber = slot.slotNumber;
-
-        mc.playerController.windowClick(slots.windowId, slotNumber, flag, method, mc.thePlayer);
+        mc.playerController.windowClick(windowID, slotNumber, flag, method, mc.thePlayer);
     }
 
     public void close(Minecraft mc) {

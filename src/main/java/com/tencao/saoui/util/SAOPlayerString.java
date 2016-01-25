@@ -33,20 +33,25 @@ public final class SAOPlayerString implements SAOString {
         if (player.isRiding() && SAOOption.MOUNT_STAT_VIEW.getValue()){
             final String name = ((EntityLiving)mount).getCustomNameTag();
             final double maxHealth = attr(mount.getMaxHealth());
-            final double health = attr(mount.getHealth());
+            double health = attr(mount.getHealth());
             final double resistance = attr(mount.getTotalArmorValue());
             final double speed = attr(mount.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue());
             final double jump;
-            DecimalFormat df = new DecimalFormat("0.000");
-            String speedFormated = df.format(speed);
+            DecimalFormat df3 = new DecimalFormat("0.000");
+            DecimalFormat df1 = new DecimalFormat("0.0");
+            String speedFormated = df3.format(speed);
+            health *= 10;
+            health += 0.5F;
+            health /= 10.0F;
+            String healthFormated = df3.format(health );
 
             builder.append(StatCollector.translateToLocal("displayName")).append(": ").append(name).append('\n');
-            builder.append(StatCollector.translateToLocal("displayHpLong")).append(": ").append(health).append("/").append(maxHealth).append('\n');
+            builder.append(StatCollector.translateToLocal("displayHpLong")).append(": ").append(healthFormated).append("/").append(maxHealth).append('\n');
             builder.append(StatCollector.translateToLocal("displayResLong")).append(": ").append(resistance).append('\n');
             builder.append(StatCollector.translateToLocal("displaySpdLong")).append(": ").append(speedFormated).append('\n');
             if (mount instanceof EntityHorse) {
                 jump = ((EntityHorse) mount).getHorseJumpStrength();
-                String jumpFormated = df.format(jump);
+                String jumpFormated = df3.format(jump);
                 builder.append(StatCollector.translateToLocal("displayJmpLong")).append(": ").append(jumpFormated).append('\n');
             }
         } else {

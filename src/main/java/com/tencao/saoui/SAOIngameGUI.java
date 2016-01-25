@@ -114,7 +114,7 @@ public class SAOIngameGUI extends GuiIngameForge {
             SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
 
             for (int i = 0; i < slotCount; i++) {
-                SAOGL.glColorRGBA(i == inv.currentItem ? 0xE0BE62AA : 0xCDCDCDAA);
+                SAOGL.glColorRGBA(i == inv.currentItem ? 0xFFBA66AA : 0xCDCDCDAA);
                 SAOGL.glTexturedRect(width / 2 - 91 - 1 + i * 20, height - 22 - 1, zLevel, 0, 25, 20, 20);
             }
 
