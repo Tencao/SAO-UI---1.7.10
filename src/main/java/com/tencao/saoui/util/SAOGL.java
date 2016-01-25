@@ -116,7 +116,7 @@ public final class SAOGL {
         glBindTexture(glTextureManager(), location);
     }
 
-    public static void glTexturedRect(int x, int y, float z, double width, double height, int srcX, int srcY, int srcWidth, int srcHeight) {
+    public static void glTexturedRect(int x, int y, float z, double width, double height, double srcX, double srcY, double srcWidth, double srcHeight) {
         float f = 0.00390625F;
         float f1 = 0.00390625F;
         Tessellator tessellator = Tessellator.instance;
