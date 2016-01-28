@@ -43,7 +43,7 @@ public final class SAOPlayerString implements SAOString {
             health *= 10;
             health += 0.5F;
             health /= 10.0F;
-            String healthFormated = df3.format(health );
+            String healthFormated = df1.format(health );
 
             builder.append(StatCollector.translateToLocal("displayName")).append(": ").append(name).append('\n');
             builder.append(StatCollector.translateToLocal("displayHpLong")).append(": ").append(healthFormated).append("/").append(maxHealth).append('\n');
