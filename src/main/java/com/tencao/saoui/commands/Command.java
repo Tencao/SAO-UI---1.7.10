@@ -21,9 +21,11 @@ public class Command {
     private final String[] args;
 
     private Command(String raw) {
-        if (!raw.contains("<") || !raw.contains(">")) throw new MissingFormatArgumentException("<username> not found in \"" + raw + '"');
-        this.from = raw.substring(raw.indexOf('<') + 1, raw.indexOf('>'));
-        this.type = CommandType.getCommand(raw.substring(raw.indexOf(CommandType.PREFIX) + CommandType.PREFIX.length(), raw.indexOf(CommandType.SUFFIX)));
+        if (!raw.contains("$")) throw new MissingFormatArgumentException("<username> not found in \"" + raw + '"');
+        if (!raw.contains(CommandType.PREFIX) || !raw.contains(CommandType.SUFFIX))
+            throw new MissingFormatArgumentException("invalid command: \"" + raw + '"');
+        this.from = raw.substring(raw.indexOf('$') + 1, raw.lastIndexOf('$'));
+        this.type = CommandType.getCommand(raw);
         this.to = StaticPlayerHelper.getName(Minecraft.getMinecraft());
         this.args = getContent(raw);
     }
@@ -74,7 +76,7 @@ public class Command {
 
         final String args = this.args != null ? Arrays.toString(this.args) : "[]";
 
-        return cmd + ' ' + this.to + ' ' + this.type.toString() + " <" + this.from + "> {" + args + '}';
+        return cmd + ' ' + this.to + ' ' + this.type.toString() + " $" + this.from + "$ {" + args + '}';
     }
 
     public void send(Minecraft mc) {

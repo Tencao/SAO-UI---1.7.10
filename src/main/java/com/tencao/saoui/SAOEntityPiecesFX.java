@@ -4,6 +4,7 @@ import com.tencao.saoui.util.SAOResources;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
@@ -54,7 +55,7 @@ public class SAOEntityPiecesFX extends EntityFX {
     }
 
     private void renderParticles(Tessellator tessellator, float time, float x, float y, float z, float f0, float f1) {
-        FMLClientHandler.instance().getClient().renderEngine.bindTexture(SAOResources.particleLarge);
+        Minecraft.getMinecraft().renderEngine.bindTexture(SAOResources.particleLarge);
 
         float scale = 0.1F * this.particleScale;
         float xPos = (float) (this.prevPosX + (this.posX - this.prevPosX) * (double) time - interpPosX);
@@ -73,15 +74,6 @@ public class SAOEntityPiecesFX extends EntityFX {
     /**
      * Called to update the entity's position/logic.
      */
-
-    @Override
-    public EntityFX multiplyVelocity(float speed)
-    {
-        this.motionX *= (double)speed;
-        this.motionY = (this.motionY - 0.10000000149011612D) * (double)speed + 0.10000000149011612D;
-        this.motionZ *= (double)speed;
-        return this;
-    }
 
     @Override
     public void onUpdate() {

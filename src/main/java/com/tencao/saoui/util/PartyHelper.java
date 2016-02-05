@@ -11,10 +11,13 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class PartyHelper {
     private static PartyHelper instance = new PartyHelper();
+    private List<String> invited = new ArrayList<>();
     private String[] party;
 
     private PartyHelper() {
@@ -41,7 +44,7 @@ public class PartyHelper {
                         System.arraycopy(args, 0, party, 0, args.length);
                         party[party.length - 1] = StaticPlayerHelper.getName(mc);
                     } else party = null;
-                    mc.thePlayer.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("ptJoin")));
+                    mc.thePlayer.addChatMessage(new ChatComponentText(StatCollector.translateToLocalFormatted("ptJoin", username))); // Might change that later
 
                     new Command(CommandType.CONFIRM_INVITE_PARTY, username).send(mc);
                 } else new Command(CommandType.CANCEL_INVITE_PARTY, username).send(mc);
@@ -113,8 +116,10 @@ public class PartyHelper {
     }
 
     public void invite(Minecraft mc, String username) {
-        if (!isMember(username))
-            new Command(CommandType.INVITE_PARTY, username, hasParty() ? party[0] : StaticPlayerHelper.getName(mc)).send(mc);
+        if (!isMember(username)) {
+            invited.add(username);
+            new Command(CommandType.INVITE_TO_PARTY, username, hasParty() ? party[0] : StaticPlayerHelper.getName(mc)).send(mc);
+        }
     }
 
     public void sendDissolve(Minecraft mc) {
@@ -147,7 +152,10 @@ public class PartyHelper {
 
     public void receiveConfirmation(Minecraft mc, String username, String... args) { // Keeping args for later (will be needed for auth/PT UUID system)
         create(mc);
-        if (isLeader(StaticPlayerHelper.getName(mc)) && !isMember(username)) addPlayer(mc, username);
+        if (isLeader(StaticPlayerHelper.getName(mc)) && !isMember(username) && invited.contains(username)) {
+            addPlayer(mc, username);
+            invited.remove(username);
+        }
         else new Command(CommandType.DISSOLVE_PARTY, username).send(mc);
     }
 

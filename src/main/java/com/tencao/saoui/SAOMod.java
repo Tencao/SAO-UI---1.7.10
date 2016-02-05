@@ -25,7 +25,7 @@ public class SAOMod {
 
     public static final String MODID = "saoui";
     public static final String NAME = "Sword Art Online UI";
-    public static final String VERSION = "1.4";
+    public static final String VERSION = "1.5";
     public static final double MAX_RANGE = 256.0D;
     public static final float UNKNOWN_TIME_DELAY = -1F;
     public static boolean IS_SPRINTING = false; // TODO: move somewhere else, maybe make skills have a activate/deactivate thing

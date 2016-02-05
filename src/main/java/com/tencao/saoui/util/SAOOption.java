@@ -21,6 +21,7 @@ public enum SAOOption {
     DEFAULT_UI(StatCollector.translateToLocal("optionDefaultUI"), false, false, UI),
     DEFAULT_INVENTORY(StatCollector.translateToLocal("optionDefaultInv"), true, false, UI),
     DEFAULT_DEATH_SCREEN(StatCollector.translateToLocal("optionDefaultDeath"), false, false, UI),
+    DEFAULT_DEBUG(StatCollector.translateToLocal("optionDefaultDebug"), false, false, UI),
     ORIGINAL_UI(StatCollector.translateToLocal("optionOrigUI"), true, false, UI),
     FORCE_HUD(StatCollector.translateToLocal("optionForceHud"), false, false, UI),
     LOGOUT(StatCollector.translateToLocal("optionLogout"), false, false, UI),
@@ -45,7 +46,9 @@ public enum SAOOption {
     CROSS_HAIR(StatCollector.translateToLocal("optionCrossHair"), false, false, MISC),
     CLIENT_CHAT_PACKETS(StatCollector.translateToLocal("optionCliChatPacks"), true, false, MISC),
     MOUNT_STAT_VIEW(StatCollector.translateToLocal("optionMountStatView"), true, false, MISC),
-    CUSTOM_FONT(StatCollector.translateToLocal("optionCustomFont"), false, false, MISC);
+    CUSTOM_FONT(StatCollector.translateToLocal("optionCustomFont"), false, false, MISC),
+    DEBUG_MODE(StatCollector.translateToLocal("optionDebugMode"), false, false, MISC),
+    RENDER_NAMES(StatCollector.translateToLocal("optionRenderNames"), false, false, MISC);
 
     public final String name;
     public final boolean isCategory;

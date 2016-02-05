@@ -12,9 +12,11 @@ import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.common.util.FakePlayer;
@@ -70,24 +72,24 @@ public class SAORenderHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void RenderEntities(EntityEvent.EntityConstructing e) {
-        final Minecraft mc = Minecraft.getMinecraft();
+        /*
+        If some mobs don't get registered this way, that means the mods don't register their renderers at the right place.
+         */
         RenderManager manager = RenderManager.instance;
-        manager.entityRenderMap.keySet().stream().filter(key -> key instanceof Class<?>).filter(key -> EntityLivingBase.class.isAssignableFrom((Class<?>) key)).forEach(key -> {
-            final Object value = manager.entityRenderMap.get(key);
-
-            //if (EntityLivingBase.canEntityBeSeen()
-            if (value instanceof Render) {
-                if (e.entity instanceof EntityPlayer && !(value instanceof SAORenderPlayer)) {
+        final Object value = manager.entityRenderMap.get(e.entity.getClass());
+        if (value instanceof Render) {
+            if (e.entity instanceof EntityPlayer) {
+                if (!(value instanceof SAORenderPlayer)) {
                     final Render render = new SAORenderPlayer((Render) value);
-                    manager.entityRenderMap.put(key, render);
-                    render.setRenderManager(manager);
-                } else if (!(value instanceof SAORenderBase)) {
-                    final Render render = new SAORenderBase((Render) value);
-                    manager.entityRenderMap.put(key, render);
+                    manager.entityRenderMap.put(e.entity.getClass(), render);
                     render.setRenderManager(manager);
                 }
+            } else if (!(value instanceof SAORenderBase)) {
+                final Render render = new SAORenderBase((Render) value);
+                manager.entityRenderMap.put(e.entity.getClass(), render);
+                render.setRenderManager(manager);
             }
-        });
+        }
     }
 
 }

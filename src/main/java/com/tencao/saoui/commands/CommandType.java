@@ -9,10 +9,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 
+import java.util.stream.Stream;
+
 @SideOnly(Side.CLIENT)
 public enum CommandType {
 
-    INVITE_PARTY((mc, username, args) -> PartyHelper.instance().receiveInvite(mc, username, args)),
+    INVITE_TO_PARTY((mc, username, args) -> PartyHelper.instance().receiveInvite(mc, username, args)),
     DISSOLVE_PARTY((mc, username, args) -> PartyHelper.instance().receiveDissolve(mc, username)),
     UPDATE_PARTY((mc, username, args) -> PartyHelper.instance().receiveUpdate(mc, username, args)),
 
@@ -24,7 +26,7 @@ public enum CommandType {
     ACCEPT_ADD_FRIEND((mc, username, args) -> FriendsHandler.instance().acceptAddFriend(username)),
     CANCEL_ADD_FRIEND((mc, username, args) -> FriendsHandler.instance().cancelAddFriend(username));
 
-    public static final String PREFIX = "[♠SAOUI ";
+    public static final String PREFIX = "[SAOUI ";
     public static final String SUFFIX = "]";
     private final TriConsumer<Minecraft, String, String[]> action;
 
@@ -33,11 +35,7 @@ public enum CommandType {
     }
 
     static CommandType getCommand(String id) {
-        try {
-            return valueOf(id);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        return Stream.of(values()).filter(t -> id.contains(t.name())).findAny().orElse(null);
     }
 
     public final String toString() {

@@ -92,6 +92,8 @@ optionBossBar=Force Boss HP bar
 optionAltAbsorbPos=Alt Absorb Value Pos
 optionGuiPause=GUIs pause the game
 optionCustomFont=Use SAO Font
+optionDebugMode=Debug Mode
+optionDefaultDebuge=Default Debug
 optionMountStatView=Show Mount Stats
 
 optCatUI=UI Options

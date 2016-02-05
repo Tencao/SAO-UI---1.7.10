@@ -2,6 +2,7 @@ package com.tencao.saoui;
 
 import com.tencao.saoui.ui.SAOCharacterView;
 import com.tencao.saoui.util.*;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
@@ -23,10 +24,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
-class SAORenderBase extends RenderPlayer {
+class SAORenderBase extends Render {
 
     private static final int HEALTH_COUNT = 32;
     private static final double HEALTH_ANGLE = 0.35F;
@@ -70,6 +73,7 @@ class SAORenderBase extends RenderPlayer {
             if (deadStart) {
                 living.deathTime++;
             }
+
         } else if (entity instanceof EntityItem) {
             final EntityItem item = (EntityItem) entity;
 
@@ -81,11 +85,15 @@ class SAORenderBase extends RenderPlayer {
 
         if (!SAOCharacterView.IS_VIEWING && entity instanceof EntityLivingBase && !dead && !entity.isInvisibleToPlayer(mc.thePlayer) && entity != mc.thePlayer) {
             if (SAOOption.COLOR_CURSOR.getValue()) {
-                doRenderColorCursor(mc, entity, x, y, z, 64);
+                if (!(SAOOption.DEBUG_MODE.getValue() && SAOColorState.checkValidState((EntityLivingBase)entity))){
+                    doRenderColorCursor(mc, entity, x, y, z, 64);
+                } else if (SAOOption.DEBUG_MODE.getValue()) doRenderColorCursor(mc, entity, x, y, z, 64);
             }
 
             if ((SAOOption.HEALTH_BARS.getValue()) && (!entity.equals(mc.thePlayer))) {
-                doRenderHealthBar(mc, entity, x, y, z, f0, f1);
+                if (!(SAOOption.DEBUG_MODE.getValue() && SAOColorState.checkValidState((EntityLivingBase)entity))) {
+                    doRenderHealthBar(mc, entity, x, y, z, f0, f1);
+                } else if (SAOOption.DEBUG_MODE.getValue()) doRenderHealthBar(mc, entity, x, y, z, f0, f1);
             }
         }
 
@@ -152,9 +160,7 @@ class SAORenderBase extends RenderPlayer {
             Tessellator tessellator = Tessellator.instance;
 
             tessellator.startDrawingQuads();
-            if (entity instanceof EntityLiving || entity instanceof EntityPlayer) {
-                SAOColorState.getColorState(mc, entity, SAOMod.UNKNOWN_TIME_DELAY).glColor();
-            }
+            SAOColorState.getColorState(mc, entity, SAOMod.UNKNOWN_TIME_DELAY).glColor();
 
             if (SAOOption.SPINNING_CRYSTALS.getValue()) {
                 double a = (entity.worldObj.getTotalWorldTime() % 40) / 20.0D * Math.PI;
@@ -352,6 +358,15 @@ class SAORenderBase extends RenderPlayer {
 
     @Override
     protected ResourceLocation getEntityTexture(Entity entity) {
+        try {
+            @SuppressWarnings("unchecked")
+            Method m = ReflectionHelper.findMethod((Class) parent.getClass(), parent, new String[]{"getEntityTexture", "func_110775_a", "a"}, (Class) Entity.class);
+            return (ResourceLocation) m.invoke(parent, entity);
+        } catch (ReflectionHelper.UnableToFindMethodException e) {
+            System.err.println("Unable to find {\"getEntityTexture\", \"func_110775_a\", \"a\"} in parent");
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            System.err.println("Unable to invoke {\"getEntityTexture\", \"func_110775_a\", \"a\"} on parent");
+        }
         return null;
     }
 }

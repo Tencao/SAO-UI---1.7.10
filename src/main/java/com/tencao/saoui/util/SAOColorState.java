@@ -4,9 +4,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.IEntityOwnable;
+import net.minecraft.entity.*;
 import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityTameable;
@@ -52,7 +50,11 @@ public enum SAOColorState {
         else if (entity instanceof IAnimals) return INNOCENT;
         else if (entity instanceof IEntityOwnable) return VIOLENT;
         else return INVALID;
+    }
 
+    public static boolean checkValidState(EntityLivingBase entity){
+        if (entity instanceof IMob || entity instanceof IAnimals || entity instanceof EntityPlayer || entity instanceof IEntityOwnable || entity instanceof  IBossDisplayData) return true;
+        else return false;
     }
 
     private static SAOColorState getPlayerColorState(Minecraft mc, EntityPlayer player, float time) {
