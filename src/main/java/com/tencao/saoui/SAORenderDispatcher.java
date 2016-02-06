@@ -1,0 +1,26 @@
+package com.tencao.saoui;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.profiler.Profiler;
+import org.lwjgl.opengl.GL11;
+
+/**
+ * This code was original created by <Vazkii> and has been modified to our needs
+ * All credit goes to him
+ */
+public final class SAORenderDispatcher {
+
+    public static int particleFxCount = 0;
+
+    public static void dispatch() {
+        Tessellator tessellator = Tessellator.instance;
+
+        Profiler profiler = Minecraft.getMinecraft().mcProfiler;
+
+        profiler.startSection("death particle");
+        SAOEntityPiecesFX.dispatchQueuedRenders(tessellator);
+        profiler.endSection();
+        GL11.glPopAttrib();
+    }
+}

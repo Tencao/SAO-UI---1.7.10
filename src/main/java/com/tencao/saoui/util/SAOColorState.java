@@ -1,5 +1,6 @@
 package com.tencao.saoui.util;
 
+import com.tencao.saoui.SAOEventHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
@@ -12,7 +13,12 @@ import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Stream;
 
 @SideOnly(Side.CLIENT)
@@ -34,14 +40,16 @@ public enum SAOColorState {
         color = argb;
     }
 
-    public static SAOColorState getColorState(Minecraft mc, Entity entity, float time) {
-        if (entity instanceof EntityPlayer) return getPlayerColorState(mc, (EntityPlayer) entity, time);
+    private static HashMap<Entity, SAOColorState> savedState = new HashMap<Entity, SAOColorState>();
+
+    private static SAOColorState getColorState(Minecraft mc, Entity entity) {
+        if (entity instanceof EntityPlayer) return getPlayerColorState(mc, (EntityPlayer) entity);
         else if (entity instanceof EntityLiving)
-            return ((EntityLiving) entity).getAttackTarget() instanceof EntityPlayer ? KILLER : getState(mc, (EntityLiving) entity, time);
+            return ((EntityLiving) entity).getAttackTarget() instanceof EntityPlayer ? KILLER : getState(mc, (EntityLiving) entity);
         else return INVALID;
     }
 
-    private static SAOColorState getState(Minecraft mc, EntityLiving entity, float time) {
+    private static SAOColorState getState(Minecraft mc, EntityLiving entity) {
         if (entity instanceof EntityWolf && ((EntityWolf) entity).isAngry()) return KILLER;
         else if (entity instanceof EntityTameable && ((EntityTameable) entity).isTamed())
             return ((EntityTameable) entity).getOwner() != mc.thePlayer ? VIOLENT : INNOCENT;
@@ -57,16 +65,24 @@ public enum SAOColorState {
         else return false;
     }
 
-    private static SAOColorState getPlayerColorState(Minecraft mc, EntityPlayer player, float time) {
-        if (isDev(StaticPlayerHelper.getName(player))) return GAMEMASTER;
-        else if (StaticPlayerHelper.isCreative((AbstractClientPlayer) player)) return CREATIVE;
-        else return ColorStateHandler.instance().get(player);
+    public static SAOColorState getSavedState(Minecraft mc, EntityLivingBase entity){
+        if (savedState.containsKey(entity)){
+            if (SAOOption.DEBUG_MODE.getValue()) System.out.print(entity.getCommandSenderName() + "loaded from map");
+            return savedState.get(entity);
+        }
+        else {
+            SAOColorState state = getColorState(mc, entity);
+            savedState.put(entity, state);
+            if (SAOOption.DEBUG_MODE.getValue()) System.out.print(entity.getCommandSenderName() + "added to map");
+            return state;
+        }
     }
 
-    private static boolean getCreative(EntityPlayer player) {
-        NBTTagCompound c = player.getEntityData();
-        if (c.hasKey("playerGameType", 1)) return true;
-        else return false;
+    private static SAOColorState getPlayerColorState(Minecraft mc, EntityPlayer player) {
+        if (isDev(StaticPlayerHelper.getName(player))) return GAMEMASTER;
+        else if (StaticPlayerHelper.isCreative((AbstractClientPlayer) player)) return CREATIVE;
+        else if (PartyHelper.instance().isMember(player.getCommandSenderName())) return CREATIVE;
+        else return ColorStateHandler.instance().get(player);
     }
 
     private static boolean isDev(final String pl) {
