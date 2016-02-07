@@ -6,6 +6,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.BlockPumpkin;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.Items;
 import net.minecraft.item.*;
 
 @SideOnly(Side.CLIENT)
@@ -45,6 +46,12 @@ public enum SAOInventory{
         final Item item = stack.getItem();
 
         return item instanceof ItemSpade;
+    }),
+
+    COMPATTOOLS((ItemFilter) (stack, state) -> {
+        final Item item = stack.getItem();
+
+        return ((item instanceof ItemTool) || (item instanceof ItemBow) || (item instanceof ItemSword));
     }),
 
     ACCESSORY((ItemFilter) (stack, state) -> {

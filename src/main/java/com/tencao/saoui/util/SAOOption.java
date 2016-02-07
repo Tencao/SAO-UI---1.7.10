@@ -48,6 +48,7 @@ public enum SAOOption {
     MOUNT_STAT_VIEW(StatCollector.translateToLocal("optionMountStatView"), true, false, MISC),
     CUSTOM_FONT(StatCollector.translateToLocal("optionCustomFont"), false, false, MISC),
     DEBUG_MODE(StatCollector.translateToLocal("optionDebugMode"), false, false, MISC),
+    COMPACT_INVENTORY(StatCollector.translateToLocal("optionCompatInv"), false, false, MISC),
     RENDER_NAMES(StatCollector.translateToLocal("optionRenderNames"), false, false, MISC);
 
     public final String name;

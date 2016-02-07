@@ -368,7 +368,8 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
         else if (id == SAOID.EQUIPMENT) {
             menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
 
-            menu.elements.add(new SAOButtonGUI(menu, SAOID.TOOLS, 0, 0, StatCollector.translateToLocal("guiTools"), SAOIcon.EQUIPMENT));
+            if (SAOInventory.WEAPONS != null || SAOInventory.BOWS != null || SAOInventory.PICKAXE != null || SAOInventory.AXE != null || SAOInventory.SHOVEL != null)
+                menu.elements.add(new SAOButtonGUI(menu, SAOID.TOOLS, 0, 0, StatCollector.translateToLocal("guiTools"), SAOIcon.EQUIPMENT));
             menu.elements.add(new SAOButtonGUI(menu, SAOID.ARMOR, 0, 0, StatCollector.translateToLocal("guiEquipped"), SAOIcon.ARMOR));
             menu.elements.add(new SAOButtonGUI(menu, SAOID.ACCESSORY, 0, 0, StatCollector.translateToLocal("guiAccessory"), SAOIcon.ACCESSORY));
             menu.elements.add(new SAOButtonGUI(menu, SAOID.CONSUMABLES, 0, 0, StatCollector.translateToLocal("guiConsumable"), SAOIcon.ITEMS));
@@ -382,13 +383,16 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
         }
         //Profile -> Equipment
         else if (id == SAOID.TOOLS) { // TODO: Some optimization could be done here. Laterz.
-            menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
-
-            menu.elements.add(new SAOButtonGUI(menu, SAOID.WEAPONS, 0, 0, StatCollector.translateToLocal("guiWeapons"), SAOIcon.EQUIPMENT));
-            menu.elements.add(new SAOButtonGUI(menu, SAOID.BOWS, 0, 0, StatCollector.translateToLocal("guiBows"), SAOIcon.EQUIPMENT));
-            menu.elements.add(new SAOButtonGUI(menu, SAOID.PICKAXE, 0, 0, StatCollector.translateToLocal("guiPickaxes"), SAOIcon.EQUIPMENT));
-            menu.elements.add(new SAOButtonGUI(menu, SAOID.AXE, 0, 0, StatCollector.translateToLocal("guiAxes"), SAOIcon.EQUIPMENT));
-            menu.elements.add(new SAOButtonGUI(menu, SAOID.SHOVEL, 0, 0, StatCollector.translateToLocal("guiShovels"), SAOIcon.EQUIPMENT));
+            if (SAOOption.COMPACT_INVENTORY.getValue()){
+                menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.COMPATTOOLS);
+            } else {
+                menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
+                menu.elements.add(new SAOButtonGUI(menu, SAOID.WEAPONS, 0, 0, StatCollector.translateToLocal("guiWeapons"), SAOIcon.EQUIPMENT));
+                menu.elements.add(new SAOButtonGUI(menu, SAOID.BOWS, 0, 0, StatCollector.translateToLocal("guiBows"), SAOIcon.EQUIPMENT));
+                menu.elements.add(new SAOButtonGUI(menu, SAOID.PICKAXE, 0, 0, StatCollector.translateToLocal("guiPickaxes"), SAOIcon.EQUIPMENT));
+                menu.elements.add(new SAOButtonGUI(menu, SAOID.AXE, 0, 0, StatCollector.translateToLocal("guiAxes"), SAOIcon.EQUIPMENT));
+                menu.elements.add(new SAOButtonGUI(menu, SAOID.SHOVEL, 0, 0, StatCollector.translateToLocal("guiShovels"), SAOIcon.EQUIPMENT));
+            }
         } else if (id == SAOID.WEAPONS) {
             menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.WEAPONS);
         } else if (id == SAOID.BOWS) {
