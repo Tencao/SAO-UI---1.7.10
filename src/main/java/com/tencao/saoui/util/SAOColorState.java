@@ -40,7 +40,7 @@ public enum SAOColorState {
         color = argb;
     }
 
-    private static HashMap<Entity, SAOColorState> savedState = new HashMap<Entity, SAOColorState>();
+    public static HashMap<Class, SAOColorState> savedState = new HashMap<Class, SAOColorState>();
 
     private static SAOColorState getColorState(Minecraft mc, Entity entity) {
         if (entity instanceof EntityPlayer) return getPlayerColorState(mc, (EntityPlayer) entity);
@@ -60,28 +60,27 @@ public enum SAOColorState {
         else return INVALID;
     }
 
-    public static boolean checkValidState(EntityLivingBase entity){
-        if (entity instanceof IMob || entity instanceof IAnimals || entity instanceof EntityPlayer || entity instanceof IEntityOwnable || entity instanceof  IBossDisplayData) return true;
+    public static boolean checkValidState(Entity entity){
+        if (entity instanceof IAnimals || entity instanceof EntityPlayer || entity instanceof IEntityOwnable) return true;
         else return false;
     }
 
-    public static SAOColorState getSavedState(Minecraft mc, EntityLivingBase entity){
-        if (savedState.containsKey(entity)){
-            if (SAOOption.DEBUG_MODE.getValue()) System.out.print(entity.getCommandSenderName() + "loaded from map");
-            return savedState.get(entity);
-        }
-        else {
+    public static SAOColorState getSavedState(Minecraft mc, Entity entity){
+        if (!(savedState.containsKey(entity.getClass()))){
             SAOColorState state = getColorState(mc, entity);
-            savedState.put(entity, state);
-            if (SAOOption.DEBUG_MODE.getValue()) System.out.print(entity.getCommandSenderName() + "added to map");
+            savedState.put(entity.getClass(), state);
+            if (SAOOption.DEBUG_MODE.getValue()) System.out.print(entity.getCommandSenderName() + " added to map" + "\n");
             return state;
+        } else {
+            return savedState.get(entity.getClass());
         }
+
     }
 
     private static SAOColorState getPlayerColorState(Minecraft mc, EntityPlayer player) {
         if (isDev(StaticPlayerHelper.getName(player))) return GAMEMASTER;
         else if (StaticPlayerHelper.isCreative((AbstractClientPlayer) player)) return CREATIVE;
-        else if (PartyHelper.instance().isMember(player.getCommandSenderName())) return CREATIVE;
+        else if (PartyHelper.instance().isMember(StaticPlayerHelper.getName(player))) return CREATIVE;
         else return ColorStateHandler.instance().get(player);
     }
 

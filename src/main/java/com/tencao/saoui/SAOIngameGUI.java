@@ -17,6 +17,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.boss.BossStatus;
 import net.minecraft.entity.boss.IBossDisplayData;
+import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.Direction;
@@ -29,6 +31,7 @@ import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
+import org.apache.logging.log4j.core.net.Priority;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -60,6 +63,7 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     @Override
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
     public void renderGameOverlay(float partialTicks, boolean hasScreen, int mouseX, int mouseY) {
         fontRenderer = mc.fontRendererObj;
         username = mc.thePlayer.getDisplayName();
@@ -82,14 +86,12 @@ public class SAOIngameGUI extends GuiIngameForge {
             if (renderFood) renderFood(width, height);
             if (renderHealthMount) renderHealthMount(width, height);
             if (renderAir) renderAir(width, height);
-            //renderHealth = false;
-            //renderArmor = false;
-            //renderHealthMount = false;
             mc.entityRenderer.setupOverlayRendering();
         } // Basically adding what super doesn't render by default
     }
 
     @Override
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
     protected void renderCrosshairs(int width, int height) {
         if (pre(CROSSHAIRS)) return;
         SAOGL.glBlend(true);
@@ -98,6 +100,7 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     @Override
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
     protected void renderArmor(int width, int height) {
         if (pre(ARMOR)) return;
         // Nothing happens here
@@ -105,6 +108,7 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     @Override
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
     protected void renderHotbar(int width, int height, float partialTicks) {
         if (pre(HOTBAR)) return;
 
@@ -166,6 +170,7 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     @Override
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
     protected void renderAir(int width, int height) {
         if (pre(AIR)) return;
         // Linked to renderHealth
@@ -173,6 +178,7 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     @Override
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
     protected void renderBossHealth() {
         if (pre(BOSSHEALTH)) return;
 
@@ -231,6 +237,7 @@ public class SAOIngameGUI extends GuiIngameForge {
 
 
     @Override
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
     public void renderHealth(int width, int height) {
         if (pre(HEALTH)) return;
         mc.mcProfiler.startSection("health");
@@ -420,6 +427,7 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     @Override
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
     public void renderFood(int width, int height) {
         // See below, called by renderHealth
     }
@@ -461,6 +469,7 @@ public class SAOIngameGUI extends GuiIngameForge {
 
 
     @Override
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
     protected void renderExperience(int width, int height) {
         if (pre (EXPERIENCE)) return;
         if (SAOOption.REMOVE_HPXP.getValue()) return;
@@ -489,6 +498,7 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     @Override
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
     protected void renderJumpBar(int width, int height) {
         if (pre(JUMPBAR)) return;
         renderExperience(width, height);
@@ -498,6 +508,7 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     @Override
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
     protected void renderHealthMount(int width, int height) {
         //EntityPlayer player = (EntityPlayer)mc.getRenderViewEntity();
         EntityPlayer player = (EntityPlayer) mc.renderViewEntity;
@@ -510,6 +521,7 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     @Override
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
     protected void renderHUDText(int width, int height)
     {
         if (pre(DEBUG)) return;
@@ -613,9 +625,7 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     // c/p from GuiIngameForge
-
-
-    private boolean pre(ElementType type) {
+    private boolean pre(ElementType type){
         return MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Pre(eventParent, type));
     }
 

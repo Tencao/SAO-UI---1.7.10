@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -19,6 +20,7 @@ import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -74,31 +76,26 @@ class SAORenderBase extends Render {
                 living.deathTime++;
             }
 
-        } else if (entity instanceof EntityItem) {
+        }/* else if (entity instanceof EntityItem) {
             final EntityItem item = (EntityItem) entity;
 
             deadStart = (item.age + 16 >= item.lifespan);
             deadExactly = (item.age >= item.lifespan);
-        }
+        }*/
 
         parent.doRender(entity, x, y, z, f0, f1);
 
-        if (!SAOCharacterView.IS_VIEWING && entity instanceof EntityLivingBase && !dead && !entity.isInvisibleToPlayer(mc.thePlayer) && entity != mc.thePlayer) {
+        if (!SAOCharacterView.IS_VIEWING && !dead && !entity.isInvisibleToPlayer(mc.thePlayer) && entity != mc.thePlayer) {
             if (SAOOption.COLOR_CURSOR.getValue()) {
-                if (!(SAOOption.DEBUG_MODE.getValue() && SAOColorState.checkValidState((EntityLivingBase)entity))){
-                    doRenderColorCursor(mc, (EntityLivingBase)entity, x, y, z, 64);
-                } else if (SAOOption.DEBUG_MODE.getValue()) doRenderColorCursor(mc, (EntityLivingBase)entity, x, y, z, 64);
+                doRenderColorCursor(mc, entity, x, y, z, 64);
             }
-
             if ((SAOOption.HEALTH_BARS.getValue()) && (!entity.equals(mc.thePlayer))) {
-                if (!(SAOOption.DEBUG_MODE.getValue() && SAOColorState.checkValidState((EntityLivingBase)entity))) {
-                    doRenderHealthBar(mc, (EntityLivingBase)entity, x, y, z, f0, f1);
-                } else if (SAOOption.DEBUG_MODE.getValue()) doRenderHealthBar(mc, (EntityLivingBase)entity, x, y, z, f0, f1);
+                doRenderHealthBar(mc, entity, x, y, z, f0, f1);
             }
         }
 
         if (SAOOption.PARTICLES.getValue()) {
-            if (deadStart && entity instanceof EntityLivingBase) {
+            if (deadStart) {
                 SAOSound.playAtEntity(entity, SAOSound.PARTICLES_DEATH);
             }
 
@@ -130,15 +127,15 @@ class SAORenderBase extends Render {
         super.renderManager = render;
     }
 
-    private void doRenderColorCursor(Minecraft mc, EntityLivingBase entity, double x, double y, double z, int distance) {
+    private void doRenderColorCursor(Minecraft mc, Entity entity, double x, double y, double z, int distance) {
         if (entity.riddenByEntity != null) return;
-        if (SAOOption.LESS_VISUALS.getValue() && !(entity instanceof IMob || StaticPlayerHelper.getHealth(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) != StaticPlayerHelper.getMaxHealth(entity)) && !(entity instanceof EntityPlayer))
+        if (SAOOption.LESS_VISUALS.getValue() && !(entity instanceof IMob || StaticPlayerHelper.getHealth(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) != StaticPlayerHelper.getMaxHealth(entity)))
             return;
 
         double d3 = entity.getDistanceSqToEntity(renderManager.livingPlayer);
 
         if (d3 <= (double) (distance * distance)) {
-            final float sizeMult = entity.isChild() && entity instanceof EntityMob ? 0.5F : 1.0F;
+            final float sizeMult = ((EntityLivingBase)entity).isChild() && entity instanceof EntityMob ? 0.5F : 1.0F;
 
             float f = 1.6F;
             float f1 = 0.016666668F * f;
@@ -212,11 +209,9 @@ class SAORenderBase extends Render {
         }
     }
 
-    private void doRenderHealthBar(Minecraft mc, EntityLivingBase entity, double x, double y, double z, float f0, float f1) {
+    private void doRenderHealthBar(Minecraft mc, Entity entity, double x, double y, double z, float f0, float f1) {
         if (entity.riddenByEntity != null && entity.riddenByEntity == mc.thePlayer) return;
-        //if (entity instanceof EntityOtherPlayerMP && SAOMod.isMPCreative((EntityOtherPlayerMP) entity)) return;
-        if (entity instanceof EntityPlayer && StaticPlayerHelper.isCreative((AbstractClientPlayer) entity)) return;
-        if (SAOOption.LESS_VISUALS.getValue() && !(entity instanceof IMob || StaticPlayerHelper.getHealth(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) != StaticPlayerHelper.getMaxHealth(entity)) && !(entity instanceof EntityPlayer))
+        if (SAOOption.LESS_VISUALS.getValue() && !(entity instanceof IMob || StaticPlayerHelper.getHealth(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) != StaticPlayerHelper.getMaxHealth(entity)))
             return;
         SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.entities : SAOResources.entitiesCustom);
 
@@ -231,7 +226,7 @@ class SAORenderBase extends Render {
         useColor(mc, entity, SAOMod.UNKNOWN_TIME_DELAY);
         if (entity instanceof IBossDisplayData){
             tessellator.startDrawing(GL11.GL_TRIANGLE_STRIP);
-            final float sizeMult = ((EntityLivingBase) entity).isChild() && entity instanceof EntityMob ? 0.5F : 1.0F;
+            final float sizeMult = ((EntityLivingBase)entity).isChild() && entity instanceof EntityMob ? 0.5F : 1.0F;
             for (int i = 0; i <= hitPoints; i++) {
                 final double value = (double) (i + HEALTH_COUNT - hitPoints) / HEALTH_COUNT;
                 final double rad = Math.toRadians(renderManager.playerViewY - 135) + (value - 0.5) * Math.PI * HEALTH_ANGLE;
@@ -269,7 +264,7 @@ class SAORenderBase extends Render {
         else {
             tessellator.startDrawing(GL11.GL_TRIANGLE_STRIP);
 
-            final float sizeMult = ((EntityLivingBase) entity).isChild() && entity instanceof EntityMob ? 0.5F : 1.0F;
+            final float sizeMult = ((EntityLivingBase)entity).isChild() && entity instanceof IAnimals ? 0.5F : 1.0F;
 
             for (int i = 0; i <= hitPoints; i++) {
                 final double value = (double) (i + HEALTH_COUNT - hitPoints) / HEALTH_COUNT;
@@ -350,11 +345,6 @@ class SAORenderBase extends Render {
 
         return normalFactor + (delta * delta / 2) * normalFactor;
     }
-    /*
-    @Override
-    public void renderName(Entity entity, double x, double y, double z) {
-        if (entity instanceof EntityLivingBase) super.renderManager(entity, x, y, z);
-    }*/
 
     @Override
     protected ResourceLocation getEntityTexture(Entity entity) {

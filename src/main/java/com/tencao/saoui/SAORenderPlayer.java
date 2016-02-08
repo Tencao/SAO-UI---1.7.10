@@ -1,5 +1,7 @@
 package com.tencao.saoui;
 
+import com.tencao.saoui.ui.SAOCharacterView;
+import com.tencao.saoui.util.SAOOption;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;

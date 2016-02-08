@@ -1,5 +1,6 @@
 package com.tencao.saoui;
 
+import com.tencao.saoui.util.SAOGL;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.profiler.Profiler;
@@ -18,9 +19,14 @@ public final class SAORenderDispatcher {
 
         Profiler profiler = Minecraft.getMinecraft().mcProfiler;
 
+        //GL11.glPushAttrib(GL11.GL_LIGHTING);
+        SAOGL.glBlend(true);
+        SAOGL.blendFunc(GL11.GL_ONE, GL11.GL_ONE);
+
         profiler.startSection("death particle");
         SAOEntityPiecesFX.dispatchQueuedRenders(tessellator);
         profiler.endSection();
-        GL11.glPopAttrib();
+        SAOGL.glBlend(false);
+        //GL11.glPopAttrib();
     }
 }
