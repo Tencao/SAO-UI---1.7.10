@@ -27,28 +27,49 @@ import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.client.GuiIngameForge;
+import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class SAORenderHandler {
 
+    public static final List<EntityLivingBase> deadHandlers = new ArrayList<>();
     private boolean ticked = false;
     private final Minecraft mc = Minecraft.getMinecraft();
     public static int REPLACE_GUI_DELAY = 0;
     public static boolean replaceGUI;
-    public static HashMap<Class, Boolean> renderCheck = new HashMap<>();
 
     @SubscribeEvent
     public void checkingameGUI(TickEvent.RenderTickEvent e) {
         boolean b = mc.ingameGUI instanceof SAOIngameGUI;
         if (mc.ingameGUI != null && SAOOption.DEFAULT_UI.getValue() == b)
             mc.ingameGUI = b ? new GuiIngameForge(mc) : new SAOIngameGUI(mc);
+        deadHandlers.forEach(ent -> {
+            if (ent != null) {
+                final boolean deadStart = (ent.deathTime == 1);
+                final boolean deadExactly = (ent.deathTime >= 18);
+                if (deadStart) {
+                    ent.deathTime++;
+                    SAOSound.playAtEntity(ent, SAOSound.PARTICLES_DEATH);
+                }
+
+                if (deadExactly) {
+                    StaticRenderer.doSpawnDeathParticles(mc, ent);
+                    ent.setDead();
+                }
+            }
+        });
+        deadHandlers.removeIf(ent -> ent.isDead);
     }
 
     @SubscribeEvent
@@ -86,7 +107,7 @@ public class SAORenderHandler {
     }
 
     @SubscribeEvent
-    public void RenderTickEvent(TickEvent.RenderTickEvent event) {
+    public void renderTickEvent(TickEvent.RenderTickEvent event) {
         if ((event.type == TickEvent.Type.RENDER || event.type == TickEvent.Type.CLIENT) && event.phase == TickEvent.Phase.END) {
             if (!ticked && mc.ingameGUI != null) {
                 mc.ingameGUI = new SAOIngameGUI(mc);
@@ -96,59 +117,17 @@ public class SAORenderHandler {
     }
 
     @SubscribeEvent
-    public void RenderEntity(LivingEvent.LivingUpdateEvent event) {
-        /*
-        If some mobs don't get registered this way, that means the mods don't register their renderers at the right place.
-         */
-        if (!(renderCheck.containsKey(event.entityLiving.getClass()))){
-            renderCheck.put(event.entityLiving.getClass(), false);
-        } else if (renderCheck.get(event.entityLiving.getClass()).booleanValue()) return;
-        else {
-            RenderManager manager = RenderManager.instance;
-            final Object value = manager.entityRenderMap.get(event.entityLiving.getClass());
-            if (event.entityLiving instanceof EntityPlayer) {
-                final RenderPlayer render = new SAORenderPlayer((RenderPlayer) value);
-                manager.entityRenderMap.put(value, render);
-                render.setRenderManager(manager);
-                renderCheck.replace(event.entityLiving.getClass(), false, true);
-                if (SAOOption.DEBUG_MODE.getValue()) System.out.print(event.entityLiving.getClass() + " passed to SAORenderPlayer" + "\n");
-            } else {
-                final Render render = new SAORenderBase((Render) value);
-                manager.entityRenderMap.put(event.entityLiving.getClass(), render);
-                render.setRenderManager(manager);
-                renderCheck.replace(event.entityLiving.getClass(), false, true);
-                if (SAOOption.DEBUG_MODE.getValue()) System.out.print(event.entityLiving.getClass() + " passed to SAORenderBase" + "\n");
-            }
-        }
+    public void renderPlayer(RenderPlayerEvent.Pre e) {
+        RenderManager manager = RenderManager.instance;
+        StaticRenderer.render(manager, e.entity, e.entityPlayer.posX, e.entityPlayer.posY, e.entityPlayer.posZ);
     }
 
-/*
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void RenderEntities(EntityEvent.EntityConstructing e) {
-        if (!(renderCheck.containsKey(e.entity.getClass())))
-
-
-        if (e.entity instanceof EntityLivingBase && !(renderCheck.containsKey(e.entity.getClass()))) {
-            RenderManager manager = RenderManager.instance;
-            EntityLivingBase entity = (EntityLivingBase) e.entity;
-            final Object value = manager.entityRenderMap.get(e.entity.getClass());
-            if (value instanceof SAORenderBase || value instanceof SAORenderPlayer) return;
-            else if (value != null && !SAOColorState.savedState.containsKey(e.entity)) {
-                if (!(entity instanceof AbstractClientPlayer) && !(value instanceof SAORenderBase)) {
-                    final Render render = new SAORenderBase((Render) value);
-                    manager.entityRenderMap.put(entity.getClass(), render);
-                    render.setRenderManager(manager);
-                    System.out.print(entity.getClass() + " passed to SAORenderBase" + "\n");
-                } else if (!(value instanceof SAORenderPlayer)) {
-                    final Render render = new SAORenderPlayer((Render) value);
-                    manager.entityRenderMap.put(entity.getClass(), render);
-                    render.setRenderManager(manager);
-                    System.out.print(entity.getClass() + " passed to SAORenderPlayer" + "\n");
-                } else System.out.print("Could not pass " + entity.getClass() + " to SAORender" + "\n");
-            }
-        }
+    @SubscribeEvent
+    public void renderEntity(RenderLivingEvent.Pre e) {
+        RenderManager manager = RenderManager.instance;
+        StaticRenderer.render(manager, e.entity, e.x, e.y, e.z);
     }
-*/
+
     @SubscribeEvent
     public void onRenderWorldLast(RenderWorldLastEvent event) {
         SAORenderDispatcher.dispatch();

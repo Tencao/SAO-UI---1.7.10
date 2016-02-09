@@ -148,7 +148,7 @@ public class StaticPlayerHelper {
         return time >= 0F ? time : HEALTH_FRAME_FACTOR / gameFPS(mc);
     }
 
-    public static boolean isCreative(AbstractClientPlayer player) { // TODO: test this!
+    public static boolean isCreative(EntityPlayer player) { // TODO: test this!
         return player.capabilities.isCreativeMode;
 //        NetworkPlayerInfo networkplayerinfo = Minecraft.getMinecraft().getNetHandler().getPlayerInfo(player.getGameProfile().getId());
 //        return networkplayerinfo != null && networkplayerinfo.getGameType() == WorldSettings.GameType.SPECTATOR;

@@ -19,6 +19,7 @@ import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @SideOnly(Side.CLIENT)
@@ -40,9 +41,7 @@ public enum SAOColorState {
         color = argb;
     }
 
-    public static HashMap<Class, SAOColorState> savedState = new HashMap<Class, SAOColorState>();
-
-    private static SAOColorState getColorState(Minecraft mc, Entity entity) {
+    public static SAOColorState getColorState(Minecraft mc, Entity entity) {
         if (entity instanceof EntityPlayer) return getPlayerColorState(mc, (EntityPlayer) entity);
         else if (entity instanceof EntityLiving)
             return ((EntityLiving) entity).getAttackTarget() instanceof EntityPlayer ? KILLER : getState(mc, (EntityLiving) entity);
@@ -54,7 +53,7 @@ public enum SAOColorState {
         else if (entity instanceof EntityTameable && ((EntityTameable) entity).isTamed())
             return ((EntityTameable) entity).getOwner() != mc.thePlayer ? VIOLENT : INNOCENT;
         else if (entity instanceof IBossDisplayData) return BOSS;
-        else if (entity instanceof IMob) return KILLER;
+        else if (entity instanceof IMob) return VIOLENT;
         else if (entity instanceof IAnimals) return INNOCENT;
         else if (entity instanceof IEntityOwnable) return VIOLENT;
         else return INVALID;
@@ -65,23 +64,11 @@ public enum SAOColorState {
         else return false;
     }
 
-    public static SAOColorState getSavedState(Minecraft mc, Entity entity){
-        if (!(savedState.containsKey(entity.getClass()))){
-            SAOColorState state = getColorState(mc, entity);
-            savedState.put(entity.getClass(), state);
-            if (SAOOption.DEBUG_MODE.getValue()) System.out.print(entity.getCommandSenderName() + " added to map" + "\n");
-            return state;
-        } else {
-            return savedState.get(entity.getClass());
-        }
-
-    }
-
     private static SAOColorState getPlayerColorState(Minecraft mc, EntityPlayer player) {
         if (isDev(StaticPlayerHelper.getName(player))) return GAMEMASTER;
-        else if (StaticPlayerHelper.isCreative((AbstractClientPlayer) player)) return CREATIVE;
+        //else if (StaticPlayerHelper.isCreative(player)) return CREATIVE;
         else if (PartyHelper.instance().isMember(StaticPlayerHelper.getName(player))) return CREATIVE;
-        else return ColorStateHandler.instance().get(player);
+        else return INNOCENT;
     }
 
     private static boolean isDev(final String pl) {

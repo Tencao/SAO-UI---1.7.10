@@ -31,36 +31,15 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
-class SAORenderBase extends Render {
+class StaticRenderer {
 
     private static final int HEALTH_COUNT = 32;
     private static final double HEALTH_ANGLE = 0.35F;
     private static final double HEALTH_RANGE = 0.975F;
     private static final float HEALTH_OFFSET = 0.75F;
-    @SuppressWarnings("unused")
-    private static final float HEALTH_OFFSET_PLAYER = -0.125F;
     private static final double HEALTH_HEIGHT = 0.21F;
-    @SuppressWarnings("unused")
-    private static final double PIECES_X_OFFSET = 0.02;
-    @SuppressWarnings("unused")
-    private static final double PIECES_Y_OFFSET = -0.02;
-    @SuppressWarnings("unused")
-    private static final int PIECES_COUNT = 150;
-    @SuppressWarnings("unused")
-    private static final double PIECES_SPEED = 1.4;
-    @SuppressWarnings("unused")
-    private static final double PIECES_GRAVITY = 0.4;
-    private final Render parent;
-    RenderManager manager;
 
-    public SAORenderBase(Render render) {
-        this.manager = RenderManager.instance;
-        parent = render;
-        super.setRenderManager(manager);
-    }
-
-    @Override
-    public void doRender(Entity entity, double x, double y, double z, float f0, float f1) {
+    public static void render(RenderManager renderManager, Entity entity, double x, double y, double z) {
         final Minecraft mc = Minecraft.getMinecraft();
 
         boolean dead = false, deadStart = false, deadExactly = false;
@@ -76,58 +55,31 @@ class SAORenderBase extends Render {
                 living.deathTime++;
             }
 
-        }/* else if (entity instanceof EntityItem) {
+        } else if (entity instanceof EntityItem) {
             final EntityItem item = (EntityItem) entity;
 
             deadStart = (item.age + 16 >= item.lifespan);
             deadExactly = (item.age >= item.lifespan);
-        }*/
-
-        parent.doRender(entity, x, y, z, f0, f1);
+        }
 
         if (!SAOCharacterView.IS_VIEWING && !dead && !entity.isInvisibleToPlayer(mc.thePlayer) && entity != mc.thePlayer) {
             if (SAOOption.COLOR_CURSOR.getValue()) {
-                doRenderColorCursor(mc, entity, x, y, z, 64);
+                if (!(SAOOption.DEBUG_MODE.getValue() && SAOColorState.checkValidState(entity))) {
+                    doRenderColorCursor(renderManager, mc, (EntityLivingBase) entity, x, y, z, 64);
+                } else if (SAOOption.DEBUG_MODE.getValue())
+                    doRenderColorCursor(renderManager, mc, (EntityLivingBase) entity, x, y, z, 64);
             }
             if ((SAOOption.HEALTH_BARS.getValue()) && (!entity.equals(mc.thePlayer))) {
-                doRenderHealthBar(mc, entity, x, y, z, f0, f1);
+                if (!(SAOOption.DEBUG_MODE.getValue() && SAOColorState.checkValidState((EntityLivingBase) entity))) {
+                    doRenderHealthBar(renderManager, mc, (EntityLivingBase) entity, x, y, z);
+                } else if (SAOOption.DEBUG_MODE.getValue())
+                    doRenderHealthBar(renderManager, mc, (EntityLivingBase) entity, x, y, z);
             }
         }
 
-        if (SAOOption.PARTICLES.getValue()) {
-            if (deadStart) {
-                SAOSound.playAtEntity(entity, SAOSound.PARTICLES_DEATH);
-            }
-
-            if (deadExactly) {
-                doSpawnDeathParticles(mc, entity);
-
-                entity.setDead();
-            }
-        }
     }
 
-    @Override
-    public void bindTexture(ResourceLocation location) {
-        super.bindTexture(location);
-    }
-
-    @Override
-    public void doRenderShadowAndFire(Entity p_76979_1_, double p_76979_2_, double p_76979_4_, double p_76979_6_, float p_76979_8_, float p_76979_9_) {
-        parent.doRenderShadowAndFire(p_76979_1_, p_76979_2_, p_76979_4_, p_76979_6_, p_76979_8_, p_76979_9_);
-    }
-
-    @Override
-    public FontRenderer getFontRendererFromRenderManager() {
-        return parent.getFontRendererFromRenderManager();
-    }
-
-    @Override
-    public void setRenderManager(RenderManager render) {
-        super.renderManager = render;
-    }
-
-    private void doRenderColorCursor(Minecraft mc, Entity entity, double x, double y, double z, int distance) {
+    private static void doRenderColorCursor(RenderManager renderManager, Minecraft mc, EntityLivingBase entity, double x, double y, double z, int distance) {
         if (entity.riddenByEntity != null) return;
         if (SAOOption.LESS_VISUALS.getValue() && !(entity instanceof IMob || StaticPlayerHelper.getHealth(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) != StaticPlayerHelper.getMaxHealth(entity)))
             return;
@@ -135,7 +87,7 @@ class SAORenderBase extends Render {
         double d3 = entity.getDistanceSqToEntity(renderManager.livingPlayer);
 
         if (d3 <= (double) (distance * distance)) {
-            final float sizeMult = ((EntityLivingBase)entity).isChild() && entity instanceof EntityMob ? 0.5F : 1.0F;
+            final float sizeMult = entity.isChild() && entity instanceof EntityMob ? 0.5F : 1.0F;
 
             float f = 1.6F;
             float f1 = 0.016666668F * f;
@@ -157,7 +109,9 @@ class SAORenderBase extends Render {
             Tessellator tessellator = Tessellator.instance;
 
             tessellator.startDrawingQuads();
-            SAOColorState.getSavedState(mc, entity).glColor();
+            ColorStateHandler.getCurrent(entity).glColor();
+
+            //System.out.print(state.name() + " assigned to " + entity.getCommandSenderName() + " " + entity.getUniqueID() + "\n");
 
             if (SAOOption.SPINNING_CRYSTALS.getValue()) {
                 double a = (entity.worldObj.getTotalWorldTime() % 40) / 20.0D * Math.PI;
@@ -209,7 +163,7 @@ class SAORenderBase extends Render {
         }
     }
 
-    private void doRenderHealthBar(Minecraft mc, Entity entity, double x, double y, double z, float f0, float f1) {
+    private static void doRenderHealthBar(RenderManager renderManager, Minecraft mc, EntityLivingBase entity, double x, double y, double z) {
         if (entity.riddenByEntity != null && entity.riddenByEntity == mc.thePlayer) return;
         if (SAOOption.LESS_VISUALS.getValue() && !(entity instanceof IMob || StaticPlayerHelper.getHealth(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) != StaticPlayerHelper.getMaxHealth(entity)))
             return;
@@ -302,10 +256,10 @@ class SAORenderBase extends Render {
 
     }
 
-    private void doSpawnDeathParticles(Minecraft mc, Entity entity) {
+    public static void doSpawnDeathParticles(Minecraft mc, Entity entity) {
         final World world = entity.worldObj;
 
-        if (world != null) {
+        if (entity.worldObj.isRemote) {
             final float[][] colors = {
                     {1F / 0xFF * 0x9A, 1F / 0xFF * 0xFE, 1F / 0xFF * 0x2E},
                     {1F / 0xFF * 0x01, 1F / 0xFF * 0xFF, 1F / 0xFF * 0xFF},
@@ -331,7 +285,7 @@ class SAORenderBase extends Render {
         }
     }
 
-    private void useColor(Minecraft mc, Entity entity, float time) {
+    private static void useColor(Minecraft mc, Entity entity, float time) {
         if (entity instanceof EntityLivingBase) {
             SAOHealthStep.getStep(mc, (EntityLivingBase) entity, time).glColor();
         } else {
@@ -339,24 +293,10 @@ class SAORenderBase extends Render {
         }
     }
 
-    private float getHealthFactor(Minecraft mc, Entity entity, float time) {
+    private static float getHealthFactor(Minecraft mc, Entity entity, float time) {
         final float normalFactor = StaticPlayerHelper.getHealth(mc, entity, time) / StaticPlayerHelper.getMaxHealth(entity);
         final float delta = 1.0F - normalFactor;
 
         return normalFactor + (delta * delta / 2) * normalFactor;
-    }
-
-    @Override
-    protected ResourceLocation getEntityTexture(Entity entity) {
-        try {
-            @SuppressWarnings("unchecked")
-            Method m = ReflectionHelper.findMethod((Class) parent.getClass(), parent, new String[]{"getEntityTexture", "func_110775_a", "a"}, (Class) Entity.class);
-            return (ResourceLocation) m.invoke(parent, entity);
-        } catch (ReflectionHelper.UnableToFindMethodException e) {
-            System.err.println("Unable to find {\"getEntityTexture\", \"func_110775_a\", \"a\"} in parent");
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            System.err.println("Unable to invoke {\"getEntityTexture\", \"func_110775_a\", \"a\"} on parent");
-        }
-        return null;
     }
 }

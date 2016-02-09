@@ -1,6 +1,8 @@
 package com.tencao.saoui;
 
 import com.tencao.saoui.util.SAOGL;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.profiler.Profiler;
@@ -10,6 +12,7 @@ import org.lwjgl.opengl.GL11;
  * This code was original created by <Vazkii> and has been modified to our needs
  * All credit goes to him
  */
+@SideOnly(Side.CLIENT)
 public final class SAORenderDispatcher {
 
     public static int particleFxCount = 0;

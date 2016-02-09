@@ -8,24 +8,15 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.PlayerDropsEvent;
-import org.lwjgl.opengl.GL11;
-
-import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @SideOnly(Side.CLIENT)
 public class SAOEventHandler {
@@ -33,59 +24,78 @@ public class SAOEventHandler {
     private final Minecraft mc = Minecraft.getMinecraft();
     private boolean isPlaying = false;
 
-    public static void onDamagePlayer(final EntityPlayer entity) {
-        ColorStateHandler.instance().set(entity, SAOColorState.VIOLENT);
-    }
-
-    public static void onKillPlayer(final EntityPlayer entity) {
-        ColorStateHandler.instance().set(entity, SAOColorState.KILLER);
+    public static void stateChanger(EntityLivingBase entity, boolean major){
+        if (entity instanceof EntityPlayer) {
+            SAOColorState state = ColorStateHandler.getCurrent(entity);
+            if (major){
+                if (state == SAOColorState.VIOLENT)
+                    ColorStateHandler.set(entity, SAOColorState.KILLER, true);
+                else if (state == SAOColorState.INNOCENT)
+                    ColorStateHandler.set(entity, SAOColorState.VIOLENT, true);
+            } else if (state == SAOColorState.INNOCENT)
+                ColorStateHandler.set(entity, SAOColorState.VIOLENT, true);
+        }
+        else {
+            SAOColorState state = major ? ColorStateHandler.getCurrent(entity) : ColorStateHandler.getDefault(entity);
+            if (state == SAOColorState.INNOCENT)
+                ColorStateHandler.set(entity, SAOColorState.VIOLENT, true);
+            else if (state == SAOColorState.VIOLENT)
+                ColorStateHandler.set(entity, SAOColorState.KILLER, true);
+        }
     }
 
     @SubscribeEvent
-    public void livingAttack(LivingAttackEvent e) {
-        this.livingHit(e.entityLiving, e.source.getEntity());
+    public void checkAggro(LivingSetAttackTargetEvent e) {
+        if (e.target instanceof EntityPlayer)
+            if (!(e.entityLiving.getLastAttacker() == e.target)){
+                stateChanger(e.entityLiving, false);
+                System.out.print(e.entityLiving.getCommandSenderName() + " sent to State Changer from checkAggro");
+            }
     }
 
     @SubscribeEvent
-    public void livingHurt(LivingHurtEvent e) {
-        this.livingHit(e.entityLiving, e.source.getEntity());
+    public void checkAttack(LivingAttackEvent e) {
+        if (e.source.getEntity() instanceof IAnimals)
+            if (e.entityLiving instanceof EntityPlayer) {
+                if (e.entityLiving.getHealth() <= 0) stateChanger((EntityLivingBase) e.source.getEntity(), true);
+                else stateChanger((EntityLivingBase) e.source.getEntity(), false);
+                System.out.print(e.source.getEntity().getCommandSenderName() + " sent to State Changer from checkAttack");
+            }
     }
 
-    private void livingHit(EntityLivingBase target, Entity source) {
-        if (target instanceof EntityPlayer && source instanceof EntityPlayer) {
-            if (target.getHealth() <= 0) {
-                onKillPlayer((EntityPlayer) source);
-            } else {
-                onDamagePlayer((EntityPlayer) source);
+    @SubscribeEvent
+    public void checkPlayerAttack(AttackEntityEvent e) {
+        if (e.target instanceof EntityPlayer && e.target.getUniqueID() != e.entityPlayer.getUniqueID()) {
+            if (((EntityPlayer) e.target).getHealth() <= 0) stateChanger(e.entityPlayer, true);
+            else stateChanger(e.entityPlayer, false);
+            System.out.print(e.entityPlayer.getCommandSenderName() + " sent to State Changer from checkPlayerAttack");
+        }
+    }
+
+    @SubscribeEvent
+    public void checkKill(LivingDeathEvent e){
+        if (e.source.getEntity() instanceof EntityLivingBase)
+            if (e.entityLiving instanceof EntityPlayer) {
+                stateChanger((EntityLivingBase) e.source.getEntity(), true);
+                System.out.print(e.source.getEntity().getCommandSenderName() + " sent to State Changer from checkKill");
+            }
+        if (SAOOption.PARTICLES.getValue() && e.entity.worldObj.isRemote) SAORenderHandler.deadHandlers.add(e.entityLiving);
+    }
+
+    @SubscribeEvent
+    public void resetState(TickEvent.WorldTickEvent e){
+        if (!(ColorStateHandler.stateKeeper.isEmpty())) {
+            for (Map.Entry<UUID, Integer> entry : ColorStateHandler.stateKeeper.entrySet()) {
+                UUID uuid = entry.getKey();
+                int ticks = entry.getValue();
+                --ticks;
+                if (ticks == 0) {
+                    ColorStateHandler.reset(uuid);
+                } else {
+                    ColorStateHandler.stateKeeper.put(uuid, ticks);
+                }
             }
         }
-    }
-
-    @SubscribeEvent
-    public void livingDeath(LivingDeathEvent e) {
-        if (e.entityLiving instanceof EntityPlayer && e.source.getEntity() instanceof EntityPlayer)
-            onKillPlayer((EntityPlayer) e.source.getEntity());
-    }
-
-    @SubscribeEvent
-    public void livingDrop(LivingDropsEvent e) {
-        if (e.entityLiving instanceof EntityPlayer && e.source.getEntity() instanceof EntityPlayer)
-            onKillPlayer((EntityPlayer) e.source.getEntity());
-    }
-
-    @SubscribeEvent
-    public void playerAttackEntity(AttackEntityEvent e) {
-        if (e.target instanceof EntityPlayer) {
-            final EntityPlayer player = (EntityPlayer) e.target;
-
-            if (player.getHealth() <= 0) onKillPlayer(e.entityPlayer);
-            else onDamagePlayer(e.entityPlayer);
-        }
-    }
-
-    @SubscribeEvent
-    public void playerDrops(PlayerDropsEvent e) {
-        if (e.source.getEntity() instanceof EntityPlayer) onKillPlayer((EntityPlayer) e.source.getEntity());
     }
 
     @SubscribeEvent
