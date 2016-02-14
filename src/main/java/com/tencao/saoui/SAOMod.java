@@ -1,23 +1,17 @@
 package com.tencao.saoui;
 
 import com.tencao.saoui.ui.SAOWindowGUI;
-import com.tencao.saoui.util.ConfigHandler;
-import com.tencao.saoui.util.FriendsHandler;
-import com.tencao.saoui.util.SAOGL;
-import com.tencao.saoui.util.SAOOption;
+import com.tencao.saoui.util.*;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.NetworkCheckHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
-
-import java.util.Map;
 
 @Mod(modid = SAOMod.MODID, name = SAOMod.NAME, version = SAOMod.VERSION)
 @SideOnly(Side.CLIENT)
@@ -57,7 +51,6 @@ public class SAOMod {
     @EventHandler
     public void postInit(FMLPostInitializationEvent evt) {
         Minecraft mc = Minecraft.getMinecraft();
-
         SAOGL.setFont(mc, SAOOption.CUSTOM_FONT.getValue());
     }
 }

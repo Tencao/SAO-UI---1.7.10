@@ -121,9 +121,9 @@ public final class SAOGL {
         float f1 = 0.00390625F;
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
-        tessellator.addVertexWithUV((double) (x), (double) (y + height), (double) z, (double) ((float) (srcX) * f), (double) ((float) (srcY + srcHeight) * f1));
-        tessellator.addVertexWithUV((double) (x + width), (double) (y + height), (double) z, (double) ((float) (srcX + srcWidth) * f), (double) ((float) (srcY + srcHeight) * f1));
-        tessellator.addVertexWithUV((double) (x + width), (double) (y), (double) z, (double) ((float) (srcX + srcWidth) * f), (double) ((float) (srcY) * f1));
+        tessellator.addVertexWithUV((double) (x), y + height, (double) z, (double) ((float) (srcX) * f), (double) ((float) (srcY + srcHeight) * f1));
+        tessellator.addVertexWithUV(x + width, y + height, (double) z, (double) ((float) (srcX + srcWidth) * f), (double) ((float) (srcY + srcHeight) * f1));
+        tessellator.addVertexWithUV(x + width, (double) (y), (double) z, (double) ((float) (srcX + srcWidth) * f), (double) ((float) (srcY) * f1));
         tessellator.addVertexWithUV((double) (x), (double) (y), (double) z, (double) ((float) (srcX) * f), (double) ((float) (srcY) * f1));
         tessellator.draw();
     }

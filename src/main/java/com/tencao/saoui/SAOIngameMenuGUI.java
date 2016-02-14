@@ -1,12 +1,8 @@
 package com.tencao.saoui;
 
-import baubles.api.BaubleType;
 import baubles.api.BaublesApi;
-import baubles.api.IBauble;
 import com.tencao.saoui.ui.*;
 import com.tencao.saoui.util.*;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.GuiChat;
@@ -15,10 +11,8 @@ import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -26,6 +20,7 @@ import net.minecraft.stats.Achievement;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
@@ -237,7 +232,7 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
             return swap.slotNumber >= 40 ? findEmptySlot(container, 9) : container.getSlot(40);
         } else if (type == SAOInventory.ACCESSORY) {
             IInventory baubles = BaublesApi.getBaubles(mc.thePlayer);
-            if (swap.inventory.getInventoryName() == baubles.getInventoryName()) return findEmptySlot(container, 9);
+            if (Objects.equals(swap.inventory.getInventoryName(), baubles.getInventoryName())) return findEmptySlot(container, 9);
             else {
                 for (int i = 0; i < baubles.getSizeInventory(); i++) {
                     if (baubles.isItemValidForSlot(i, swap.getStack())) return container.getSlot(i);

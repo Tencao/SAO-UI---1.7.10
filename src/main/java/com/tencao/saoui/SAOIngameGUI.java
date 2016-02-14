@@ -8,7 +8,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -16,9 +15,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.boss.BossStatus;
-import net.minecraft.entity.boss.IBossDisplayData;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.Direction;
@@ -31,11 +27,11 @@ import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
-import org.apache.logging.log4j.core.net.Priority;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.*;
 
@@ -529,8 +525,8 @@ public class SAOIngameGUI extends GuiIngameForge {
         else {
             mc.mcProfiler.startSection("forgeHudText");
             OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-            ArrayList<String> left = new ArrayList<String>();
-            ArrayList<String> right = new ArrayList<String>();
+            ArrayList<String> left = new ArrayList<>();
+            ArrayList<String> right = new ArrayList<>();
 
             if (mc.isDemo()) {
                 long time = mc.theWorld.getTotalWorldTime();
@@ -595,9 +591,7 @@ public class SAOIngameGUI extends GuiIngameForge {
                 }
 
                 right.add(null);
-                for (String brand : FMLCommonHandler.instance().getBrandings(false)) {
-                    right.add(brand);
-                }
+                right.addAll(FMLCommonHandler.instance().getBrandings(false).stream().collect(Collectors.toList()));
                 GL11.glPopMatrix();
                 mc.mcProfiler.endSection();
                 post(DEBUG);

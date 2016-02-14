@@ -6,6 +6,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 @SideOnly(Side.CLIENT)
 public enum SAOHealthStep {
 
@@ -36,10 +40,9 @@ public enum SAOHealthStep {
     }
 
     public static SAOHealthStep getStep(Minecraft mc, float health, float time) {
-        final float value = health;
         SAOHealthStep step = first();
 
-        while ((value > step.getLimit()) && (step.ordinal() + 1 < values().length)) step = next(step);
+        while ((health > step.getLimit()) && (step.ordinal() + 1 < values().length)) step = next(step);
 
         return step;
     }

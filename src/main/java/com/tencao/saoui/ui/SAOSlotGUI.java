@@ -122,10 +122,10 @@ public class SAOSlotGUI extends SAOButtonGUI {
             }
 
             tessellator.startDrawingQuads();
-            tessellator.addVertexWithUV((double)(x + 0), (double)(y + height), (double)itemRender.zLevel, (double)((f2 + (float)height * f4) * f), (double)((f3 + (float)height) * f1));
+            tessellator.addVertexWithUV((double)(x), (double)(y + height), (double)itemRender.zLevel, (double)((f2 + (float)height * f4) * f), (double)((f3 + (float)height) * f1));
             tessellator.addVertexWithUV((double)(x + width), (double)(y + height), (double)itemRender.zLevel, (double)((f2 + (float)width + (float)height * f4) * f), (double)((f3 + (float)height) * f1));
-            tessellator.addVertexWithUV((double)(x + width), (double)(y + 0), (double)itemRender.zLevel, (double)((f2 + (float)width) * f), (double)((f3 + 0.0F) * f1));
-            tessellator.addVertexWithUV((double)(x + 0), (double)(y + 0), (double)itemRender.zLevel, (double)((f2 + 0.0F) * f), (double)((f3 + 0.0F) * f1));
+            tessellator.addVertexWithUV((double)(x + width), (double)(y), (double)itemRender.zLevel, (double)((f2 + (float)width) * f), (double)((f3 + 0.0F) * f1));
+            tessellator.addVertexWithUV((double)(x), (double)(y), (double)itemRender.zLevel, (double)((f2 + 0.0F) * f), (double)((f3 + 0.0F) * f1));
             tessellator.draw();
         }
     }
@@ -159,9 +159,8 @@ public class SAOSlotGUI extends SAOButtonGUI {
 
     @Override
     int getColor(int hoverState, boolean bg) {
-        final int color = super.getColor(hoverState, bg);
 
-        return color;
+        return super.getColor(hoverState, bg);
     }
 
     @Override

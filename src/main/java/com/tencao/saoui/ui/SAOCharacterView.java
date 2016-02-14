@@ -5,7 +5,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
@@ -31,7 +30,7 @@ public class SAOCharacterView extends SAOElementGUI {
 
         IS_VIEWING = true;
         if (character.isRiding() && SAOOption.MOUNT_STAT_VIEW.getValue())
-            GuiInventory.drawEntityOnScreen(x, y, size, mouseX, mouseY, (EntityLivingBase)tmp);
+            GuiInventory.drawEntityOnScreen(x, y, size, mouseX, mouseY, tmp);
         else GuiInventory.drawEntityOnScreen(x, y, size, mouseX, mouseY, character);
         IS_VIEWING = false;
 

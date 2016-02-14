@@ -2,7 +2,6 @@ package com.tencao.saoui;
 
 import com.tencao.saoui.util.SAOGL;
 import com.tencao.saoui.util.SAOResources;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;

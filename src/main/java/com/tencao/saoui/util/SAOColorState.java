@@ -41,10 +41,9 @@ public enum SAOColorState {
         color = argb;
     }
 
-    public static SAOColorState getColorState(Minecraft mc, Entity entity) {
+    public static SAOColorState getColorState(Minecraft mc, EntityLivingBase entity) {
         if (entity instanceof EntityPlayer) return getPlayerColorState(mc, (EntityPlayer) entity);
-        else if (entity instanceof EntityLiving)
-            return ((EntityLiving) entity).getAttackTarget() instanceof EntityPlayer ? KILLER : getState(mc, (EntityLiving) entity);
+        else if (entity instanceof EntityLiving) return getState(mc, (EntityLiving) entity);
         else return INVALID;
     }
 
@@ -60,8 +59,7 @@ public enum SAOColorState {
     }
 
     public static boolean checkValidState(Entity entity){
-        if (entity instanceof IAnimals || entity instanceof EntityPlayer || entity instanceof IEntityOwnable) return true;
-        else return false;
+        return entity instanceof IAnimals || entity instanceof EntityPlayer || entity instanceof IEntityOwnable;
     }
 
     private static SAOColorState getPlayerColorState(Minecraft mc, EntityPlayer player) {
@@ -75,7 +73,8 @@ public enum SAOColorState {
         return Stream.of("_Bluexin_", "Blaez", "Felphor", "LordCruaver", "Tencao").anyMatch(name -> name.equals(pl));
     }
 
-    public final void glColor() {
+
+    public void glColor() {
         SAOGL.glColorRGBA(color);
     }
 

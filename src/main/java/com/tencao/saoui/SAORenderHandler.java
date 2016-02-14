@@ -1,43 +1,27 @@
 package com.tencao.saoui;
 
 import com.tencao.saoui.ui.SAOScreenGUI;
-import com.tencao.saoui.util.SAOColorState;
+import com.tencao.saoui.util.ColorStateHandler;
 import com.tencao.saoui.util.SAOOption;
-import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.IAnimals;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
@@ -117,15 +101,20 @@ public class SAORenderHandler {
     }
 
     @SubscribeEvent
-    public void renderPlayer(RenderPlayerEvent.Pre e) {
+    public void renderPlayer(RenderPlayerEvent.Post e) {
         RenderManager manager = RenderManager.instance;
-        StaticRenderer.render(manager, e.entity, e.entityPlayer.posX, e.entityPlayer.posY, e.entityPlayer.posZ);
+        if (e.entityPlayer != null)
+            ColorStateHandler.getInstance().genPlayerStates(e.entityPlayer);
+            StaticRenderer.render(manager, e.entityPlayer, e.entityPlayer.posX, e.entityPlayer.posY, e.entityPlayer.posZ);
     }
 
     @SubscribeEvent
-    public void renderEntity(RenderLivingEvent.Pre e) {
+    public void renderEntity(RenderLivingEvent.Post e) {
         RenderManager manager = RenderManager.instance;
-        StaticRenderer.render(manager, e.entity, e.x, e.y, e.z);
+        if (e.entity != mc.thePlayer) {
+            ColorStateHandler.getInstance().genColorStates(e.entity);
+            StaticRenderer.render(manager, e.entity, e.x, e.y, e.z);
+        }
     }
 
     @SubscribeEvent
