@@ -59,8 +59,13 @@ public class ColorStateHandler {
     }
 
     public synchronized void remove(EntityPlayer entity) {
-        playerStates.remove(entity.getEntityId());
-        playerKeeper.remove(entity.getEntityId());
+        playerStates.remove(entity.getUniqueID());
+        playerKeeper.remove(entity.getUniqueID());
+    }
+
+    public synchronized boolean isEmpty(){
+        if (colorStates.isEmpty() && stateKeeper.isEmpty() && playerKeeper.isEmpty() && playerStates.isEmpty()) return true;
+        else return false;
     }
 
     public boolean isChanged(EntityLivingBase entity) {
@@ -82,9 +87,11 @@ public class ColorStateHandler {
         colorStates.clear();
         playerKeeper.clear();
         playerStates.clear();
+        defaultStates.clear();
     }
 
     public synchronized void stateColor(EntityLivingBase entity) {
+        if (!SAOOption.AGGRO_SYSTEM.getValue()) defaultStates.get(entity.getClass()).glColor();
         if (entity instanceof EntityPlayer){
             if (playerStates.get(entity.getUniqueID()) != null) {
                 SAOColorState state = playerStates.get(entity.getUniqueID());
@@ -211,15 +218,10 @@ public class ColorStateHandler {
         }
     }
 
-    public synchronized boolean isStateKeeperEmpty(){
-        return stateKeeper.isEmpty();
-    }
-
-    public synchronized boolean isPlayerKeeperEmpty(){
-        return playerKeeper.isEmpty();
-    }
-
     public synchronized void updateKeeper(){
+        if (!SAOOption.AGGRO_SYSTEM.getValue()){
+            clean();
+        }
         if (!stateKeeper.isEmpty())
             stateKeeper.forEach((uuid, ticks) -> {
                 --ticks;

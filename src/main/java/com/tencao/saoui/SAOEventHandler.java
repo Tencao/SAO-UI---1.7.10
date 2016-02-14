@@ -60,44 +60,56 @@ public class SAOEventHandler {
 
     @SubscribeEvent
     public void checkAggro(LivingSetAttackTargetEvent e) {
-        if (e.target instanceof EntityPlayer)
-            stateChanger(e.entityLiving, false, true);
-        //System.out.print(e.entityLiving.getCommandSenderName() + " sent to State Changer from checkAggro");
+        if (SAOOption.AGGRO_SYSTEM.getValue())
+            if (e.target instanceof EntityPlayer)
+                stateChanger(e.entityLiving, false, true);
+            //System.out.print(e.entityLiving.getCommandSenderName() + " sent to State Changer from checkAggro");
     }
 
     @SubscribeEvent
     public void checkAttack(LivingAttackEvent e) {
-        if (e.source.getEntity() instanceof IAnimals)
-            if (e.entityLiving instanceof EntityPlayer) {
-                if (e.entityLiving.getHealth() <= 0) stateChanger((EntityLivingBase) e.source.getEntity(), true, false);
-                else stateChanger((EntityLivingBase) e.source.getEntity(), false, false);
-                if (SAOOption.DEBUG_MODE.getValue()) System.out.print(e.source.getEntity().getCommandSenderName() + " sent to State Changer from checkAttack" + "\n");
-            }
+        if (SAOOption.AGGRO_SYSTEM.getValue())
+            if (e.source.getEntity() instanceof IAnimals)
+                if (e.entityLiving instanceof EntityPlayer) {
+                    if (e.entityLiving.getHealth() <= 0)
+                        stateChanger((EntityLivingBase) e.source.getEntity(), true, false);
+                    else stateChanger((EntityLivingBase) e.source.getEntity(), false, false);
+                    if (SAOOption.DEBUG_MODE.getValue())
+                        System.out.print(e.source.getEntity().getCommandSenderName() + " sent to State Changer from checkAttack" + "\n");
+                }
     }
 
     @SubscribeEvent
     public void checkPlayerAttack(AttackEntityEvent e) {
-        if (e.target instanceof EntityPlayer && e.target.getUniqueID() != e.entityPlayer.getUniqueID()) {
-            if (((EntityPlayer) e.target).getHealth() <= 0) stateChanger(e.entityPlayer, true, false);
-            else stateChanger(e.entityPlayer, false, false);
-            if (SAOOption.DEBUG_MODE.getValue()) System.out.print(e.entityPlayer.getCommandSenderName() + " sent to State Changer from checkPlayerAttack" + "\n");
-        }
+        if (SAOOption.AGGRO_SYSTEM.getValue())
+            if (e.target instanceof EntityPlayer && e.target.getUniqueID() != e.entityPlayer.getUniqueID()) {
+                if (((EntityPlayer) e.target).getHealth() <= 0) stateChanger(e.entityPlayer, true, false);
+                else stateChanger(e.entityPlayer, false, false);
+                if (SAOOption.DEBUG_MODE.getValue())
+                    System.out.print(e.entityPlayer.getCommandSenderName() + " sent to State Changer from checkPlayerAttack" + "\n");
+            }
     }
 
     @SubscribeEvent
     public void checkKill(LivingDeathEvent e){
-        if (e.source.getEntity() instanceof EntityLivingBase)
-            if (e.entityLiving instanceof EntityPlayer) {
-                stateChanger((EntityLivingBase) e.source.getEntity(), true, false);
-                if (SAOOption.DEBUG_MODE.getValue()) System.out.print(e.source.getEntity().getCommandSenderName() + " sent to State Changer from checkKill" + "\n");
-            }
-        if (!(e.entityLiving instanceof EntityPlayer)) ColorStateHandler.getInstance().remove(e.entityLiving);
+        if (SAOOption.AGGRO_SYSTEM.getValue()) {
+            if (e.source.getEntity() instanceof EntityLivingBase)
+                if (e.entityLiving instanceof EntityPlayer) {
+                    stateChanger((EntityLivingBase) e.source.getEntity(), true, false);
+                    if (SAOOption.DEBUG_MODE.getValue())
+                        System.out.print(e.source.getEntity().getCommandSenderName() + " sent to State Changer from checkKill" + "\n");
+                }
+            if (!(e.entityLiving instanceof EntityPlayer)) ColorStateHandler.getInstance().remove(e.entityLiving);
+        }
         if (SAOOption.PARTICLES.getValue() && e.entity.worldObj.isRemote) SAORenderHandler.deadHandlers.add(e.entityLiving);
     }
 
     @SubscribeEvent
     public void resetState(TickEvent.RenderTickEvent e){
-        ColorStateHandler.getInstance().updateKeeper();
+        if (SAOOption.AGGRO_SYSTEM.getValue())ColorStateHandler.getInstance().updateKeeper();
+        if (!SAOOption.AGGRO_SYSTEM.getValue()){
+            if (!ColorStateHandler.getInstance().isEmpty())ColorStateHandler.getInstance().clean();
+        }
     }
 
     @SubscribeEvent

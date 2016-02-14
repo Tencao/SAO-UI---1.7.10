@@ -96,6 +96,7 @@ optionDebugMode=Debug Mode
 optionDefaultDebug=Default Debug
 optionCompatInv=Compact Inventory
 optionMountStatView=Show Mount Stats
+optionAggro=Aggro System
 
 optCatUI=UI Options
 optCatHealth=Health Bar Options

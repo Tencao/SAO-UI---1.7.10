@@ -52,7 +52,7 @@ public enum SAOColorState {
         else if (entity instanceof EntityTameable && ((EntityTameable) entity).isTamed())
             return ((EntityTameable) entity).getOwner() != mc.thePlayer ? VIOLENT : INNOCENT;
         else if (entity instanceof IBossDisplayData) return BOSS;
-        else if (entity instanceof IMob) return VIOLENT;
+        else if (entity instanceof IMob) return SAOOption.AGGRO_SYSTEM.getValue() ? VIOLENT : KILLER;
         else if (entity instanceof IAnimals) return INNOCENT;
         else if (entity instanceof IEntityOwnable) return VIOLENT;
         else return INVALID;
