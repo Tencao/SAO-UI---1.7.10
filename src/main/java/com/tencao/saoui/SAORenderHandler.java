@@ -103,9 +103,10 @@ public class SAORenderHandler {
     @SubscribeEvent
     public void renderPlayer(RenderPlayerEvent.Post e) {
         RenderManager manager = RenderManager.instance;
-        if (e.entityPlayer != null)
+        if (e.entityPlayer != null) {
             ColorStateHandler.getInstance().genPlayerStates(e.entityPlayer);
             StaticRenderer.render(manager, e.entityPlayer, e.entityPlayer.posX, e.entityPlayer.posY, e.entityPlayer.posZ);
+        }
     }
 
     @SubscribeEvent

@@ -6,6 +6,7 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -169,7 +170,26 @@ public class SAOIngameGUI extends GuiIngameForge {
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
     protected void renderAir(int width, int height) {
         if (pre(AIR)) return;
-        // Linked to renderHealth
+        mc.mcProfiler.startSection("air");
+        GL11.glEnable(GL11.GL_BLEND);
+        int left = width / 2 + 91;
+        int top = height - right_height;
+
+        if (mc.thePlayer.isInsideOfMaterial(Material.water))
+        {
+            int air = mc.thePlayer.getAir();
+            int full = MathHelper.ceiling_double_int((double)(air - 2) * 10.0D / 300.0D);
+            int partial = MathHelper.ceiling_double_int((double)air * 10.0D / 300.0D) - full;
+
+            for (int i = 0; i < full + partial; ++i)
+            {
+                drawTexturedModalRect(left - i * 8 - 9, top, (i < full ? 16 : 25), 18, 9, 9);
+            }
+            right_height += 10;
+        }
+
+        GL11.glDisable(GL11.GL_BLEND);
+        mc.mcProfiler.endSection();
         post(AIR);
     }
 
@@ -599,17 +619,24 @@ public class SAOIngameGUI extends GuiIngameForge {
 
             RenderGameOverlayEvent.Text event = new RenderGameOverlayEvent.Text(eventParent, left, right);
             if (!MinecraftForge.EVENT_BUS.post(event)) {
-                for (int x = 0; x < left.size(); x++) {
-                    String msg = left.get(x);
+                int top = 20;
+                for (String msg : left) {
                     if (msg == null) continue;
-                    fontRenderer.drawStringWithShadow(msg, 2, 2 + x * 10, 0xFFFFFF);
+                    drawRect(1, top - 1, 2 + fontRenderer.getStringWidth(msg) + 1, top + fontRenderer.FONT_HEIGHT - 1, -1873784752);
+                    fontRenderer.drawString(msg, 2, top, 14737632);
+                    top += fontRenderer.FONT_HEIGHT;
                 }
 
-                for (int x = 0; x < right.size(); x++) {
-                    String msg = right.get(x);
+                top = 2;
+                for (String msg : right) {
                     if (msg == null) continue;
                     int w = fontRenderer.getStringWidth(msg);
-                    fontRenderer.drawStringWithShadow(msg, width - w - 10, 2 + x * 10, 0xFFFFFF);
+                    final int slotsY = (height - 9 * 22) / 2;
+
+                    int leftL = width - (SAOOption.ALT_HOTBAR.getValue() || top < slotsY - fontRenderer.FONT_HEIGHT - 2 ? 2 : 26) - w;
+                    drawRect(leftL - 1, top - 1, leftL + w + 1, top + fontRenderer.FONT_HEIGHT - 1, -1873784752);
+                    fontRenderer.drawString(msg, leftL, top, 14737632);
+                    top += fontRenderer.FONT_HEIGHT;
                 }
             }
 

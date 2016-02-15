@@ -132,16 +132,19 @@ public class ColorStateHandler {
                     if (defaultState != currentState) {
                         stateKeeper.put(entity.getEntityId(), 12000);
                         colorStates.replace(entity.getEntityId(), currentState, newState);
-                        if (SAOOption.DEBUG_MODE.getValue())
-                            System.out.print(entity + "---" + entity.getCommandSenderName() + "\n" + " updated state 1. Changed state from " + currentState.name() + " to " + newState.name() + "\n" + "\n");
+                        if (SAOOption.DEBUG_MODE.getValue()) System.out.print(entity + "---" + entity.getCommandSenderName() + "\n" + " updated state 1. Changed state from " + currentState.name() + " to " + newState.name() + "\n" + "\n");
                     } else {
                         stateKeeper.put(entity.getEntityId(), 6000);
                         colorStates.replace(entity.getEntityId(), currentState, newState);
-                        if (SAOOption.DEBUG_MODE.getValue())
-                            System.out.print(entity + "---" + entity.getCommandSenderName() + "\n" + " updated state 2. Changed state from " + currentState.name() + " to " + newState.name() + "\n" + "\n");
+                        if (SAOOption.DEBUG_MODE.getValue()) System.out.print(entity + "---" + entity.getCommandSenderName() + "\n" + " updated state 2. Changed state from " + currentState.name() + " to " + newState.name() + "\n" + "\n");
                     }
+                else if (newState == SAOColorState.KILLER) {
+                    stateKeeper.put(entity.getEntityId(), 12000);
+                } else if (newState == SAOColorState.VIOLENT){
+                    stateKeeper.put(entity.getEntityId(), 6000);
+                }
             } else if (SAOOption.DEBUG_MODE.getValue())
-                System.out.print("WARNING - ENTITY RETURNED INVALID STATE FROM SET - " + entity.getCommandSenderName() + " " + entity.getEntityId() + "\n");
+                if (SAOOption.DEBUG_MODE.getValue()) System.out.print("WARNING - ENTITY RETURNED INVALID STATE FROM SET - " + entity.getCommandSenderName() + " " + entity.getEntityId() + "\n");
         } else {
             if (playerStates.get(entity.getUniqueID()) == null) genPlayerStates((EntityPlayer)entity);
             else {
@@ -150,10 +153,16 @@ public class ColorStateHandler {
                     if (defaultState != currentState) {
                         playerKeeper.put(entity.getUniqueID(), 12000);
                         playerStates.replace(entity.getUniqueID(), currentState, newState);
+                        if (SAOOption.DEBUG_MODE.getValue()) System.out.print(entity + "---" + entity.getCommandSenderName() + "\n" + " updated state 3. Changed state from " + currentState.name() + " to " + newState.name() + "\n" + "\n");
                     } else {
                         playerKeeper.put(entity.getUniqueID(), 6000);
                         playerStates.replace(entity.getUniqueID(), currentState, newState);
+                        if (SAOOption.DEBUG_MODE.getValue()) System.out.print(entity + "---" + entity.getCommandSenderName() + "\n" + " updated state 4. Changed state from " + currentState.name() + " to " + newState.name() + "\n" + "\n");
                     }
+                } else if (newState == SAOColorState.KILLER) {
+                    playerKeeper.put(entity.getUniqueID(), 12000);
+                } else if (newState == SAOColorState.VIOLENT){
+                    playerKeeper.put(entity.getUniqueID(), 6000);
                 }
             }
         }

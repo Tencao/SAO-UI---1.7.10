@@ -15,9 +15,6 @@ import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.Color;
-
-import java.util.UUID;
 
 @SideOnly(Side.CLIENT)
 class StaticRenderer{
@@ -27,18 +24,13 @@ class StaticRenderer{
     private static final double HEALTH_RANGE = 0.975F;
     private static final float HEALTH_OFFSET = 0.75F;
     private static final double HEALTH_HEIGHT = 0.21F;
-    private static EntityLivingBase entity;
-    private static SAOColorState state;
 
     public static void render(RenderManager renderManager, EntityLivingBase living, double x, double y, double z) {
         if (!(ColorStateHandler.getInstance().isValid(living))) System.out.print("WARNING - " + living.getCommandSenderName() + " " + living.getUniqueID() + " contains no valid state" + "\n");
-        entity = living;
+
         final Minecraft mc = Minecraft.getMinecraft();
 
-        boolean dead = false;
-
-
-        dead = StaticPlayerHelper.getHealth(mc, living, SAOMod.UNKNOWN_TIME_DELAY) <= 0;
+        boolean dead = StaticPlayerHelper.getHealth(mc, living, SAOMod.UNKNOWN_TIME_DELAY) <= 0;
 
         if (living.deathTime == 1) living.deathTime++;
 
@@ -87,7 +79,7 @@ class StaticRenderer{
                 SAOGL.tryBlendFuncSeparate(770, 771, 1, 0);
 
                 SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.entities : SAOResources.entitiesCustom);
-                SAOEventHandler.getColor(entity);
+                SAOEventHandler.getColor(living);
                 tessellator.startDrawingQuads();
 
                 //System.out.print(state.name() + " assigned to " + living.getCommandSenderName() + " " + living.getUniqueID() + "\n");
@@ -264,10 +256,6 @@ class StaticRenderer{
         } else {
             SAOHealthStep.GOOD.glColor();
         }
-    }
-
-    private static void useColor(EntityLivingBase living) {
-        ColorStateHandler.getInstance().stateColor(living);
     }
 
     private static float getHealthFactor(Minecraft mc, Entity living, float time) {

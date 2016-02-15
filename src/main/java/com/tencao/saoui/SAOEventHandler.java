@@ -38,7 +38,7 @@ public class SAOEventHandler {
         else {
             SAOColorState defaultState =ColorStateHandler.getInstance().getDefault(entity);
             SAOColorState state = ColorStateHandler.getInstance().getSavedState(entity);
-            if (aggro && state == SAOColorState.VIOLENT)
+            if (aggro && defaultState == SAOColorState.VIOLENT)
                 ColorStateHandler.getInstance().set(entity, SAOColorState.KILLER, true);
             else if (major) {
                 if (state == SAOColorState.INNOCENT)
@@ -60,10 +60,11 @@ public class SAOEventHandler {
 
     @SubscribeEvent
     public void checkAggro(LivingSetAttackTargetEvent e) {
-        if (SAOOption.AGGRO_SYSTEM.getValue())
-            if (e.target instanceof EntityPlayer)
+        if (SAOOption.AGGRO_SYSTEM.getValue() && ColorStateHandler.getInstance().getSavedState(e.entityLiving) != SAOColorState.KILLER)
+            if (e.target instanceof EntityPlayer) {
                 stateChanger(e.entityLiving, false, true);
-            //System.out.print(e.entityLiving.getCommandSenderName() + " sent to State Changer from checkAggro");
+                System.out.print(e.entityLiving.getCommandSenderName() + " sent to State Changer from checkAggro" + "\n");
+            }
     }
 
     @SubscribeEvent

@@ -1,68 +1,46 @@
 package com.tencao.saoui.util;
 
 import baubles.api.BaubleType;
+import baubles.api.BaublesApi;
 import baubles.api.IBauble;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.BlockPumpkin;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.*;
 
 @SideOnly(Side.CLIENT)
 public enum SAOInventory{
 
-    EQUIPMENT((ItemFilter) (stack, state) -> {
+    EQUIPMENT((stack, state) -> {
         final Item item = stack.getItem();
 
         return (item instanceof ItemArmor) || ((item instanceof ItemBlock) && (((ItemBlock) item).blockInstance instanceof BlockPumpkin));
     }),
 
-    WEAPONS((ItemFilter) (stack, state) -> {
-        final Item item = stack.getItem();
+    WEAPONS((stack, state) -> stack.getItem() instanceof ItemSword),
 
-        return item instanceof ItemSword;
-    }),
+    BOWS((stack, state) -> stack.getItem() instanceof ItemBow),
 
-    BOWS((ItemFilter) (stack, state) -> {
-        final Item item = stack.getItem();
+    PICKAXE((stack, state) -> stack.getItem() instanceof ItemPickaxe),
 
-        return item instanceof ItemBow;
-    }),
+    AXE((stack, state) -> stack.getItem() instanceof ItemAxe),
 
-    PICKAXE((ItemFilter) (stack, state) -> {
-        final Item item = stack.getItem();
+    SHOVEL((stack, state) -> stack.getItem() instanceof ItemSpade),
 
-        return item instanceof ItemPickaxe;
-    }),
-
-    AXE((ItemFilter) (stack, state) -> {
-        final Item item = stack.getItem();
-
-        return item instanceof ItemAxe;
-    }),
-
-    SHOVEL((ItemFilter) (stack, state) -> {
-        final Item item = stack.getItem();
-
-        return item instanceof ItemSpade;
-    }),
-
-    COMPATTOOLS((ItemFilter) (stack, state) -> {
+    COMPATTOOLS((stack, state) -> {
         final Item item = stack.getItem();
 
         return ((item instanceof ItemTool) || (item instanceof ItemBow) || (item instanceof ItemSword));
     }),
 
-    ACCESSORY((ItemFilter) (stack, state) -> {
-        final Item item = stack.getItem();
+    ACCESSORY((stack, state) -> stack.getItem() instanceof IBauble),
 
-        return (
-                (item instanceof IBauble)
-        );
-    }),
-
-    CONSUMABLES((ItemFilter) (stack, state) -> {
+    CONSUMABLES((stack, state) -> {
         final Item item = stack.getItem();
 
         return (
@@ -76,7 +54,7 @@ public enum SAOInventory{
 
     private final ItemFilter itemFilter;
 
-    private SAOInventory(ItemFilter filter) {
+    SAOInventory(ItemFilter filter) {
         itemFilter = filter;
     }
 
@@ -84,8 +62,20 @@ public enum SAOInventory{
         return itemFilter.filter(stack, state);
     }
 
+    public static IInventory getBaubles(EntityPlayer player)
+    {
+        if (!Loader.isModLoaded("Baubles"))
+        {
+            return null;
+        } else
+        {
+            return BaublesApi.getBaubles(player);
+        }
+    }
+
+    @FunctionalInterface
     private interface ItemFilter {
-        public boolean filter(ItemStack stack, boolean state);
+        boolean filter(ItemStack stack, boolean state);
     }
 
 }
