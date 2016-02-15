@@ -30,7 +30,19 @@ public class SAOListGUI extends SAOMenuGUI {
 
     @Override
     protected int getOffset(int index) {
-        return Math.round(super.getOffset(index) - scrolledValue);
+        int a = Math.round(super.getOffset(index) - scrolledValue);
+
+        if (elements.size() > 9) {
+            if (super.getOffset(0) - scrolledValue > -super.getOffset(2)) { // elements can be added above
+                if (a >= super.getOffset(8)) {
+                    a = Math.round(super.getOffset(0) - super.getReverseOffset(index) - scrolledValue);
+                    if (a > super.getOffset(8) - scrolledValue) a = Math.round(super.getOffset(0) - super.getReverseOffset(index) - super.getOffset(elements.size()) - scrolledValue);
+                }
+            } else if (super.getOffset(elements.size()) - scrolledValue < super.getOffset(6) && index < elements.size() - 8) { // elements can be added below
+                a = Math.round(super.getOffset(elements.size()) + super.getOffset(index) - scrolledValue);
+            }
+        }
+        return a;
     }
 
     @Override
@@ -55,6 +67,7 @@ public class SAOListGUI extends SAOMenuGUI {
 
         if (element.visibility < 0.6F) element.visibility = 0;
         else element.visibility *= element.visibility;
+        scroll(0);
     }
 
     @Override
@@ -115,15 +128,18 @@ public class SAOListGUI extends SAOMenuGUI {
 
     @Override
     public boolean mouseWheel(Minecraft mc, int cursorX, int cursorY, int delta) {
-        if (elements.size() > 0) {
-            scroll(Math.abs(delta * 2 * getSize() / elements.size()) / delta);
-        }
+        if (elements.size() > 0) scroll(Math.abs(delta * 2 * getSize() / elements.size()) / delta);
+
         return super.mouseWheel(mc, cursorX, cursorY, delta);
     }
 
     private int scroll(int delta) {
         final int value = scrollValue;
-        scrollValue = Math.min(Math.max(scrollValue - delta, 0), super.getOffset(elements.size()) - getSize());
+        if (elements.size() <= 9) scrollValue = Math.min(Math.max(scrollValue - delta, 0), super.getOffset(elements.size()) - getSize());
+        else {
+            scrollValue -= delta;
+            scrollValue %= super.getOffset(elements.size());
+        }
         return Math.abs(value - scrollValue);
     }
 

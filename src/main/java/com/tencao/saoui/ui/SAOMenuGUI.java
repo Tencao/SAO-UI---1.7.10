@@ -21,6 +21,10 @@ public class SAOMenuGUI extends SAOContainerGUI {
         return elements.stream().limit(index).mapToInt(this::getOffsetSize).sum();
     }
 
+    int getReverseOffset(int index) {
+        return elements.stream().skip(index).mapToInt(this::getOffsetSize).sum();
+    }
+
     protected int getOffsetSize(SAOElementGUI element) {
         return element.height;
     }
