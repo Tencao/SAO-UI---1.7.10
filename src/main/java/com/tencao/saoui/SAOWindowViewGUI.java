@@ -32,16 +32,16 @@ public abstract class SAOWindowViewGUI extends SAOScreenGUI {
 
     public static SAOWindowViewGUI viewConfirm(final String title, final String message, final SAOActionHandler handler) {
         return new SAOWindowViewGUI(200, 60) {
-
             @Override
             protected SAOWindowGUI createWindow(int width, int height) {
                 return new SAOConfirmGUI(this, 0, 0, width, height, title, message, handler);
             }
-
         };
     }
 
+    @Override
     protected void init() {
+        super.init();
         elements.add(createWindow(windowWidth, windowHeight));
     }
 
@@ -51,20 +51,24 @@ public abstract class SAOWindowViewGUI extends SAOScreenGUI {
         return (SAOWindowGUI) elements.get(0);
     }
 
+    @Override
     public int getX(boolean relative) {
         return super.getX(relative) + (width - windowWidth) / 2;
     }
 
+    @Override
     public int getY(boolean relative) {
         return super.getY(relative) + (height - windowHeight) / 2;
     }
 
+    @Override
     public void drawScreen(int cursorX, int cursorY, float f) {
         drawDefaultBackground();
 
         super.drawScreen(cursorX, cursorY, f);
     }
 
+    @Override
     protected void backgroundClicked(int cursorX, int cursorY, int button) {
     }
 

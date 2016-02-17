@@ -9,6 +9,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Cursor;
 import org.lwjgl.input.Mouse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -183,7 +184,7 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
     }
 
     protected void backgroundClicked(int cursorX, int cursorY, int button) {
-        if (button == 0 /*&& ((SAOIngameGUI) mc.ingameGUI).backgroundClicked(cursorX, cursorY, button)*/) {
+        if (button == 0) {
             mc.displayGuiScreen(null);
             mc.setIngameFocus();
         }

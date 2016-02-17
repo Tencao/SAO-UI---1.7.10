@@ -44,7 +44,7 @@ public enum SAOOption {
     SOUND_EFFECTS(StatCollector.translateToLocal("optionSounds"), true, false, EFFECTS),
     //Misc
     CROSS_HAIR(StatCollector.translateToLocal("optionCrossHair"), false, false, MISC),
-    AGGRO_SYSTEM(StatCollector.translateToLocal("optionAggro"), true, false, MISC),
+    AGGRO_SYSTEM(StatCollector.translateToLocal("optionAggro"), false, false, MISC),
     CLIENT_CHAT_PACKETS(StatCollector.translateToLocal("optionCliChatPacks"), true, false, MISC),
     MOUNT_STAT_VIEW(StatCollector.translateToLocal("optionMountStatView"), true, false, MISC),
     CUSTOM_FONT(StatCollector.translateToLocal("optionCustomFont"), false, false, MISC),

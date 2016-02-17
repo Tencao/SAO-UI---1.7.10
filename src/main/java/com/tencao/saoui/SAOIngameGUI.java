@@ -2,6 +2,7 @@ package com.tencao.saoui;
 
 import com.tencao.saoui.util.*;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -60,7 +61,6 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     @Override
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
     public void renderGameOverlay(float partialTicks, boolean hasScreen, int mouseX, int mouseY) {
         fontRenderer = mc.fontRendererObj;
         username = mc.thePlayer.getDisplayName();
@@ -88,26 +88,26 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     @Override
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderCrosshairs(int width, int height) {
-        if (pre(CROSSHAIRS)) return;
+        if (replaceEvent(CROSSHAIRS)) return;
         SAOGL.glBlend(true);
         if (SAOOption.CROSS_HAIR.getValue()) super.renderCrosshairs(width, height);
         post(CROSSHAIRS);
     }
 
     @Override
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderArmor(int width, int height) {
-        if (pre(ARMOR)) return;
+        if (replaceEvent(ARMOR)) return;
         // Nothing happens here
         post(ARMOR);
     }
 
     @Override
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderHotbar(int width, int height, float partialTicks) {
-        if (pre(HOTBAR)) return;
+        if (replaceEvent(HOTBAR)) return;
 
         SAOGL.glAlpha(true);
         SAOGL.glBlend(true);
@@ -167,9 +167,9 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     @Override
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderAir(int width, int height) {
-        if (pre(AIR)) return;
+        if (replaceEvent(AIR)) return;
         mc.mcProfiler.startSection("air");
         GL11.glEnable(GL11.GL_BLEND);
         int left = width / 2 + 91;
@@ -194,9 +194,9 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     @Override
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderBossHealth() {
-        if (pre(BOSSHEALTH)) return;
+        if (replaceEvent(BOSSHEALTH)) return;
 
         mc.mcProfiler.startSection("bossHealth");
         if (BossStatus.bossName != null && BossStatus.statusBarTime > 0)
@@ -253,9 +253,9 @@ public class SAOIngameGUI extends GuiIngameForge {
 
 
     @Override
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     public void renderHealth(int width, int height) {
-        if (pre(HEALTH)) return;
+        if (replaceEvent(HEALTH)) return;
         mc.mcProfiler.startSection("health");
 
         SAOGL.glAlpha(true);
@@ -443,13 +443,13 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     @Override
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     public void renderFood(int width, int height) {
         // See below, called by renderHealth
     }
 
     private void renderFood(int healthWidth, int healthHeight, int offsetUsername, int stepOne, int stepTwo, int stepThree) {
-        if (pre(FOOD)) return;
+        if (replaceEvent(FOOD)) return;
         mc.mcProfiler.startSection("food");
         final int foodValue = (int) (StaticPlayerHelper.getHungerFract(mc, mc.thePlayer, time) * healthWidth);
         int h = foodValue < 12 ? 12 - foodValue : 0;
@@ -485,9 +485,9 @@ public class SAOIngameGUI extends GuiIngameForge {
 
 
     @Override
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderExperience(int width, int height) {
-        if (pre (EXPERIENCE)) return;
+        if (replaceEvent (EXPERIENCE)) return;
         if (SAOOption.REMOVE_HPXP.getValue()) return;
         if (!SAOOption.FORCE_HUD.getValue() && !this.mc.playerController.shouldDrawHUD()) return;
         mc.mcProfiler.startSection("expLevel");
@@ -514,9 +514,9 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     @Override
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderJumpBar(int width, int height) {
-        if (pre(JUMPBAR)) return;
+        if (replaceEvent(JUMPBAR)) return;
         renderExperience(width, height);
         super.renderJumpBar(width, height);
         // Nothing happens here (not implemented yet)
@@ -524,23 +524,23 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     @Override
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderHealthMount(int width, int height) {
         //EntityPlayer player = (EntityPlayer)mc.getRenderViewEntity();
         EntityPlayer player = (EntityPlayer) mc.renderViewEntity;
         Entity tmp = player.ridingEntity;
         if (!(tmp instanceof EntityLivingBase)) return;
 
-        if (pre(HEALTHMOUNT)) return;
+        if (replaceEvent(HEALTHMOUNT)) return;
         // Not implemented yet
         post(HEALTHMOUNT);
     }
 
     @Override
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled=true)
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderHUDText(int width, int height)
     {
-        if (pre(DEBUG)) return;
+        if (replaceEvent(DEBUG)) return;
         if (SAOOption.DEFAULT_UI.getValue() || SAOOption.DEFAULT_DEBUG.getValue()) super.renderHUDText(width, height);
         else {
             mc.mcProfiler.startSection("forgeHudText");
@@ -643,6 +643,16 @@ public class SAOIngameGUI extends GuiIngameForge {
             mc.mcProfiler.endSection();
             post(TEXT);
         }
+    }
+
+    private boolean replaceEvent(ElementType el) {
+        if (eventParent.type == el && eventParent.isCanceled()) {
+            eventParent.setCanceled(false);
+            eventParent.setResult(Event.Result.ALLOW);
+            pre(el);
+            return true;
+        }
+        return false;
     }
 
     // c/p from GuiIngameForge

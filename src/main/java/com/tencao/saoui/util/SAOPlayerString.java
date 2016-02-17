@@ -6,10 +6,12 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
 import net.minecraft.util.StatCollector;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
+import java.util.List;
 
 
 public final class SAOPlayerString implements SAOString {
@@ -63,7 +65,7 @@ public final class SAOPlayerString implements SAOString {
 
             float itemDamage = 0.0F;
 
-            if (player.getCurrentEquippedItem() != null) {
+            if (player.getCurrentEquippedItem() != null && player.getCurrentEquippedItem().getAttributeModifiers().get(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName()) != null) {
                 @SuppressWarnings("unchecked") final Collection<?> itemAttackDamage = player.getCurrentEquippedItem().getAttributeModifiers().get(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName());
 
                 itemDamage += itemAttackDamage.stream().filter(value -> value instanceof AttributeModifier).map(value -> (AttributeModifier) value)
@@ -71,7 +73,7 @@ public final class SAOPlayerString implements SAOString {
              }
 
             final float strength = attr(attackDamage + itemDamage);
-            final float agility = attr(player.getAIMoveSpeed());
+            final float agility = attr(player.getAIMoveSpeed()) * 10;
             final float resistance = attr(player.getTotalArmorValue());
 
             builder.append(StatCollector.translateToLocal("displayLvLong")).append(": ").append(level).append('\n');
