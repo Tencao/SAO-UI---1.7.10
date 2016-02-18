@@ -64,13 +64,17 @@ public enum SAOInventory{
 
     public static IInventory getBaubles(EntityPlayer player)
     {
-        if (!Loader.isModLoaded("Baubles"))
+        if (!isBaublesLoaded())
         {
             return null;
         } else
         {
             return BaublesApi.getBaubles(player);
         }
+    }
+
+    public static boolean isBaublesLoaded(){
+        return Loader.isModLoaded("Baubles");
     }
 
     @FunctionalInterface

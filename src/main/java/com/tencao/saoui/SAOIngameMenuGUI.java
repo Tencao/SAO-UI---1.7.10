@@ -404,7 +404,8 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
         } else if (id == SAOID.ARMOR) {
             menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.EQUIPMENT);
         } else if (id == SAOID.ACCESSORY) {
-            menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.ACCESSORY);
+            if (SAOInventory.isBaublesLoaded()) menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.ACCESSORY);
+            else menu.elements.add(new SAOEmptySlot(menu, 0, 0));
         } else if (id == SAOID.CONSUMABLES) {
             menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.CONSUMABLES);
         }
