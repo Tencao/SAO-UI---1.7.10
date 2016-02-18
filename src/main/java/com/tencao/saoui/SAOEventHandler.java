@@ -61,7 +61,7 @@ public class SAOEventHandler {
 
     @SubscribeEvent
     public void checkAggro(LivingSetAttackTargetEvent e) {
-        if (SAOOption.AGGRO_SYSTEM.getValue() && ColorStateHandler.getInstance().getSavedState(e.entityLiving) != SAOColorState.KILLER)
+        if (SAOOption.AGGRO_SYSTEM.getValue() && ColorStateHandler.getInstance().getSavedState(e.entityLiving) != SAOColorState.KILLER  && e.getPhase().equals(TickEvent.Phase.END))
             if (e.target instanceof EntityPlayer) {
                 stateChanger(e.entityLiving, false, true);
                 System.out.print(e.entityLiving.getCommandSenderName() + " sent to State Changer from checkAggro" + "\n");
@@ -70,7 +70,7 @@ public class SAOEventHandler {
 
     @SubscribeEvent
     public void checkAttack(LivingAttackEvent e) {
-        if (SAOOption.AGGRO_SYSTEM.getValue())
+        if (SAOOption.AGGRO_SYSTEM.getValue() && e.getPhase().equals(TickEvent.Phase.END)) // only)
             if (e.source.getEntity() instanceof IAnimals)
                 if (e.entityLiving instanceof EntityPlayer) {
                     if (e.entityLiving.getHealth() <= 0)
@@ -83,7 +83,7 @@ public class SAOEventHandler {
 
     @SubscribeEvent
     public void checkPlayerAttack(AttackEntityEvent e) {
-        if (SAOOption.AGGRO_SYSTEM.getValue())
+        if (SAOOption.AGGRO_SYSTEM.getValue() && e.getPhase().equals(TickEvent.Phase.END))
             if (e.target instanceof EntityPlayer && e.target.getUniqueID() != e.entityPlayer.getUniqueID()) {
                 if (((EntityPlayer) e.target).getHealth() <= 0) stateChanger(e.entityPlayer, true, false);
                 else stateChanger(e.entityPlayer, false, false);
@@ -94,7 +94,7 @@ public class SAOEventHandler {
 
     @SubscribeEvent
     public void checkKill(LivingDeathEvent e){
-        if (SAOOption.AGGRO_SYSTEM.getValue()) {
+        if (SAOOption.AGGRO_SYSTEM.getValue() && e.getPhase().equals(TickEvent.Phase.END)) {
             if (e.source.getEntity() instanceof EntityLivingBase)
                 if (e.entityLiving instanceof EntityPlayer) {
                     stateChanger((EntityLivingBase) e.source.getEntity(), true, false);
@@ -117,6 +117,11 @@ public class SAOEventHandler {
     @SubscribeEvent
     public void cleanStateMaps(FMLNetworkEvent.ClientDisconnectionFromServerEvent e){
         ColorStateHandler.getInstance().clean();
+    }
+
+    @SubscribeEvent
+    public void disableAggroOnServer(FMLNetworkEvent.ClientConnectedToServerEvent e){
+        if (!e.isLocal && SAOOption.AGGRO_SYSTEM.getValue()) SAOOption.AGGRO_SYSTEM.flip();
     }
 
     @SubscribeEvent
