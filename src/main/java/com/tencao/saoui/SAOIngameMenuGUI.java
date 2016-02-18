@@ -342,8 +342,8 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
             menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
 
             menu.elements.add(new SAOButtonGUI(menu, SAOID.QUESTS, 0, 0, StatCollector.translateToLocal("guiQuest"), SAOIcon.QUEST));
-            menu.elements.add(new SAOButtonGUI(menu, SAOID.FIELD_MAP, 0, 0, StatCollector.translateToLocal("guiFieldMap"), SAOIcon.FIELD_MAP));
-            menu.elements.add(new SAOButtonGUI(menu, SAOID.DUNGEON_MAP, 0, 0, StatCollector.translateToLocal("guiDungMap"), SAOIcon.DUNGEON_MAP));
+            if (SAOOption.DEBUG_MODE.getValue())menu.elements.add(new SAOButtonGUI(menu, SAOID.FIELD_MAP, 0, 0, StatCollector.translateToLocal("guiFieldMap"), SAOIcon.FIELD_MAP));
+            if (SAOOption.DEBUG_MODE.getValue()) menu.elements.add(new SAOButtonGUI(menu, SAOID.DUNGEON_MAP, 0, 0, StatCollector.translateToLocal("guiDungMap"), SAOIcon.DUNGEON_MAP));
 
             sub = SAOSub.createNavigationSub(mc, element, -189, menuOffsetY);
             info = SAOSub.addInfo(sub);
