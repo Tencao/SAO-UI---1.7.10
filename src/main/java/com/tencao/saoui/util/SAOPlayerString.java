@@ -6,12 +6,10 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.util.StatCollector;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
-import java.util.List;
 
 
 public final class SAOPlayerString implements SAOString {

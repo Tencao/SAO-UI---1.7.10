@@ -13,7 +13,6 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.*;
@@ -70,7 +69,7 @@ public class SAOEventHandler {
 
     @SubscribeEvent
     public void checkAttack(LivingAttackEvent e) {
-        if (SAOOption.AGGRO_SYSTEM.getValue() && e.getPhase().equals(TickEvent.Phase.END)) // only)
+        if (SAOOption.AGGRO_SYSTEM.getValue() && e.getPhase().equals(TickEvent.Phase.END))
             if (e.source.getEntity() instanceof IAnimals)
                 if (e.entityLiving instanceof EntityPlayer) {
                     if (e.entityLiving.getHealth() <= 0)

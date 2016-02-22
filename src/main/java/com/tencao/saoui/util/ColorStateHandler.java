@@ -5,7 +5,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import org.lwjgl.Sys;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;

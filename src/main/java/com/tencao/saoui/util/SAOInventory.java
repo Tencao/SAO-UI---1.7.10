@@ -1,15 +1,12 @@
 package com.tencao.saoui.util;
 
-import baubles.api.BaubleType;
 import baubles.api.BaublesApi;
 import baubles.api.IBauble;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.BlockPumpkin;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.*;
 
@@ -59,7 +56,7 @@ public enum SAOInventory{
     }
 
     public final boolean isFine(ItemStack stack, boolean state) {
-        return itemFilter.filter(stack, state);
+        return stack != null && itemFilter.filter(stack, state);
     }
 
     public static IInventory getBaubles(EntityPlayer player)
