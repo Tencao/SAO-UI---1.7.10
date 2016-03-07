@@ -384,11 +384,11 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
                 menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.COMPATTOOLS);
             } else {
                 menu = new SAOMenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
-                if (mc.thePlayer.inventoryContainer.inventoryItemStacks.stream().anyMatch(st -> SAOInventory.WEAPONS.isFine((ItemStack) st, true))) menu.elements.add(new SAOButtonGUI(menu, SAOID.WEAPONS, 0, 0, StatCollector.translateToLocal("guiWeapons"), SAOIcon.EQUIPMENT));
-                if (mc.thePlayer.inventoryContainer.inventoryItemStacks.stream().anyMatch(st -> SAOInventory.BOWS.isFine((ItemStack) st, true))) menu.elements.add(new SAOButtonGUI(menu, SAOID.BOWS, 0, 0, StatCollector.translateToLocal("guiBows"), SAOIcon.EQUIPMENT));
-                if (mc.thePlayer.inventoryContainer.inventoryItemStacks.stream().anyMatch(st -> SAOInventory.PICKAXE.isFine((ItemStack) st, true))) menu.elements.add(new SAOButtonGUI(menu, SAOID.PICKAXE, 0, 0, StatCollector.translateToLocal("guiPickaxes"), SAOIcon.EQUIPMENT));
-                if (mc.thePlayer.inventoryContainer.inventoryItemStacks.stream().anyMatch(st -> SAOInventory.AXE.isFine((ItemStack) st, true))) menu.elements.add(new SAOButtonGUI(menu, SAOID.AXE, 0, 0, StatCollector.translateToLocal("guiAxes"), SAOIcon.EQUIPMENT));
-                if (mc.thePlayer.inventoryContainer.inventoryItemStacks.stream().anyMatch(st -> SAOInventory.SHOVEL.isFine((ItemStack) st, true))) menu.elements.add(new SAOButtonGUI(menu, SAOID.SHOVEL, 0, 0, StatCollector.translateToLocal("guiShovels"), SAOIcon.EQUIPMENT));
+                if (mc.thePlayer.inventoryContainer.getInventory().stream().filter(st -> st != null).anyMatch(st -> SAOInventory.WEAPONS.isFine((ItemStack) st, true))) menu.elements.add(new SAOButtonGUI(menu, SAOID.WEAPONS, 0, 0, StatCollector.translateToLocal("guiWeapons"), SAOIcon.EQUIPMENT));
+                if (mc.thePlayer.inventoryContainer.getInventory().stream().filter(st -> st != null).anyMatch(st -> SAOInventory.BOWS.isFine((ItemStack) st, true))) menu.elements.add(new SAOButtonGUI(menu, SAOID.BOWS, 0, 0, StatCollector.translateToLocal("guiBows"), SAOIcon.EQUIPMENT));
+                if (mc.thePlayer.inventoryContainer.getInventory().stream().filter(st -> st != null).anyMatch(st -> SAOInventory.PICKAXE.isFine((ItemStack) st, true))) menu.elements.add(new SAOButtonGUI(menu, SAOID.PICKAXE, 0, 0, StatCollector.translateToLocal("guiPickaxes"), SAOIcon.EQUIPMENT));
+                if (mc.thePlayer.inventoryContainer.getInventory().stream().filter(st -> st != null).anyMatch(st -> SAOInventory.AXE.isFine((ItemStack) st, true))) menu.elements.add(new SAOButtonGUI(menu, SAOID.AXE, 0, 0, StatCollector.translateToLocal("guiAxes"), SAOIcon.EQUIPMENT));
+                if (mc.thePlayer.inventoryContainer.getInventory().stream().filter(st -> st != null).anyMatch(st -> SAOInventory.SHOVEL.isFine((ItemStack) st, true))) menu.elements.add(new SAOButtonGUI(menu, SAOID.SHOVEL, 0, 0, StatCollector.translateToLocal("guiShovels"), SAOIcon.EQUIPMENT));
                 if (menu.elements.isEmpty()) menu.elements.add(new SAOEmptySlot(menu, 0, 0));
             }
         } else if (id == SAOID.WEAPONS) {
