@@ -1,7 +1,7 @@
 package com.tencao.saoui.commands;
 
-import com.tencao.saoui.util.FriendsHandler;
-import com.tencao.saoui.util.PartyHelper;
+import com.tencao.saoui.events.FriendsHandler;
+import com.tencao.saoui.social.party.PartyHelper;
 import com.tencao.saoui.util.TriConsumer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

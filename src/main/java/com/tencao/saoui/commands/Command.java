@@ -1,7 +1,7 @@
 package com.tencao.saoui.commands;
 
-import com.tencao.saoui.util.SAOOption;
-import com.tencao.saoui.util.StaticPlayerHelper;
+import com.tencao.saoui.util.OptionCore;
+import com.tencao.saoui.social.StaticPlayerHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 
@@ -38,7 +38,7 @@ public class Command {
     }
 
     public static boolean processCommand(String raw) {
-        if (Minecraft.getMinecraft().thePlayer == null || !SAOOption.CLIENT_CHAT_PACKETS.getValue()) return false;
+        if (Minecraft.getMinecraft().thePlayer == null || !OptionCore.CLIENT_CHAT_PACKETS.getValue()) return false;
         if (raw.contains(CommandType.PREFIX) && raw.contains(CommandType.SUFFIX)) {
             final Command command;
             try {
@@ -80,7 +80,7 @@ public class Command {
     }
 
     public void send(Minecraft mc) {
-        if (mc.thePlayer == null || !SAOOption.CLIENT_CHAT_PACKETS.getValue()) return;
+        if (mc.thePlayer == null || !OptionCore.CLIENT_CHAT_PACKETS.getValue()) return;
         mc.thePlayer.sendChatMessage(this.toChat());
     }
 
