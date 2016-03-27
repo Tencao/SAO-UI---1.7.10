@@ -107,14 +107,14 @@ public abstract class ScreenGUI extends GuiScreen implements ParentElement {
         super.drawScreen(cursorX, cursorY, f);
 
         GLCore.glStartUI(mc);
-        GLCore.glStart();
-
-        GLCore.glBlend(true);
-        GLCore.tryBlendFuncSeparate(770, 771, 1, 0);
 
         for (int i = elements.size() - 1; i >= 0; i--) elements.get(i).draw(mc, cursorX, cursorY);
 
         if (CURSOR_STATUS == CursorStatus.SHOW) {
+            GLCore.glStart();
+
+            GLCore.glBlend(true);
+            GLCore.tryBlendFuncSeparate(770, 771, 1, 0);
             GLCore.glBindTexture(OptionCore.ORIGINAL_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
 
             GLCore.glBlend(true);
@@ -137,9 +137,9 @@ public abstract class ScreenGUI extends GuiScreen implements ParentElement {
             }
 
             GLCore.glTexturedRect(cursorX - 7, cursorY - 7, 20, 115, 15, 15);
+            GLCore.glEnd();
         }
 
-        GLCore.glEnd();
         GLCore.glEndUI(mc);
     }
 
