@@ -1,0 +1,12 @@
+###Version 1.7.10-1.6.0
+* ADDED: New option, UI Only, which removed everything excluding the UI
+* ADDED: New multi-choice option in ingame menu
+* CHANGE: Reorganized the language file
+* CHANGE: Reorganized class files to make updating and debugging much easier
+* CHANGE: Doubled the search radius of party invites to make it less restrictive
+* CHANGE: Pressing ctrl now locks the ingame menu position
+* CHANGE: CursorToggle option now makes ctrl act as a toggle or hold
+* CHANGE: Reworked the Aggro System
+* CHANGE: Reworked the ColorState Handler to reflect the new Aggro System
+* CHANGE: Redone all the GL Code
+* FIXED: Fixed a bug where Cross-hairs would break with certain mods
