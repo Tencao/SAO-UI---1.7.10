@@ -68,42 +68,54 @@ guiLogout=Logout
 guiBack=Back
 
 
-# Options
-optionDefaultUI=Default UI
-optionDefaultInv=Default Inventory
-optionDefaultDeath=Default Death
-optionDefaultHotbar=Default Hotbar
-optionAltHotbar=Alt Hotbar
-optionCrossHair=Cross Hair
-optionHealthBars=Health Bars
-optionSmoothHealth=Smooth Health
-optionColorCursor=Guild Icon
-optionParticles=Particles
-optionCursorMov=Cursor Movement
-optionCliChatPacks=Client Chat Packets
-optionSounds=Sound Effects
-optionLogout=Can Log Out?
-optionOrigUI=Original UI
-optionLessVis=Less Visual Noise
-optionSpinning=Spinning Crystals
-optionForceHud=Force HUD (gm 1)
-optionLightHud=Lighter HUD
-optionBossBar=Force Boss HP bar
-optionAltAbsorbPos=Alt Absorb Value Pos
-optionGuiPause=GUIs pause the game
-optionCustomFont=Use SAO Font
-optionDebugMode=Debug Mode
-optionDefaultDebug=Default Debug
-optionCompatInv=Compact Inventory
-optionMountStatView=Show Mount Stats
-optionAggro=Aggro System
-
+# Option Categories
 optCatUI=UI Options
+optTheme=Themes
 optCatHealth=Health Bar Options
 optCatHotBar=Hotbar Options
 optCatEffects=Effects
 optCatMisc=Misc
 
+# Options - UI
+optionDefaultInv=Default Inventory
+optionDefaultDeath=Default Death
+optionDefaultDebuge=Default Debug
+optionForceHud=Force HUD (gm 1)
+optionLogout=Enable Logout
+optionGuiPause=GUIs pause the game
+
+# Options - Themes
+optionDefaultUI=Vanilla UI
+optionALOUI=ALO UI
+optionSAOUI=SAO UI
+
+# Options - Health
+optionSmoothHealth=Smooth Health
+optionHealthBars=Health Bars
+optionLightHud=Lighter HUD
+optionAltAbsorbPos=Alt Absorb Value Pos
+
+# Options - Hotbar
+optionDefaultHotbar=Default Hotbar
+optionHorHotbar=Horizontal Hotbar
+optionVerHotbar=Vertical Hotbar
+
+# Options - Effects
+optionColorCursor=Color Cursor
+optionCursorToggle=Toggle Cursor Movement
+optionSpinning=Spinning Crystals
+optionParticles=Particles
+optionLessVis=Less Visual Noise
+optionSounds=Sound Effects
+
+# Options - Misc
+optionCrossHair=Cross Hair
+optionAggro=Aggro System
+optionCliChatPacks=Client Chat Packets
+optionMountStatView=Show Mount Stats
+optionCustomFont=Use SAO Font
+optionDebugMode=Debug Mode
+optionCompatInv=Compact Inventory
 
 # Display
 displayLvShort=LV
