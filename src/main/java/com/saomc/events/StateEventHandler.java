@@ -13,13 +13,14 @@ import net.minecraftforge.event.entity.EntityEvent;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.saomc.events.EventCore.mc;
+
 /**
  * This is purely for the ColorStateHandler
  */
 public class StateEventHandler {
 
     private static int ticks = 0;
-    private static Minecraft mc = Minecraft.getMinecraft();
 
     static void checkTicks (TickEvent.RenderTickEvent e){
         if (!OptionCore.DISABLE_TICKS.getValue() && mc.theWorld != null && e.phase.equals(TickEvent.Phase.END)) {

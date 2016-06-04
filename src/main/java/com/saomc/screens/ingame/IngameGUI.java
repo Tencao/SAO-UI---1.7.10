@@ -4,6 +4,8 @@ import com.saomc.GLCore;
 import com.saomc.SAOCore;
 import com.saomc.effects.StatusEffects;
 import com.saomc.resources.StringNames;
+import com.saomc.screens.death.DeathScreen;
+import com.saomc.screens.menu.IngameMenuGUI;
 import com.saomc.social.StaticPlayerHelper;
 import com.saomc.social.party.PartyHelper;
 import com.saomc.util.OptionCore;
@@ -97,23 +99,25 @@ public class IngameGUI extends GuiIngameForge {
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderCrosshairs(int width, int height) {
         if (pre(CROSSHAIRS)) return;
-        if (OptionCore.CROSS_HAIR.getValue()) super.renderCrosshairs(width, height);
+        if (OptionCore.CROSS_HAIR.getValue() && !(mc.currentScreen instanceof IngameMenuGUI || mc.currentScreen instanceof DeathScreen)) super.renderCrosshairs(width, height);
         post(CROSSHAIRS);
     }
 
     @Override
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderArmor(int width, int height) {
-        if (replaceEvent(ARMOR)) return;
-        // Nothing happens here
-        post(ARMOR);
+        if (OptionCore.VANILLA_UI.getValue()) super.renderArmor(width, height);
+        else {
+            if (replaceEvent(ARMOR)) return;
+            // Nothing happens here
+            post(ARMOR);
+        }
     }
 
     @Override
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderHotbar(int width, int height, float partialTicks) {
         if (replaceEvent(HOTBAR)) return;
-
         final InventoryPlayer inv = mc.thePlayer.inventory;
         final int slotCount = 9;
         if (OptionCore.DEFAULT_HOTBAR.getValue()) super.renderHotbar(width, height, partialTicks);
@@ -179,86 +183,89 @@ public class IngameGUI extends GuiIngameForge {
     @Override
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderAir(int width, int height) {
-        if (replaceEvent(AIR)) return;
-        mc.mcProfiler.startSection("air");
-        GLCore.glBlend(true);
-        int left = width / 2 + 91;
-        int top = height - right_height;
+        if (OptionCore.VANILLA_UI.getValue()) super.renderAir(width, height);
+        else {
+            if (replaceEvent(AIR)) return;
+            mc.mcProfiler.startSection("air");
+            GLCore.glBlend(true);
+            int left = width / 2 + 91;
+            int top = height - right_height;
 
-        if (mc.thePlayer.isInsideOfMaterial(Material.water))
-        {
-            int air = mc.thePlayer.getAir();
-            int full = MathHelper.ceiling_double_int((double)(air - 2) * 10.0D / 300.0D);
-            int partial = MathHelper.ceiling_double_int((double)air * 10.0D / 300.0D) - full;
+            if (mc.thePlayer.isInsideOfMaterial(Material.water)) {
+                int air = mc.thePlayer.getAir();
+                int full = MathHelper.ceiling_double_int((double) (air - 2) * 10.0D / 300.0D);
+                int partial = MathHelper.ceiling_double_int((double) air * 10.0D / 300.0D) - full;
 
-            for (int i = 0; i < full + partial; ++i)
-            {
-                drawTexturedModalRect(left - i * 8 - 9, top, (i < full ? 16 : 25), 18, 9, 9);
+                for (int i = 0; i < full + partial; ++i) {
+                    drawTexturedModalRect(left - i * 8 - 9, top, (i < full ? 16 : 25), 18, 9, 9);
+                }
+                right_height += 10;
             }
-            right_height += 10;
-        }
 
-        GLCore.glBlend(false);
-        mc.mcProfiler.endSection();
-        post(AIR);
+            GLCore.glBlend(false);
+            mc.mcProfiler.endSection();
+            post(AIR);
+        }
     }
 
     @Override
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderBossHealth() {
-        if (replaceEvent(BOSSHEALTH)) return;
+        if (OptionCore.VANILLA_UI.getValue()) super.renderBossHealth();
+        else {
+            if (replaceEvent(BOSSHEALTH)) return;
 
-        mc.mcProfiler.startSection("bossHealth");
-        if (BossStatus.bossName != null && BossStatus.statusBarTime > 0)
-        {
-            GLCore.glAlphaTest(true);
-            GLCore.glBlend(true);
-            --BossStatus.statusBarTime;
+            mc.mcProfiler.startSection("bossHealth");
+            if (BossStatus.bossName != null && BossStatus.statusBarTime > 0) {
+                GLCore.glAlphaTest(true);
+                GLCore.glBlend(true);
+                --BossStatus.statusBarTime;
 
-            double scale = 1.00;
-            GLCore.glColor(1.0F, 1.0F, 1.0F, 1.0F);
+                double scale = 1.00;
+                GLCore.glColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-            GLCore.glBindTexture(StringNames.gui);
+                GLCore.glBindTexture(StringNames.gui);
 
-            final int healthBarWidth = 234;
-            final double healthWidth = 216 * scale;
-            double j = width / 2 - healthBarWidth / 2 * scale;
-            byte b0 = 15;
-            final double healthValue = BossStatus.healthScale * healthWidth;
+                final int healthBarWidth = 234;
+                final double healthWidth = 216 * scale;
+                double j = width / 2 - healthBarWidth / 2 * scale;
+                byte b0 = 15;
+                final double healthValue = BossStatus.healthScale * healthWidth;
 
-            //bar background
-            GLCore.glTexturedRect((int)j, b0, zLevel, (int)(healthBarWidth * scale), (int)(15 * scale), 21, 0, healthBarWidth, 15);
-            GLCore.glTexturedRect((int)j, b0, zLevel, (int)(healthBarWidth * scale), (int)(5 * scale), 21, 0, healthBarWidth, 5);
+                //bar background
+                GLCore.glTexturedRect((int) j, b0, zLevel, (int) (healthBarWidth * scale), (int) (15 * scale), 21, 0, healthBarWidth, 15);
+                GLCore.glTexturedRect((int) j, b0, zLevel, (int) (healthBarWidth * scale), (int) (5 * scale), 21, 0, healthBarWidth, 5);
 
-            final int healthHeight = 9;
-            HealthStep.getStep(mc, BossStatus.healthScale, time).glColor();
+                final int healthHeight = 9;
+                HealthStep.getStep(mc, BossStatus.healthScale, time).glColor();
 
-            //render
-            int h = healthHeight;
-            //GL11.glPushMatrix();
-            //GL11.glScalef((float)scale, (float)scale, (float)scale);
-            for (int i = 0; i < healthValue ; i++) {
-                GLCore.glTexturedRect((int)j + 1 + i, b0 + (int)(3 * scale), zLevel, 1, h * scale, (healthHeight - h), 15, (int)(1 * scale), h);
+                //render
+                int h = healthHeight;
+                //GL11.glPushMatrix();
+                //GL11.glScalef((float)scale, (float)scale, (float)scale);
+                for (int i = 0; i < healthValue; i++) {
+                    GLCore.glTexturedRect((int) j + 1 + i, b0 + (int) (3 * scale), zLevel, 1, h * scale, (healthHeight - h), 15, (int) (1 * scale), h);
 
-                if (((i >= 105 * scale) && (i <= 110 * scale)) || (i >= healthValue - h)) {
-                    h--;
+                    if (((i >= 105 * scale) && (i <= 110 * scale)) || (i >= healthValue - h)) {
+                        h--;
 
-                    if (h <= 0) break;
+                        if (h <= 0) break;
+                    }
                 }
+                //GL11.glPopMatrix();
+
+                //name
+                String s = BossStatus.bossName;
+                fontRenderer.drawStringWithShadow(s, width / 2 - fontRenderer.getStringWidth(s) / 2, b0 - 10, 16777215);
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+
+                GLCore.glAlphaTest(false);
+                GLCore.glBlend(false);
+
             }
-            //GL11.glPopMatrix();
-
-            //name
-            String s = BossStatus.bossName;
-            fontRenderer.drawStringWithShadow(s, width / 2 - fontRenderer.getStringWidth(s) / 2, b0 - 10, 16777215);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-
-            GLCore.glAlphaTest(false);
-            GLCore.glBlend(false);
-
+            mc.mcProfiler.endSection();
+            post(BOSSHEALTH);
         }
-        mc.mcProfiler.endSection();
-        post(BOSSHEALTH);
 
     }
 
@@ -266,189 +273,193 @@ public class IngameGUI extends GuiIngameForge {
     @Override
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     public void renderHealth(int width, int height) {
-        if (replaceEvent(HEALTH)) return;
-        mc.mcProfiler.startSection("health");
+        if (OptionCore.VANILLA_UI.getValue()) super.renderHealth(width, height);
+        else {
+            if (replaceEvent(HEALTH)) return;
+            mc.mcProfiler.startSection("health");
 
-        final int healthBarWidth = 234;
-        final int healthWidth = 216;
-        final int healthHeight = OptionCore.SAO_UI.getValue() ? 9 : 4;
-        final int healthValue = (int) (StaticPlayerHelper.getHealth(mc, mc.thePlayer, time) / StaticPlayerHelper.getMaxHealth(mc.thePlayer) * healthWidth);
-        int stepOne = (int) (healthWidth / 3.0F - 3);
-        int stepTwo = (int) (healthWidth / 3.0F * 2.0F - 3);
-        int stepThree = healthWidth - 3;
-
-        GLCore.glAlphaTest(true);
-        GLCore.glBlend(true);
-        GLCore.glColor(1, 1, 1, 0.75F);
-        GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
-        GLCore.glTexturedRect(2, 2, zLevel, 0, 0, 16, 15);
-        GLCore.glTexturedRect(18, 2, zLevel, usernameBoxes * 5, 15, 16, 0, 5, 15);
-        GLCore.glString(fontRenderer, username, 18, 3 + (15 - fontRenderer.FONT_HEIGHT) / 2, 0xFFFFFFFF, true);
-        GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
-        GLCore.glTexturedRect(offsetUsername, 2, zLevel, 21, 0, healthBarWidth, 15);
-        HealthStep.getStep(mc, mc.thePlayer, time).glColor();
-
-        if (OptionCore.SAO_UI.getValue()) {
-            int h = healthHeight;
-            for (int i = 0; i < healthValue; i++) {
-                GLCore.glTexturedRect(offsetUsername + 1 + i, 5, zLevel, (healthHeight - h), 15, 1, h);
-
-                if (((i >= 105) && (i <= 110)) || (i >= healthValue - h)) {
-                    h--;
-
-                    if (h <= 0) break;
-                }
-            }
-        } else {
-            int h = healthValue <= 12 ? 12 - healthValue : 0;
-            int o = healthHeight;
-            for (int i = 0; i < healthValue; i++) {
-                GLCore.glTexturedRect(offsetUsername + 4 + i, 6 + (healthHeight - o), zLevel, h, 236 + (healthHeight - o), 1, o);
-                if (healthValue < healthWidth && i >= healthValue - 3) o--;
-
-                if (healthValue <= 12) {
-                    h++;
-                    if (h > 12) break;
-                } else if ((i >= stepOne && i <= stepOne + 3) || (i >= stepTwo && i <= stepTwo + 3) || (i >= stepThree)) {
-                    h++;
-
-                    if (h > 12) break;
-                }
-            }
-
-            if (healthValue >= stepTwo && healthValue < stepThree)
-                GLCore.glTexturedRect(offsetUsername + healthValue, 6, zLevel, 11, 245, 7, 4);
-            if (healthValue >= stepOne && healthValue < stepTwo + 4)
-                GLCore.glTexturedRect(offsetUsername + healthValue, 6, zLevel, 4, 245, 7, 4);
-            if (healthValue < stepOne + 4 && healthValue > 0) {
-                GLCore.glTexturedRect(offsetUsername + healthValue + 2, 6, zLevel, 0, 245, 4, 4);
-                for (int i = 0; i < healthValue - 2; i++)
-                    GLCore.glTexturedRect(offsetUsername + i + 4, 6, zLevel, 0, 245, 4, 4);
-            }
-
-        }
-
-        mc.mcProfiler.endSection();
-        post(HEALTH);
-
-        renderFood(healthWidth, healthHeight, offsetUsername, stepOne, stepTwo, stepThree);
-
-        if (!OptionCore.REMOVE_HPXP.getValue()) {
-            String absorb = OptionCore.ALT_ABSORB_POS.getValue() ? "" : " ";
-            if (mc.thePlayer.getAbsorptionAmount() > 0) {
-                absorb += "(+" + (int) Math.ceil(mc.thePlayer.getAbsorptionAmount());
-                absorb += ')';
-                absorb += OptionCore.ALT_ABSORB_POS.getValue() ? ' ' : "";
-            }
-
-            final String healthStr = String.valueOf((OptionCore.ALT_ABSORB_POS.getValue() ? absorb : "") + (int) Math.ceil(StaticPlayerHelper.getHealth(mc, mc.thePlayer, time))) + (OptionCore.ALT_ABSORB_POS.getValue() ? "" : absorb) + " / " + String.valueOf((int) Math.ceil(StaticPlayerHelper.getMaxHealth(mc.thePlayer)));
-            final int healthStrWidth = fontRenderer.getStringWidth(healthStr);
-
-            final int absStart = healthStr.indexOf('(');
-            String[] strs;
-            if (absStart >= 0) strs = new String[]{
-                    healthStr.substring(0, absStart),
-                    healthStr.substring(absStart, healthStr.indexOf(')') + 1),
-                    healthStr.substring(healthStr.indexOf(')') + 1)
-            };
-            else strs = new String[]{"", "", healthStr};
-
-            healthBoxes = (healthStrWidth + 4) / 5;
-
-            final int offsetR = OptionCore.SAO_UI.getValue() ? HPXP_OFFSET_ORIG_R : HPXP_OFFSET_ALO_R;
-            final int offsetD = OptionCore.SAO_UI.getValue() ? HPXP_OFFSET_ORIG_D : HPXP_OFFSET_ALO_D;
-            GLCore.glColor(1, 1, 1, 0.95F);
-            GLCore.glTexturedRect(offsetUsername + 113 + offsetR, 13 + offsetD, zLevel, 60, 15, 5, 13);
-            GLCore.glTexturedRect(offsetUsername + 118 + offsetR, 13 + offsetD, zLevel, healthBoxes * 5, 13, 66, 15, 5, 13);
-            GLCore.glTexturedRect(offsetUsername + 118 + offsetR + healthBoxes * 5, 13 + +offsetD, zLevel, 70, 15, 5, 13);
-
-            GLCore.glString(strs[0], offsetUsername + 118 + offsetR, 16 + offsetD, 0xFFFFFFFF, true);
-            GLCore.glString(strs[1], offsetUsername + 118 + offsetR + fontRenderer.getStringWidth(strs[0]), 16 + offsetD, 0xFF55FFFF, true);
-            GLCore.glString(strs[2], offsetUsername + 118 + offsetR + fontRenderer.getStringWidth(strs[0] + strs[1]), 16 + offsetD, 0xFFFFFFFF, true);
-        }
-
-        GLCore.glColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-        mc.mcProfiler.startSection("potioneffects");
-
-        final int offsetForEffects = offsetUsername + healthBarWidth - 4;
-        final List<StatusEffects> effects = StatusEffects.getEffects(mc.thePlayer);
-
-        GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
-
-        for (int i = 0; i < effects.size(); i++) {
-            effects.get(i).glDraw(offsetForEffects + i * 11, 2, zLevel);
-        }
-
-        mc.mcProfiler.endSection();
-
-        if (PartyHelper.instance().isEffective()) {
-            mc.mcProfiler.startSection("party");
-
-            final List<EntityPlayer> players = StaticPlayerHelper.listOnlinePlayers(mc);
-
-            if (players.contains(mc.thePlayer)) players.remove(mc.thePlayer);
+            final int healthBarWidth = 234;
+            final int healthWidth = 216;
+            final int healthHeight = OptionCore.SAO_UI.getValue() ? 9 : 4;
+            final int healthValue = (int) (StaticPlayerHelper.getHealth(mc, mc.thePlayer, time) / StaticPlayerHelper.getMaxHealth(mc.thePlayer) * healthWidth);
+            int stepOne = (int) (healthWidth / 3.0F - 3);
+            int stepTwo = (int) (healthWidth / 3.0F * 2.0F - 3);
+            int stepThree = healthWidth - 3;
 
             GLCore.glAlphaTest(true);
             GLCore.glBlend(true);
+            GLCore.glColor(1, 1, 1, 0.75F);
+            GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
+            GLCore.glTexturedRect(2, 2, zLevel, 0, 0, 16, 15);
+            GLCore.glTexturedRect(18, 2, zLevel, usernameBoxes * 5, 15, 16, 0, 5, 15);
+            GLCore.glString(fontRenderer, username, 18, 3 + (15 - fontRenderer.FONT_HEIGHT) / 2, 0xFFFFFFFF, true);
+            GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
+            GLCore.glTexturedRect(offsetUsername, 2, zLevel, 21, 0, healthBarWidth, 15);
+            HealthStep.getStep(mc, mc.thePlayer, time).glColor();
 
-            int index = 0;
-            final int baseY = 35;
-            final int h = 15;
-            for (final EntityPlayer player : players) {
-                String playerName = player.getDisplayName();
+            if (OptionCore.SAO_UI.getValue()) {
+                int h = healthHeight;
+                for (int i = 0; i < healthValue; i++) {
+                    GLCore.glTexturedRect(offsetUsername + 1 + i, 5, zLevel, (healthHeight - h), 15, 1, h);
 
-                if (!PartyHelper.instance().isMember(playerName)) continue;
+                    if (((i >= 105) && (i <= 110)) || (i >= healthValue - h)) {
+                        h--;
 
-                GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
+                        if (h <= 0) break;
+                    }
+                }
+            } else {
+                int h = healthValue <= 12 ? 12 - healthValue : 0;
+                int o = healthHeight;
+                for (int i = 0; i < healthValue; i++) {
+                    GLCore.glTexturedRect(offsetUsername + 4 + i, 6 + (healthHeight - o), zLevel, h, 236 + (healthHeight - o), 1, o);
+                    if (healthValue < healthWidth && i >= healthValue - 3) o--;
 
-                GLCore.glTexturedRect(2, baseY + index * h, zLevel, 85, 15, 10, 13);
-                GLCore.glTexturedRect(13, baseY + index * h, zLevel, 80, 15, 5, 13);
+                    if (healthValue <= 12) {
+                        h++;
+                        if (h > 12) break;
+                    } else if ((i >= stepOne && i <= stepOne + 3) || (i >= stepTwo && i <= stepTwo + 3) || (i >= stepThree)) {
+                        h++;
 
-                if (playerName.length() > 5) playerName = playerName.substring(0, 5);
-
-                final int nameBoxes = 29 / 5 + 1;
-
-
-                GLCore.glTexturedRect(18, baseY + index * h, zLevel, nameBoxes * 5, 13, 65, 15, 5, 13);
-
-                int offset = 18 + nameBoxes * 5;
-
-                GLCore.glTexturedRect(offset, baseY + index * h, zLevel, 40, 28, 100, 13);
-
-                final int hpWidth = 97;
-                final int hpHeight = 3;
-
-                final int hpValue = (int) (StaticPlayerHelper.getHealth(mc, player, time) / StaticPlayerHelper.getMaxHealth(player) * hpWidth);
-                HealthStep.getStep(mc, player, time).glColor();
-
-                int hp = hpHeight;
-                for (int j = 0; j < hpValue; j++) {
-                    GLCore.glTexturedRect(offset + 1 + j, baseY + 5 + index * h, zLevel, (hpHeight - hp), 15, 1, hp);
-
-                    if (j >= hpValue - hp) {
-                        hp--;
-
-                        if (hp <= 0) break;
+                        if (h > 12) break;
                     }
                 }
 
-                offset += 100;
+                if (healthValue >= stepTwo && healthValue < stepThree)
+                    GLCore.glTexturedRect(offsetUsername + healthValue, 6, zLevel, 11, 245, 7, 4);
+                if (healthValue >= stepOne && healthValue < stepTwo + 4)
+                    GLCore.glTexturedRect(offsetUsername + healthValue, 6, zLevel, 4, 245, 7, 4);
+                if (healthValue < stepOne + 4 && healthValue > 0) {
+                    GLCore.glTexturedRect(offsetUsername + healthValue + 2, 6, zLevel, 0, 245, 4, 4);
+                    for (int i = 0; i < healthValue - 2; i++)
+                        GLCore.glTexturedRect(offsetUsername + i + 4, 6, zLevel, 0, 245, 4, 4);
+                }
 
-                GLCore.glColor(1.0F, 1.0F, 1.0F, 1.0F);
-                GLCore.glTexturedRect(offset, baseY + index * h, zLevel, 70, 15, 5, 13);
-                GLCore.glString(playerName, 18, baseY + 1 + index * h + (13 - fontRenderer.FONT_HEIGHT) / 2, 0xFFFFFFFF);
-
-                index++;
             }
 
             mc.mcProfiler.endSection();
+            post(HEALTH);
+
+            renderFood(healthWidth, healthHeight, offsetUsername, stepOne, stepTwo, stepThree);
+
+            if (!OptionCore.REMOVE_HPXP.getValue()) {
+                String absorb = OptionCore.ALT_ABSORB_POS.getValue() ? "" : " ";
+                if (mc.thePlayer.getAbsorptionAmount() > 0) {
+                    absorb += "(+" + (int) Math.ceil(mc.thePlayer.getAbsorptionAmount());
+                    absorb += ')';
+                    absorb += OptionCore.ALT_ABSORB_POS.getValue() ? ' ' : "";
+                }
+
+                final String healthStr = String.valueOf((OptionCore.ALT_ABSORB_POS.getValue() ? absorb : "") + (int) Math.ceil(StaticPlayerHelper.getHealth(mc, mc.thePlayer, time))) + (OptionCore.ALT_ABSORB_POS.getValue() ? "" : absorb) + " / " + String.valueOf((int) Math.ceil(StaticPlayerHelper.getMaxHealth(mc.thePlayer)));
+                final int healthStrWidth = fontRenderer.getStringWidth(healthStr);
+
+                final int absStart = healthStr.indexOf('(');
+                String[] strs;
+                if (absStart >= 0) strs = new String[]{
+                        healthStr.substring(0, absStart),
+                        healthStr.substring(absStart, healthStr.indexOf(')') + 1),
+                        healthStr.substring(healthStr.indexOf(')') + 1)
+                };
+                else strs = new String[]{"", "", healthStr};
+
+                healthBoxes = (healthStrWidth + 4) / 5;
+
+                final int offsetR = OptionCore.SAO_UI.getValue() ? HPXP_OFFSET_ORIG_R : HPXP_OFFSET_ALO_R;
+                final int offsetD = OptionCore.SAO_UI.getValue() ? HPXP_OFFSET_ORIG_D : HPXP_OFFSET_ALO_D;
+                GLCore.glColor(1, 1, 1, 0.95F);
+                GLCore.glTexturedRect(offsetUsername + 113 + offsetR, 13 + offsetD, zLevel, 60, 15, 5, 13);
+                GLCore.glTexturedRect(offsetUsername + 118 + offsetR, 13 + offsetD, zLevel, healthBoxes * 5, 13, 66, 15, 5, 13);
+                GLCore.glTexturedRect(offsetUsername + 118 + offsetR + healthBoxes * 5, 13 + +offsetD, zLevel, 70, 15, 5, 13);
+
+                GLCore.glString(strs[0], offsetUsername + 118 + offsetR, 16 + offsetD, 0xFFFFFFFF, true);
+                GLCore.glString(strs[1], offsetUsername + 118 + offsetR + fontRenderer.getStringWidth(strs[0]), 16 + offsetD, 0xFF55FFFF, true);
+                GLCore.glString(strs[2], offsetUsername + 118 + offsetR + fontRenderer.getStringWidth(strs[0] + strs[1]), 16 + offsetD, 0xFFFFFFFF, true);
+            }
+
+            GLCore.glColor(1.0F, 1.0F, 1.0F, 1.0F);
+
+            mc.mcProfiler.startSection("potioneffects");
+
+            final int offsetForEffects = offsetUsername + healthBarWidth - 4;
+            final List<StatusEffects> effects = StatusEffects.getEffects(mc.thePlayer);
+
+            GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
+
+            for (int i = 0; i < effects.size(); i++) {
+                effects.get(i).glDraw(offsetForEffects + i * 11, 2, zLevel);
+            }
+
+            mc.mcProfiler.endSection();
+
+            if (PartyHelper.instance().isEffective()) {
+                mc.mcProfiler.startSection("party");
+
+                final List<EntityPlayer> players = StaticPlayerHelper.listOnlinePlayers(mc);
+
+                if (players.contains(mc.thePlayer)) players.remove(mc.thePlayer);
+
+                GLCore.glAlphaTest(true);
+                GLCore.glBlend(true);
+
+                int index = 0;
+                final int baseY = 35;
+                final int h = 15;
+                for (final EntityPlayer player : players) {
+                    String playerName = player.getDisplayName();
+
+                    if (!PartyHelper.instance().isMember(playerName)) continue;
+
+                    GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
+
+                    GLCore.glTexturedRect(2, baseY + index * h, zLevel, 85, 15, 10, 13);
+                    GLCore.glTexturedRect(13, baseY + index * h, zLevel, 80, 15, 5, 13);
+
+                    if (playerName.length() > 5) playerName = playerName.substring(0, 5);
+
+                    final int nameBoxes = 29 / 5 + 1;
+
+
+                    GLCore.glTexturedRect(18, baseY + index * h, zLevel, nameBoxes * 5, 13, 65, 15, 5, 13);
+
+                    int offset = 18 + nameBoxes * 5;
+
+                    GLCore.glTexturedRect(offset, baseY + index * h, zLevel, 40, 28, 100, 13);
+
+                    final int hpWidth = 97;
+                    final int hpHeight = 3;
+
+                    final int hpValue = (int) (StaticPlayerHelper.getHealth(mc, player, time) / StaticPlayerHelper.getMaxHealth(player) * hpWidth);
+                    HealthStep.getStep(mc, player, time).glColor();
+
+                    int hp = hpHeight;
+                    for (int j = 0; j < hpValue; j++) {
+                        GLCore.glTexturedRect(offset + 1 + j, baseY + 5 + index * h, zLevel, (hpHeight - hp), 15, 1, hp);
+
+                        if (j >= hpValue - hp) {
+                            hp--;
+
+                            if (hp <= 0) break;
+                        }
+                    }
+
+                    offset += 100;
+
+                    GLCore.glColor(1.0F, 1.0F, 1.0F, 1.0F);
+                    GLCore.glTexturedRect(offset, baseY + index * h, zLevel, 70, 15, 5, 13);
+                    GLCore.glString(playerName, 18, baseY + 1 + index * h + (13 - fontRenderer.FONT_HEIGHT) / 2, 0xFFFFFFFF);
+
+                    index++;
+                }
+
+                mc.mcProfiler.endSection();
+            }
         }
     }
 
     @Override
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     public void renderFood(int width, int height) {
+        if (OptionCore.VANILLA_UI.getValue()) super.renderFood(width, height);
         // See below, called by renderHealth
     }
 
@@ -491,52 +502,61 @@ public class IngameGUI extends GuiIngameForge {
     @Override
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderExperience(int width, int height) {
-        if (replaceEvent (EXPERIENCE)) return;
-        if (OptionCore.REMOVE_HPXP.getValue()) return;
-        if (!OptionCore.FORCE_HUD.getValue() && !this.mc.playerController.shouldDrawHUD()) return;
-        mc.mcProfiler.startSection("expLevel");
+        if (OptionCore.VANILLA_UI.getValue()) super.renderExperience(width, height);
+        else {
+            if (replaceEvent(EXPERIENCE)) return;
+            if (OptionCore.REMOVE_HPXP.getValue()) return;
+            if (!OptionCore.FORCE_HUD.getValue() && !this.mc.playerController.shouldDrawHUD()) return;
+            mc.mcProfiler.startSection("expLevel");
 
-        final int offsetR = OptionCore.SAO_UI.getValue() ? HPXP_OFFSET_ORIG_R : HPXP_OFFSET_ALO_R;
-        final int offsetD = OptionCore.SAO_UI.getValue() ? HPXP_OFFSET_ORIG_D : HPXP_OFFSET_ALO_D;
-        final int offsetHealth = offsetUsername + 113 + (healthBoxes + 2) * 5 + offsetR;
-        final String levelStr = StatCollector.translateToLocal("displayLvShort") + ": " + String.valueOf(mc.thePlayer.experienceLevel);
-        final int levelStrWidth = fontRenderer.getStringWidth(levelStr);
-        final int levelBoxes = (levelStrWidth + 4) / 5;
+            final int offsetR = OptionCore.SAO_UI.getValue() ? HPXP_OFFSET_ORIG_R : HPXP_OFFSET_ALO_R;
+            final int offsetD = OptionCore.SAO_UI.getValue() ? HPXP_OFFSET_ORIG_D : HPXP_OFFSET_ALO_D;
+            final int offsetHealth = offsetUsername + 113 + (healthBoxes + 2) * 5 + offsetR;
+            final String levelStr = StatCollector.translateToLocal("displayLvShort") + ": " + String.valueOf(mc.thePlayer.experienceLevel);
+            final int levelStrWidth = fontRenderer.getStringWidth(levelStr);
+            final int levelBoxes = (levelStrWidth + 4) / 5;
 
-        GLCore.glBlend(true);
-        GLCore.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GLCore.glColor(1.0F, 1.0F, 1.0F, 1.0F);
-        GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
-        GLCore.glTexturedRect(offsetHealth, 13 + offsetD, zLevel, 5, 13, 66, 15, 2, 13);
-        GLCore.glTexturedRect(offsetHealth + 5, 13 + offsetD, zLevel, levelBoxes * 5, 13, 66, 15, 5, 13);
-        GLCore.glTexturedRect(offsetHealth + (1 + levelBoxes) * 5, 13 + offsetD, zLevel, 5, 13, 78, 15, 3, 13);
-        GLCore.glString(levelStr, offsetHealth + 5, 16 + offsetD, 0xFFFFFFFF, true);
+            GLCore.glBlend(true);
+            GLCore.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            GLCore.glColor(1.0F, 1.0F, 1.0F, 1.0F);
+            GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
+            GLCore.glTexturedRect(offsetHealth, 13 + offsetD, zLevel, 5, 13, 66, 15, 2, 13);
+            GLCore.glTexturedRect(offsetHealth + 5, 13 + offsetD, zLevel, levelBoxes * 5, 13, 66, 15, 5, 13);
+            GLCore.glTexturedRect(offsetHealth + (1 + levelBoxes) * 5, 13 + offsetD, zLevel, 5, 13, 78, 15, 3, 13);
+            GLCore.glString(levelStr, offsetHealth + 5, 16 + offsetD, 0xFFFFFFFF, true);
 
-        mc.mcProfiler.endSection();
-        post(EXPERIENCE);
+            mc.mcProfiler.endSection();
+            post(EXPERIENCE);
+        }
     }
 
     @Override
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderJumpBar(int width, int height) {
-        if (replaceEvent(JUMPBAR)) return;
-        renderExperience(width, height);
-        super.renderJumpBar(width, height);
-        // Nothing happens here (not implemented yet)
-        post(JUMPBAR);
+        if (OptionCore.VANILLA_UI.getValue()) super.renderJumpBar(width, height);
+        else {
+            if (replaceEvent(JUMPBAR)) return;
+            renderExperience(width, height);
+            super.renderJumpBar(width, height);
+            // Nothing happens here (not implemented yet)
+            post(JUMPBAR);
+        }
     }
 
     @Override
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderHealthMount(int width, int height) {
-        //EntityPlayer player = (EntityPlayer)mc.getRenderViewEntity();
-        EntityPlayer player = (EntityPlayer) mc.renderViewEntity;
-        Entity tmp = player.ridingEntity;
-        if (!(tmp instanceof EntityLivingBase)) return;
+        if (OptionCore.VANILLA_UI.getValue()) super.renderHealthMount(width, height);
+        else {
+            //EntityPlayer player = (EntityPlayer)mc.getRenderViewEntity();
+            EntityPlayer player = (EntityPlayer) mc.renderViewEntity;
+            Entity tmp = player.ridingEntity;
+            if (!(tmp instanceof EntityLivingBase)) return;
 
-        if (replaceEvent(HEALTHMOUNT)) return;
-        // Not implemented yet
-        post(HEALTHMOUNT);
+            if (replaceEvent(HEALTHMOUNT)) return;
+            // Not implemented yet
+            post(HEALTHMOUNT);
+        }
     }
 
     @Override
@@ -664,10 +684,5 @@ public class IngameGUI extends GuiIngameForge {
 
     private void post(ElementType type) {
         MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Post(eventParent, type));
-    }
-
-    public void viewMessageAuto() {
-        // TODO: implement method
-        System.out.println("IngameGUI#viewMessageAuto()");
     }
 }

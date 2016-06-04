@@ -1,6 +1,7 @@
 package com.saomc.screens.menu;
 
 import baubles.api.BaublesApi;
+import com.saomc.SoundCore;
 import com.saomc.screens.*;
 import com.saomc.screens.buttons.*;
 import com.saomc.screens.window.ScreenGUI;
@@ -58,6 +59,7 @@ public class IngameMenuGUI extends ScreenGUI {
     private Panel info;
     private LabelGUI infoCaption;
     private TextGUI infoText;
+    private boolean playedSound;
 
 
     public IngameMenuGUI(GuiInventory vanillaGUI) {
@@ -86,6 +88,16 @@ public class IngameMenuGUI extends ScreenGUI {
     }
 
     @Override
+    public void drawScreen(int cursorX, int cursorY, float f){
+        super.drawScreen(cursorX, cursorY, f);
+
+        if (!playedSound){
+            SoundCore.play(mc, SoundCore.ORB_DROPDOWN);
+            playedSound = true;
+        }
+    }
+
+    @Override
     public int getX(boolean relative) {
         return super.getX(relative) + width * 2 / 5 + (flowX - jumpX) / 2;
     }
@@ -103,6 +115,12 @@ public class IngameMenuGUI extends ScreenGUI {
         flowX /= 2;
 
         if (infoData[0] != null && infoData[1] != null) updateInfo(infoData[0].toString(), infoData[1].toString());
+    }
+
+    @Override
+    public void onGuiClosed(){
+        super.onGuiClosed();
+        SoundCore.play(mc, SoundCore.DIALOG_CLOSE);
     }
 
     @Override

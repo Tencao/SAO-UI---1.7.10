@@ -10,17 +10,21 @@ import com.saomc.screens.Elements;
 import com.saomc.util.ColorUtil;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiGameOver;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.multiplayer.WorldClient;
+
+import java.io.IOException;
 
 @SideOnly(Side.CLIENT)
 public class DeathScreen extends ScreenGUI {
 
-    private final GuiGameOver gameOver;
     private final CursorStatus oldCursorStatus;
 
-    public DeathScreen(GuiGameOver guiGamOver) {
+    public DeathScreen() {
         super();
-        gameOver = guiGamOver;
         oldCursorStatus = CURSOR_STATUS;
 
         CURSOR_STATUS = CursorStatus.HIDDEN;
@@ -47,31 +51,47 @@ public class DeathScreen extends ScreenGUI {
     public void drawScreen(int cursorX, int cursorY, float f) {
         drawDefaultBackground();
 
-        GLCore.glTranslatef(-width / 2, -height / 2, 0);
-        GLCore.glScalef(2, 2, 2);
+        GLCore.glTranslatef(-width / 2, -height / 2, 0.0F);
+        GLCore.glScalef(2.0F, 2.0F, 2.0F);
 
         super.drawScreen(cursorX, cursorY, f);
 
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) {
-    }
-
-    @Override
     public void actionPerformed(Elements element, Actions action, int data) {
-        element.click(mc.getSoundHandler(), false);
-        gameOver.confirmClicked(this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled(), -1);
+        confirmClicked(this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled(), -1);
     }
 
     @Override
     protected void backgroundClicked(int cursorX, int cursorY, int button) {
-        gameOver.confirmClicked(this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled(), -1);
+        confirmClicked(this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled(), -1);
+    }
+
+    @Override
+    protected void keyTyped(char typedChar, int keyCode) {
+
+    }
+
+    public void confirmClicked(boolean result, int id)
+    {
+        if (result)
+        {
+            mc.theWorld.sendQuittingDisconnectingPacket();
+            mc.loadWorld((WorldClient)null);
+            mc.displayGuiScreen(new GuiMainMenu());
+        }
+        else
+        {
+            mc.thePlayer.respawnPlayer();
+            mc.displayGuiScreen(null);
+        }
     }
 
     @Override
     public void close() {
         super.close();
+
         CURSOR_STATUS = oldCursorStatus;
     }
 
@@ -80,4 +100,32 @@ public class DeathScreen extends ScreenGUI {
         return true;
     }
 
+    /**
+     * This is a dummy class intended to fix the ghost death screen
+     */
+    public static class DummyScreen extends DeathScreen {
+
+        @Override
+        public void initGui(){}
+
+        @Override
+        protected void keyTyped(char typedChar, int keyCode) {}
+
+
+        @Override
+        protected void actionPerformed(GuiButton button)
+        {}
+
+        @Override
+        public void confirmClicked(boolean result, int id)
+        {}
+
+        @Override
+        public void drawScreen(int mouseX, int mouseY, float partialTicks)
+        {}
+
+        @Override
+        public void updateScreen()
+        {}
+    }
 }

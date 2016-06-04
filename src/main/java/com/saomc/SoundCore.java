@@ -52,4 +52,8 @@ public class SoundCore {
         }
     }
 
+    public static void resumeSounds(Minecraft mc){
+        mc.getSoundHandler().resumeSounds();
+    }
+
 }

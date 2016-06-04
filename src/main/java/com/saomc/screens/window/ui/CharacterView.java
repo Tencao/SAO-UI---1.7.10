@@ -54,6 +54,8 @@ public class CharacterView extends Elements {
         clickIndex = -1;
 
         if (visibility > 0) {
+            GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
+            GLCore.glColorRGBA(ColorUtil.DEFAULT_COLOR.multiplyAlpha(visibility));
 
             int left = getX(false) + width / 2;
             int top = getY(false) + height * 13 / 16;

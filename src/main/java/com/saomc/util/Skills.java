@@ -1,6 +1,7 @@
 package com.saomc.util;
 
 import com.saomc.SAOCore;
+import com.saomc.events.EventHandler;
 import com.saomc.events.RenderHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -15,12 +16,11 @@ import java.util.function.BooleanSupplier;
 @SideOnly(Side.CLIENT)
 public enum Skills {
 
-    SPRINTING(IconCore.SPRINTING, () -> SAOCore.IS_SPRINTING, (mc, parent) -> SAOCore.IS_SPRINTING = !SAOCore.IS_SPRINTING),
-    SNEAKING(IconCore.SNEAKING, () -> SAOCore.IS_SNEAKING, (mc, parent) -> SAOCore.IS_SNEAKING = !SAOCore.IS_SNEAKING),
+    SPRINTING(IconCore.SPRINTING, () -> EventHandler.IS_SPRINTING, (mc, parent) -> EventHandler.IS_SPRINTING = !EventHandler.IS_SPRINTING),
+    SNEAKING(IconCore.SNEAKING, () -> EventHandler.IS_SNEAKING, (mc, parent) -> EventHandler.IS_SNEAKING = !EventHandler.IS_SNEAKING),
     CRAFTING(IconCore.CRAFTING, () -> false, (mc, parent) -> {
         if (parent != null) mc.displayGuiScreen(parent);
         else {
-            RenderHandler.REPLACE_GUI_DELAY = 1;
             mc.displayGuiScreen(null);
 
             final int invKeyCode = mc.gameSettings.keyBindInventory.getKeyCode();

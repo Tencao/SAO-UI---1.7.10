@@ -16,32 +16,34 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.saomc.events.EventCore.mc;
+
 @SideOnly(Side.CLIENT)
 public class RenderHandler {
 
-    private static final List<EntityLivingBase> deadHandlers = new ArrayList<>();
-    private static boolean ticked = false;
-    private static final Minecraft mc = Minecraft.getMinecraft();
-    public static int REPLACE_GUI_DELAY = 0;
-    public static boolean replaceGUI;
+    static final List<EntityLivingBase> deadHandlers = new ArrayList<>();
     private static boolean menuGUI = true;
 
     static void checkingameGUI() {
-        boolean b = mc.ingameGUI instanceof IngameGUI;
-        if (mc.ingameGUI != null && OptionCore.VANILLA_UI.getValue() == b)
-            mc.ingameGUI = b ? new GuiIngameForge(mc) : new IngameGUI(mc);
+        if (mc.ingameGUI != null && !(mc.ingameGUI instanceof IngameGUI))
+            mc.ingameGUI = new IngameGUI(mc);
+    }
+
+    static void deathHandlers() {
         deadHandlers.forEach(ent -> {
             if (ent != null) {
                 final boolean deadStart = (ent.deathTime == 1);
@@ -60,45 +62,25 @@ public class RenderHandler {
         deadHandlers.removeIf(ent -> ent.isDead);
     }
 
-    static void checkGuiInstance() {
-        if ((mc.currentScreen == null) && (mc.inGameHasFocus)) replaceGUI = true;
-        else if (replaceGUI) {
-            if (mc.currentScreen != null && !(mc.currentScreen instanceof ScreenGUI)) {
-                if (REPLACE_GUI_DELAY > 0) REPLACE_GUI_DELAY--;
-                else if ((mc.currentScreen instanceof GuiIngameMenu) || ((mc.currentScreen instanceof GuiInventory) && (!OptionCore.DEFAULT_INVENTORY.getValue()))) {
-                    final boolean inv = (mc.currentScreen instanceof GuiInventory);
+    static void guiInstance(GuiOpenEvent e) {
+        if (!(mc.currentScreen instanceof ScreenGUI)) {
+            if (mc.currentScreen != e.gui) {
+                if ((e.gui instanceof GuiIngameMenu) || ((e.gui instanceof GuiInventory) && (!OptionCore.DEFAULT_INVENTORY.getValue()))) {
+                    final boolean inv = (e.gui instanceof GuiInventory);
 
-                    mc.currentScreen.mc = mc;
-                    if (mc.playerController.isInCreativeMode() && mc.currentScreen instanceof GuiInventory)
-                        mc.displayGuiScreen(new GuiContainerCreative(mc.thePlayer));
-                    else try {
-                        SoundCore.play(mc, SoundCore.ORB_DROPDOWN);
-                        mc.displayGuiScreen(new IngameMenuGUI((inv ? (GuiInventory)mc.currentScreen : null)));
-                        replaceGUI = false;
-                    } catch (NullPointerException ignored) {
+                    if (mc.playerController.isInCreativeMode() && inv)
+                        e.gui = new GuiContainerCreative(mc.thePlayer);
+                    else {
+                        e.gui = new IngameMenuGUI((inv ? (GuiInventory) mc.currentScreen : null));
                     }
-                } else if ((mc.currentScreen instanceof GuiGameOver) && (!OptionCore.DEFAULT_DEATH_SCREEN.getValue())) {
-                    mc.currentScreen.mc = mc;
-
+                }
+                if ((e.gui instanceof GuiGameOver) && (!OptionCore.DEFAULT_DEATH_SCREEN.getValue())) {
                     if (mc.ingameGUI instanceof IngameGUI) {
-                        try {
-                            mc.displayGuiScreen(null);
-                            mc.displayGuiScreen(new DeathScreen((GuiGameOver) mc.currentScreen));
-                            replaceGUI = false;
-                        } catch (NullPointerException ignored) {
-                        }
+                        e.gui = new DeathScreen();
                     }
                 }
             }
-        }
-    }
-
-    static void renderTickEvent(TickEvent.RenderTickEvent event) {
-        if ((event.type == TickEvent.Type.RENDER || event.type == TickEvent.Type.CLIENT) && event.phase == TickEvent.Phase.END) {
-            if (!ticked && mc.ingameGUI != null) {
-                mc.ingameGUI = new IngameGUI(mc);
-                ticked = true;
-            }
+            else e.setCanceled(true);
         }
     }
 
