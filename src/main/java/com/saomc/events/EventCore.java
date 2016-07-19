@@ -2,6 +2,7 @@ package com.saomc.events;
 
 import com.saomc.colorstates.ColorStateHandler;
 import com.saomc.effects.RenderDispatcher;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
@@ -9,6 +10,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 /**
  * This is the core for all event handlers, listening to events then passing on to the other events that need it.
@@ -32,6 +35,7 @@ public class EventCore {
     public void renderTickListener(TickEvent.RenderTickEvent e) {
         RenderHandler.deathHandlers();
         StateEventHandler.checkTicks(e);
+        RenderHandler.deathCheck();
     }
 
     @SubscribeEvent
@@ -55,16 +59,11 @@ public class EventCore {
     }
 
     @SubscribeEvent
-    public void renderEntityListener(LivingDeathEvent e){
-        EventHandler.onKill(e);
-    }
-
-    @SubscribeEvent
     public void renderWorldListener(RenderWorldLastEvent event) {
         RenderDispatcher.dispatch();
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void guiOpenListener (GuiOpenEvent e){
         RenderHandler.guiInstance(e);
         RenderHandler.mainMenuGUI(e);

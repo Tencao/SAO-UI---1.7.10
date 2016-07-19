@@ -36,12 +36,23 @@ public class StateEventHandler {
     static void checkRadius (){
         List<Entity> entities = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, mc.thePlayer.boundingBox.expand(19.0D, 19.0D, 19.0D));
         Entity living;
+        Iterator<Entity> iterator = entities.iterator();
+
+        while (iterator.hasNext()){
+            Entity entity = iterator.next();
+            if (entity == null) iterator.remove();
+            else if (!(entity instanceof EntityLivingBase)) iterator.remove();
+            else if (!(mc.thePlayer.canEntityBeSeen(entity))) iterator.remove();
+        }
 
         for (Entity entity : entities) {
             living = entity;
-            if (living != null && living instanceof EntityLivingBase && ColorStateHandler.getInstance().getSavedState((EntityLivingBase) living) == ColorState.VIOLENT)
+            if (ColorStateHandler.getInstance().getSavedState((EntityLivingBase) living) == ColorState.VIOLENT)
                 ColorStateHandler.getInstance().set((EntityLivingBase) living, ColorState.KILLER, true);
+            if (((EntityLivingBase) living).getHealth() <= 0 && OptionCore.PARTICLES.getValue())
+                RenderHandler.deadHandlers.add((EntityLivingBase) living);
         }
+
     }
 
     static void resetState(){

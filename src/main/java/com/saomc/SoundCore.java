@@ -35,7 +35,7 @@ public class SoundCore {
     }
 
     public static void play(Minecraft mc, String name) {
-        if (mc != null && mc.theWorld.isRemote) {
+        if (mc != null && mc.theWorld != null && mc.theWorld.isRemote) {
             play(mc.getSoundHandler(), name);
         }
     }

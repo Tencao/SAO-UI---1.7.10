@@ -9,6 +9,9 @@ import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 
 import static com.saomc.events.EventCore.mc;
 
@@ -35,10 +38,6 @@ public class EventHandler {
 
     static void chatCommand(ClientChatReceivedEvent evt) {
         if (!(mc.currentScreen instanceof GuiConnecting) && Command.processCommand(evt.message.getUnformattedText())) evt.setCanceled(true);// TODO: add pm feature and PT chat
-    }
-
-    static void onKill(LivingDeathEvent e){
-        if (OptionCore.PARTICLES.getValue() && e.entity.worldObj.isRemote) RenderHandler.deadHandlers.add(e.entityLiving);
     }
 
 }

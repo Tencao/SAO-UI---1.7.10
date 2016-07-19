@@ -9,18 +9,17 @@ import com.saomc.screens.menu.MainMenuGUI;
 import com.saomc.screens.menu.StartupGUI;
 import com.saomc.screens.window.ScreenGUI;
 import com.saomc.util.OptionCore;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGameOver;
-import net.minecraft.client.gui.GuiIngameMenu;
-import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -63,24 +62,38 @@ public class RenderHandler {
     }
 
     static void guiInstance(GuiOpenEvent e) {
-        if (!(mc.currentScreen instanceof ScreenGUI)) {
-            if (mc.currentScreen != e.gui) {
-                if ((e.gui instanceof GuiIngameMenu) || ((e.gui instanceof GuiInventory) && (!OptionCore.DEFAULT_INVENTORY.getValue()))) {
-                    final boolean inv = (e.gui instanceof GuiInventory);
+        if (OptionCore.DEBUG_MODE.getValue()) System.out.print(e.gui + " called GuiOpenEvent \n");
 
-                    if (mc.playerController.isInCreativeMode() && inv)
-                        e.gui = new GuiContainerCreative(mc.thePlayer);
-                    else {
-                        e.gui = new IngameMenuGUI((inv ? (GuiInventory) mc.currentScreen : null));
-                    }
-                }
-                if ((e.gui instanceof GuiGameOver) && (!OptionCore.DEFAULT_DEATH_SCREEN.getValue())) {
-                    if (mc.ingameGUI instanceof IngameGUI) {
-                        e.gui = new DeathScreen();
-                    }
-                }
+        if (e.gui instanceof GuiIngameMenu) {
+            if (!(mc.currentScreen instanceof IngameMenuGUI)) {
+                e.gui = new IngameMenuGUI(null);
             }
+        }
+        if (e.gui instanceof GuiInventory && !(!OptionCore.DEFAULT_INVENTORY.getValue())){
+            if (mc.playerController.isInCreativeMode())
+                e.gui = new GuiContainerCreative(mc.thePlayer);
+            else if (!(mc.currentScreen instanceof IngameMenuGUI))
+                e.gui = new IngameMenuGUI((GuiInventory) mc.currentScreen);
             else e.setCanceled(true);
+        }
+        if (e.gui instanceof GuiGameOver && (!OptionCore.DEFAULT_DEATH_SCREEN.getValue())){
+            if (!(e.gui instanceof DeathScreen)) {
+                e.gui = new DeathScreen();
+            }
+        }
+        if (e.gui instanceof IngameMenuGUI)
+            if (mc.currentScreen instanceof GuiOptions){
+                e.setCanceled(true);
+                mc.currentScreen.onGuiClosed();
+                mc.setIngameFocus();
+            }
+
+    }
+
+    static void deathCheck(){
+        if (mc.currentScreen instanceof DeathScreen && mc.thePlayer.getHealth() > 0.0F){
+            mc.currentScreen.onGuiClosed();
+            mc.setIngameFocus();
         }
     }
 

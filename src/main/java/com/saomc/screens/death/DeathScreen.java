@@ -11,15 +11,14 @@ import com.saomc.util.ColorUtil;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiYesNoCallback;
 import net.minecraft.client.multiplayer.WorldClient;
 
-import java.io.IOException;
 
 @SideOnly(Side.CLIENT)
-public class DeathScreen extends ScreenGUI {
+public class DeathScreen extends ScreenGUI implements GuiYesNoCallback {
 
     private final CursorStatus oldCursorStatus;
 
@@ -77,14 +76,14 @@ public class DeathScreen extends ScreenGUI {
     {
         if (result)
         {
-            mc.theWorld.sendQuittingDisconnectingPacket();
-            mc.loadWorld((WorldClient)null);
-            mc.displayGuiScreen(new GuiMainMenu());
+            this.mc.theWorld.sendQuittingDisconnectingPacket();
+            this.mc.loadWorld((WorldClient)null);
+            this.mc.displayGuiScreen(new GuiMainMenu());
         }
         else
         {
-            mc.thePlayer.respawnPlayer();
-            mc.displayGuiScreen(null);
+            this.mc.thePlayer.respawnPlayer();
+            this.mc.displayGuiScreen((GuiScreen)null);
         }
     }
 
@@ -97,35 +96,7 @@ public class DeathScreen extends ScreenGUI {
 
     @Override
     public boolean doesGuiPauseGame() {
-        return true;
+        return false;
     }
 
-    /**
-     * This is a dummy class intended to fix the ghost death screen
-     */
-    public static class DummyScreen extends DeathScreen {
-
-        @Override
-        public void initGui(){}
-
-        @Override
-        protected void keyTyped(char typedChar, int keyCode) {}
-
-
-        @Override
-        protected void actionPerformed(GuiButton button)
-        {}
-
-        @Override
-        public void confirmClicked(boolean result, int id)
-        {}
-
-        @Override
-        public void drawScreen(int mouseX, int mouseY, float partialTicks)
-        {}
-
-        @Override
-        public void updateScreen()
-        {}
-    }
 }

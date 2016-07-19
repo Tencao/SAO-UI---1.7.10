@@ -88,7 +88,7 @@ public class StaticRenderer{
 
                 //System.out.print(state.name() + " assigned to " + living.getCommandSenderName() + " " + living.getUniqueID() + "\n");
 
-                if (OptionCore.SPINNING_CRYSTALS.getValue()) {
+                if (OptionCore.SPINNING_CRYSTALS.getValue() && mc.thePlayer.canEntityBeSeen(living)) {
                     double a = (living.worldObj.getTotalWorldTime() % 40) / 20.0D * Math.PI;
                     double cos = Math.cos(a);//Math.PI / 3 * 2);
                     double sin = Math.sin(a);//Math.PI / 3 * 2);

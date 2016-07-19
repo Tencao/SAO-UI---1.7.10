@@ -119,8 +119,8 @@ public class IngameMenuGUI extends ScreenGUI {
 
     @Override
     public void onGuiClosed(){
-        super.onGuiClosed();
         SoundCore.play(mc, SoundCore.DIALOG_CLOSE);
+        super.onGuiClosed();
     }
 
     @Override
@@ -242,6 +242,7 @@ public class IngameMenuGUI extends ScreenGUI {
                 element.enabled = false;
                 mc.theWorld.sendQuittingDisconnectingPacket();
 
+                mc.currentScreen.onGuiClosed();
                 mc.loadWorld(null);
                 mc.displayGuiScreen(new GuiMainMenu());
             }

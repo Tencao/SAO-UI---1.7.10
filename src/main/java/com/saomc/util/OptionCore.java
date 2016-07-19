@@ -51,7 +51,7 @@ public enum OptionCore {
     SOUND_EFFECTS(StatCollector.translateToLocal("optionSounds"), true, false, EFFECTS, false),
     //Misc
     CROSS_HAIR(StatCollector.translateToLocal("optionCrossHair"), false, false, MISC, false),
-    AGGRO_SYSTEM(StatCollector.translateToLocal("optionAggro"), false, false, MISC, false),
+    AGGRO_SYSTEM(StatCollector.translateToLocal("optionAggro"), true, false, MISC, false),
     CLIENT_CHAT_PACKETS(StatCollector.translateToLocal("optionCliChatPacks"), true, false, MISC, false),
     MOUNT_STAT_VIEW(StatCollector.translateToLocal("optionMountStatView"), true, false, MISC, false),
     CUSTOM_FONT(StatCollector.translateToLocal("optionCustomFont"), false, false, MISC, false),
