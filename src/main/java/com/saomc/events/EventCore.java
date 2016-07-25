@@ -59,6 +59,11 @@ public class EventCore {
     }
 
     @SubscribeEvent
+    public void renderEntityListener(LivingDeathEvent e){
+        EventHandler.onKill(e);
+    }
+
+    @SubscribeEvent
     public void renderWorldListener(RenderWorldLastEvent event) {
         RenderDispatcher.dispatch();
     }

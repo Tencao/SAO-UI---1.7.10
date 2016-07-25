@@ -26,7 +26,6 @@ public class StartupGUI extends GuiScreen {
 
     @Override
     public void drawScreen(int par1, int par2, float par3) {
-        drawDefaultBackground();
         drawCenteredString(this.fontRendererObj, EnumChatFormatting.YELLOW + "NOTICE \n", this.width / 2, this.height / 2 - 100, 0xFFFFFF);
 
         if (isDev())

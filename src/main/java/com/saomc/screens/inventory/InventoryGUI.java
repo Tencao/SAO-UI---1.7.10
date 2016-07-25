@@ -20,8 +20,8 @@ public class InventoryGUI extends ListGUI {
 
     private boolean opened;
 
-    public InventoryGUI(ParentElement gui, int xPos, int yPos, int w, int h, Container containerSlots, InventoryCore inventory) {
-        super(gui, xPos, yPos, w, h);
+    public InventoryGUI(ParentElement gui, int xPos, int yPos, Container containerSlots, InventoryCore inventory) {
+        super(gui, xPos, yPos);
         slots = containerSlots;
         filter = inventory;
         opened = false;

@@ -5,7 +5,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 
 @SideOnly(Side.CLIENT)
-public class ListGUI extends MenuGUI {
+public class ListGUI extends MenuSlotGUI {
 
     private float scrolledValue;
     private int scrollValue;
@@ -15,16 +15,16 @@ public class ListGUI extends MenuGUI {
     private int lastDragY, dragY;
     private boolean dragging;
 
-    private ListGUI(ParentElement gui, int xPos, int yPos, int w, int h, int minH) {
-        super(gui, xPos, yPos, w, h);
+    public ListGUI(ParentElement gui, int xPos, int yPos, int h, int minH) {
+        super(gui, xPos, yPos);
         fullArrow = false;
         scrollValue = 0;
         size = h;
         minSize = minH;
     }
 
-    public ListGUI(ParentElement gui, int xPos, int yPos, int w, int h) {
-        this(gui, xPos, yPos, w, h, 0);
+    public ListGUI(ParentElement gui, int xPos, int yPos) {
+        this(gui, xPos, yPos, 0, 0);
     }
 
     @Override
@@ -127,7 +127,10 @@ public class ListGUI extends MenuGUI {
 
     @Override
     public boolean mouseWheel(Minecraft mc, int cursorX, int cursorY, int delta) {
-        if (elements.size() > 0) scroll(Math.abs(delta * 2 * getSize() / elements.size()) / delta);
+        if (elements.size() > 0){
+            if (elements.size() <= 9) scroll(Math.abs(delta * 2 * getSize() / elements.size()) / delta);
+            else scroll(Math.abs(delta * 2 * getSize() / 5) / delta);
+        }
 
         return super.mouseWheel(mc, cursorX, cursorY, delta);
     }
@@ -137,7 +140,7 @@ public class ListGUI extends MenuGUI {
         if (elements.size() <= 9) scrollValue = Math.min(Math.max(scrollValue - delta, 0), super.getOffset(elements.size()) - getSize());
         else {
             scrollValue -= delta;
-            scrollValue %= super.getOffset(elements.size());
+            scrollValue %= super.getOffset(elements.size()) - getSize();
         }
         return Math.abs(value - scrollValue);
     }

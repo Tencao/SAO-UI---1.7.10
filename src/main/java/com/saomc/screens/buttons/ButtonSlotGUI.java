@@ -9,12 +9,9 @@ import com.saomc.screens.menu.MainMenuGUI;
 import com.saomc.util.ColorUtil;
 import com.saomc.util.IconCore;
 import com.saomc.util.OptionCore;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 
-@SideOnly(Side.CLIENT)
-public class ButtonGUI extends Elements {
+public class ButtonSlotGUI extends Elements {
 
     private final Categories id;
 
@@ -23,8 +20,8 @@ public class ButtonGUI extends Elements {
     public boolean highlight;
     private boolean menu;
 
-    public ButtonGUI(ParentElement gui, Categories saoID, int xPos, int yPos, int w, int h, String string, IconCore iconCore) {
-        super(gui, xPos, yPos, w, h);
+    public ButtonSlotGUI(ParentElement gui, Categories saoID, int xPos, int yPos, String string, IconCore iconCore) {
+        super(gui, xPos, yPos, 100, 20);
         id = saoID;
         caption = string;
         icon = iconCore;
@@ -32,29 +29,10 @@ public class ButtonGUI extends Elements {
         if (gui instanceof MainMenuGUI) menu = true;
     }
 
-    public ButtonGUI(ParentElement gui, Categories saoID, int xPos, int yPos, int w, String string, IconCore iconCore) {
-        this(gui, saoID, xPos, yPos, w, 20, string, iconCore);
-    }
-
-    public ButtonGUI(ParentElement gui, Categories saoID, int xPos, int yPos, String string, IconCore iconCore) {
-        this(gui, saoID, xPos, yPos, 100, string, iconCore);
-    }
-
-    public ButtonGUI(ParentElement gui, Categories saoID, int xPos, int yPos, String string, IconCore iconCore, boolean highlighted) {
-        this(gui, saoID, xPos, yPos, 100, string, iconCore);
-        highlight = highlighted;
-    }
-
-    public ButtonGUI(ParentElement gui, Categories slot, int xPos, int yPos, int w, int h) {
-        this(gui, slot, xPos, yPos, w, h, "", IconCore.NONE);
-    }
-
     @Override
     public void draw(Minecraft mc, int cursorX, int cursorY) {
-        super.draw(mc, cursorX, cursorY);
-
         if (visibility > 0) {
-            GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
+            GLCore.glBindTexture(StringNames.slot);
 
             final int hoverState = hoverState(cursorX, cursorY);
             final int color0 = getColor(hoverState, true);
@@ -67,11 +45,13 @@ public class ButtonGUI extends Elements {
             final int captionOffset = (height - GLCore.glStringHeight()) / 2;
 
             GLCore.glBlend(true);
-            GLCore.glColorRGBA(ColorUtil.multiplyAlpha(color0, visibility));
-            GLCore.glTexturedRect(left, top, 0, 45, width2, height2);
-            GLCore.glTexturedRect(left + width2, top, 200 - width2, 45, width2, height2);
-            GLCore.glTexturedRect(left, top + height2, 0, 65 - height2, width2, height2);
-            GLCore.glTexturedRect(left + width2, top + height2, 200 - width2, 65 - height2, width2, height2);
+            GLCore.glColorRGBA(ColorUtil.multiplyAlpha(color1, visibility));
+            if (hoverState == 3)
+                GLCore.glTexturedRect(left, top, width, height, 0, 20, width - 15, height);
+            else
+                GLCore.glTexturedRect(left, top, width, height, 0, 0, width - 15, height);
+
+            GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
 
             GLCore.glColorRGBA(ColorUtil.multiplyAlpha(color1, visibility));
             GLCore.glTexturedRect(left + iconOffset, top + iconOffset, 140, 25, 16, 16);
@@ -100,5 +80,4 @@ public class ButtonGUI extends Elements {
     public Categories ID() {
         return id;
     }
-
 }

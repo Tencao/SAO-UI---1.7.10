@@ -55,6 +55,7 @@ public class RenderHandler {
                 if (deadExactly) {
                     StaticRenderer.doSpawnDeathParticles(mc, ent);
                     ent.setDead();
+                    System.out.print(ent.getCommandSenderName() + " passed deathHandlers \n");
                 }
             }
         });
@@ -69,7 +70,7 @@ public class RenderHandler {
                 e.gui = new IngameMenuGUI(null);
             }
         }
-        if (e.gui instanceof GuiInventory && !(!OptionCore.DEFAULT_INVENTORY.getValue())){
+        if (e.gui instanceof GuiInventory && !OptionCore.DEFAULT_INVENTORY.getValue()){
             if (mc.playerController.isInCreativeMode())
                 e.gui = new GuiContainerCreative(mc.thePlayer);
             else if (!(mc.currentScreen instanceof IngameMenuGUI))
@@ -109,7 +110,7 @@ public class RenderHandler {
     static void renderEntity(RenderLivingEvent.Post e) {
         if (!OptionCore.UI_ONLY.getValue()) {
             RenderManager manager = RenderManager.instance;
-            if (e.entity != mc.thePlayer) {
+            if (e.entity != null && e.entity != mc.thePlayer) {
                 StaticRenderer.render(manager, e.entity, e.x, e.y, e.z);
             }
         }
@@ -122,8 +123,8 @@ public class RenderHandler {
                     e.gui = new StartupGUI();
                     menuGUI = false;
                 }
-        else if (e.gui instanceof GuiMainMenu)
-                    e.gui = new MainMenuGUI();
+        if (e.gui instanceof GuiMainMenu)
+            e.gui = new MainMenuGUI();
     }
 
 }

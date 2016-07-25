@@ -7,6 +7,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -40,4 +42,9 @@ public class EventHandler {
         if (!(mc.currentScreen instanceof GuiConnecting) && Command.processCommand(evt.message.getUnformattedText())) evt.setCanceled(true);// TODO: add pm feature and PT chat
     }
 
+    static void onKill(LivingDeathEvent e){
+        if (e.entity.worldObj.isRemote && e.entity instanceof EntityLivingBase){
+            if (OptionCore.PARTICLES.getValue()) RenderHandler.deadHandlers.add((EntityLivingBase)e.entity);
+        }
+    }
 }

@@ -45,7 +45,7 @@ public enum ColorState {
     private static ColorState getState(Minecraft mc, EntityLiving entity) {
         if (entity instanceof EntityWolf && ((EntityWolf) entity).isAngry()) return KILLER;
         else if (entity instanceof EntityTameable && ((EntityTameable) entity).isTamed())
-            return ((EntityTameable) entity).getOwner() != mc.thePlayer ? VIOLENT : INNOCENT;
+            return ((EntityTameable) entity).getOwner() == mc.thePlayer ?  INNOCENT : VIOLENT;
         else if (entity instanceof IBossDisplayData) return BOSS;
         else if (entity instanceof IMob) return OptionCore.AGGRO_SYSTEM.getValue() ? VIOLENT : KILLER;
         else if (entity instanceof IAnimals) return INNOCENT;

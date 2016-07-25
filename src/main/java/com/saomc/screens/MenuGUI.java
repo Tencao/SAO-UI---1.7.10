@@ -14,8 +14,8 @@ public class MenuGUI extends ContainerGUI {
     public boolean innerMenu;
     public boolean fullArrow;
 
-    public MenuGUI(ParentElement gui, int xPos, int yPos, int w, int h) {
-        super(gui, xPos, yPos, w, h);
+    public MenuGUI(ParentElement gui, int xPos, int yPos, int x, int y) {
+        super(gui, xPos, yPos, x, y);
         fullArrow = true;
         innerMenu = false;
     }

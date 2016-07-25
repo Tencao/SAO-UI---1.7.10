@@ -87,7 +87,7 @@ public class CharacterView extends Elements {
 
                     if ((slot.getHasStack()) && (slot.getStack().getItem() != null)) {
                         GLCore.glColorRGBA((hovered ? ColorUtil.HOVER_FONT_COLOR : ColorUtil.DEFAULT_COLOR).multiplyAlpha(visibility));
-                        Slots.getIcon(slot.getStack()).glDraw(x - 8, y - 8);
+                        Slots.getIcon(slot.getStack()).glDraw(x - 8, y - 8, false);
                     }
 
                     if (hovered) clickIndex = index;

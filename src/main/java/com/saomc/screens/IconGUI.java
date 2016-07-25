@@ -4,6 +4,7 @@ import com.saomc.GLCore;
 import com.saomc.SoundCore;
 import com.saomc.resources.StringNames;
 import com.saomc.screens.menu.Categories;
+import com.saomc.screens.menu.MainMenuGUI;
 import com.saomc.util.ColorUtil;
 import com.saomc.util.IconCore;
 import com.saomc.util.OptionCore;
@@ -20,6 +21,7 @@ public class IconGUI extends Elements {
     public boolean highlight;
     public ColorUtil bgColor, disabledMask;
     private IconCore icon;
+    private boolean menu;
 
     public IconGUI(ParentElement gui, Categories saoID, int xPos, int yPos, IconCore iconCore) {
         super(gui, xPos, yPos, 20, 20);
@@ -28,6 +30,7 @@ public class IconGUI extends Elements {
         highlight = false;
         bgColor = ColorUtil.DEFAULT_COLOR;
         disabledMask = ColorUtil.DISABLED_MASK;
+        if (gui instanceof MainMenuGUI) menu = true;
     }
 
     public void draw(Minecraft mc, int cursorX, int cursorY) {
@@ -47,7 +50,7 @@ public class IconGUI extends Elements {
             GLCore.glColorRGBA(ColorUtil.multiplyAlpha(color0, visibility));
             GLCore.glTexturedRect(left, top, 0, 25, 20, 20);
             GLCore.glColorRGBA(ColorUtil.multiplyAlpha(color1, visibility));
-            icon.glDraw(left + iconOffset, top + iconOffset);
+            icon.glDraw(left + iconOffset, top + iconOffset, menu);
             GLCore.glBlend(false);
         }
     }

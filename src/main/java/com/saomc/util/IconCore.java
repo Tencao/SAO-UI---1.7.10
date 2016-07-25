@@ -51,17 +51,27 @@ public enum IconCore {
         return (ordinal() - 1);
     }
 
-    public final void glDraw(int x, int y, float z) {
+    public final void glDraw(int x, int y, float z, boolean menu) {
         if (index() >= 0) {
-            GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.icons : StringNames.iconsCustom);
-            GLCore.glTexturedRect(x, y, z, getSrcX(), getSrcY(), SRC_SIZE, SRC_SIZE);
+            if (menu){
+                GLCore.glBindTexture(StringNames.iconsMenu);
+                GLCore.glTexturedRect(x, y, z, getSrcX(), getSrcY(), SRC_SIZE, SRC_SIZE);
+            } else {
+                GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.icons : StringNames.iconsCustom);
+                GLCore.glTexturedRect(x, y, z, getSrcX(), getSrcY(), SRC_SIZE, SRC_SIZE);
+            }
         }
     }
 
-    public final void glDraw(int x, int y) {
+    public final void glDraw(int x, int y, boolean menu) {
         if (index() >= 0) {
-            GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.icons : StringNames.iconsCustom);
-            GLCore.glTexturedRect(x, y, getSrcX(), getSrcY(), SRC_SIZE, SRC_SIZE);
+            if (menu) {
+                GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.icons : StringNames.iconsCustom);
+                GLCore.glTexturedRect(x, y, getSrcX(), getSrcY(), SRC_SIZE, SRC_SIZE);
+            } else {
+                GLCore.glBindTexture(StringNames.iconsMenu);
+                GLCore.glTexturedRect(x, y, getSrcX(), getSrcY(), SRC_SIZE, SRC_SIZE);
+            }
         }
     }
 

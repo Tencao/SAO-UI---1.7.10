@@ -242,8 +242,8 @@ public class IngameMenuGUI extends ScreenGUI {
                 element.enabled = false;
                 mc.theWorld.sendQuittingDisconnectingPacket();
 
-                mc.currentScreen.onGuiClosed();
                 mc.loadWorld(null);
+                mc.currentScreen.onGuiClosed();
                 mc.displayGuiScreen(new GuiMainMenu());
             }
         }
@@ -335,11 +335,11 @@ public class IngameMenuGUI extends ScreenGUI {
         final int menuOffsetX = element.width + 14;
         final int menuOffsetY = element.height / 2;
 
-        MenuGUI menu = null;
+        MenuSlotGUI menu = null;
         MenuGUI subMenu = sub;
         // Core Menu
         if (id == Categories.PROFILE) {
-            menu = new MenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
+            menu = new MenuSlotGUI(element, menuOffsetX, menuOffsetY);
 
             menu.elements.add(new ButtonGUI(menu, Categories.EQUIPMENT, 0, 0, StatCollector.translateToLocal("guiEquipment"), IconCore.EQUIPMENT));
             menu.elements.add(new ButtonGUI(menu, Categories.ITEMS, 0, 0, StatCollector.translateToLocal("guiItems"), IconCore.ITEMS));
@@ -353,7 +353,7 @@ public class IngameMenuGUI extends ScreenGUI {
             setInfo(profile[0], profile[1]);
         } else if (id == Categories.SOCIAL) {
             setInfo(null, null);
-            menu = new MenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
+            menu = new MenuSlotGUI(element, menuOffsetX, menuOffsetY);
 
             menu.elements.add(new ButtonGUI(menu, Categories.GUILD, 0, 0, StatCollector.translateToLocal("guiGuild"), IconCore.GUILD));
             menu.elements.add(new ButtonGUI(menu, Categories.PARTY, 0, 0, StatCollector.translateToLocal("guiParty"), IconCore.PARTY));
@@ -366,7 +366,7 @@ public class IngameMenuGUI extends ScreenGUI {
             infoText = null;
         } else if (id == Categories.MESSAGE) {
             setInfo(null, null);
-            menu = new MenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
+            menu = new MenuSlotGUI(element, menuOffsetX, menuOffsetY);
 
             menu.elements.add(new ButtonGUI(menu, Categories.MESSAGE_BOX, 0, 0, StatCollector.translateToLocal("guiMessageBox"), IconCore.MESSAGE));
 
@@ -377,7 +377,7 @@ public class IngameMenuGUI extends ScreenGUI {
             infoText = null;
         } else if (id == Categories.NAVIGATION) {
             setInfo(null, null);
-            menu = new MenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
+            menu = new MenuSlotGUI(element, menuOffsetX, menuOffsetY);
 
             menu.elements.add(new ButtonGUI(menu, Categories.QUESTS, 0, 0, StatCollector.translateToLocal("guiQuest"), IconCore.QUEST));
             if (OptionCore.DEBUG_MODE.getValue())menu.elements.add(new ButtonGUI(menu, Categories.FIELD_MAP, 0, 0, StatCollector.translateToLocal("guiFieldMap"), IconCore.FIELD_MAP));
@@ -387,7 +387,7 @@ public class IngameMenuGUI extends ScreenGUI {
             info = SubWindow.addInfo(sub);
 
         } else if (id == Categories.SETTINGS) {
-            menu = new MenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
+            menu = new MenuSlotGUI(element, menuOffsetX, menuOffsetY);
 
             menu.elements.add(new ButtonGUI(menu, Categories.OPTIONS, 0, 0, StatCollector.translateToLocal("guiOption"), IconCore.OPTION));
             menu.elements.add(new ButtonGUI(menu, Categories.MENU, 0, 0, StatCollector.translateToLocal("guiMenu"), IconCore.HELP));
@@ -401,7 +401,7 @@ public class IngameMenuGUI extends ScreenGUI {
         }
         //Profile
         else if (id == Categories.EQUIPMENT) {
-            menu = new MenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
+            menu = new MenuSlotGUI(element, menuOffsetX, menuOffsetY);
 
             if (InventoryCore.WEAPONS != null || InventoryCore.BOWS != null || InventoryCore.PICKAXE != null || InventoryCore.AXE != null || InventoryCore.SHOVEL != null)
                 menu.elements.add(new ButtonGUI(menu, Categories.TOOLS, 0, 0, StatCollector.translateToLocal("guiTools"), IconCore.EQUIPMENT));
@@ -409,19 +409,19 @@ public class IngameMenuGUI extends ScreenGUI {
             if (InventoryCore.isBaublesLoaded()) menu.elements.add(new ButtonGUI(menu, Categories.ACCESSORY, 0, 0, StatCollector.translateToLocal("guiAccessory"), IconCore.ACCESSORY));
             menu.elements.add(new ButtonGUI(menu, Categories.CONSUMABLES, 0, 0, StatCollector.translateToLocal("guiConsumable"), IconCore.ITEMS));
         } else if (id == Categories.ITEMS) {
-            menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, InventoryCore.ITEMS);
+            menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, mc.thePlayer.inventoryContainer, InventoryCore.ITEMS);
         } else if (id == Categories.SKILLS) {
             menu = new ListGUI(element, menuOffsetX, menuOffsetY, 100, 60);
 
-            final MenuGUI mnu = menu;
+            final MenuSlotGUI mnu = menu;
             Stream.of(Skills.values()).forEach(skill -> mnu.elements.add(new SkillButton(mnu, 0, 0, skill)));
         }
         //Profile -> Equipment
         else if (id == Categories.TOOLS) { // TODO: Some optimization could be done here. Laterz.
             if (OptionCore.COMPACT_INVENTORY.getValue()){
-                menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, InventoryCore.COMPATTOOLS);
+                menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, mc.thePlayer.inventoryContainer, InventoryCore.COMPATTOOLS);
             } else {
-                menu = new MenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
+                menu = new MenuSlotGUI(element, menuOffsetX, menuOffsetY);
                 if (mc.thePlayer.inventoryContainer.getInventory().stream().filter(st -> st != null).anyMatch(st -> InventoryCore.WEAPONS.isFine((ItemStack) st, true))) menu.elements.add(new ButtonGUI(menu, Categories.WEAPONS, 0, 0, StatCollector.translateToLocal("guiWeapons"), IconCore.EQUIPMENT));
                 if (mc.thePlayer.inventoryContainer.getInventory().stream().filter(st -> st != null).anyMatch(st -> InventoryCore.BOWS.isFine((ItemStack) st, true))) menu.elements.add(new ButtonGUI(menu, Categories.BOWS, 0, 0, StatCollector.translateToLocal("guiBows"), IconCore.EQUIPMENT));
                 if (mc.thePlayer.inventoryContainer.getInventory().stream().filter(st -> st != null).anyMatch(st -> InventoryCore.PICKAXE.isFine((ItemStack) st, true))) menu.elements.add(new ButtonGUI(menu, Categories.PICKAXE, 0, 0, StatCollector.translateToLocal("guiPickaxes"), IconCore.EQUIPMENT));
@@ -430,26 +430,26 @@ public class IngameMenuGUI extends ScreenGUI {
                 if (menu.elements.isEmpty()) menu.elements.add(new EmptySlot(menu, 0, 0));
             }
         } else if (id == Categories.WEAPONS) {
-            menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, InventoryCore.WEAPONS);
+            menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, mc.thePlayer.inventoryContainer, InventoryCore.WEAPONS);
         } else if (id == Categories.BOWS) {
-            menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, InventoryCore.BOWS);
+            menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, mc.thePlayer.inventoryContainer, InventoryCore.BOWS);
         } else if (id == Categories.PICKAXE) {
-            menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, InventoryCore.PICKAXE);
+            menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, mc.thePlayer.inventoryContainer, InventoryCore.PICKAXE);
         } else if (id == Categories.AXE) {
-            menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, InventoryCore.AXE);
+            menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, mc.thePlayer.inventoryContainer, InventoryCore.AXE);
         } else if (id == Categories.SHOVEL) {
-            menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, InventoryCore.SHOVEL);
+            menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, mc.thePlayer.inventoryContainer, InventoryCore.SHOVEL);
         } else if (id == Categories.ARMOR) {
-            menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, InventoryCore.EQUIPMENT);
+            menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, mc.thePlayer.inventoryContainer, InventoryCore.EQUIPMENT);
         } else if (id == Categories.ACCESSORY) {
-            if (InventoryCore.isBaublesLoaded()) menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, InventoryCore.ACCESSORY);
+            if (InventoryCore.isBaublesLoaded()) menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, mc.thePlayer.inventoryContainer, InventoryCore.ACCESSORY);
             else menu.elements.add(new EmptySlot(menu, 0, 0));
         } else if (id == Categories.CONSUMABLES) {
-            menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, InventoryCore.CONSUMABLES);
+            menu = new InventoryGUI(element, menuOffsetX, menuOffsetY, mc.thePlayer.inventoryContainer, InventoryCore.CONSUMABLES);
         }
         //Social
         else if (id == Categories.PARTY) {
-            menu = new MenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
+            menu = new MenuSlotGUI(element, menuOffsetX, menuOffsetY);
 
             menu.elements.add(new PartyHandler(menu, Categories.INVITE_LIST, 0, 0, StatCollector.translateToLocal("guiInvite"), IconCore.INVITE));
             menu.elements.add(new PartyHandler(menu, Categories.DISSOLVE, 0, 0, StatCollector.translateToLocal("guiDissolve"), IconCore.CANCEL));
@@ -471,7 +471,7 @@ public class IngameMenuGUI extends ScreenGUI {
         else if (id == Categories.INVITE_LIST) { // TODO: make all of these update in real-time (whole class needs probs massive rewrite)
             menu = new ListGUI(element, menuOffsetX, menuOffsetY, 100, 60);
 
-            final MenuGUI mnu = menu;
+            final MenuSlotGUI mnu = menu;
             if (StaticPlayerHelper.listOnlinePlayers(mc) != null)
                 StaticPlayerHelper.listOnlinePlayers(mc, true, 5).stream().map(StaticPlayerHelper::getName).forEach(name -> {
                     final ButtonGUI button = new ButtonState(mnu, Categories.INVITE_PLAYER, 0, 0, name, IconCore.INVITE, (mc1, button1) -> !PartyHelper.instance().isMember(button1.caption));
@@ -485,7 +485,7 @@ public class IngameMenuGUI extends ScreenGUI {
             setInfo(null, null);
             if (((FriendCore) element).highlight) {
                 System.out.println("Add friends menu request");
-                menu = new MenuGUI(element, menuOffsetX, menuOffsetY, 100, 60);
+                menu = new MenuSlotGUI(element, menuOffsetX, menuOffsetY);
                 menu.elements.add(new ButtonGUI(menu, Categories.POSITION_CHECK, 0, 0, StatCollector.translateToLocal("guiPositionCheck"), IconCore.FIELD_MAP));
                 menu.elements.add(new ButtonGUI(menu, Categories.OTHER_PROFILE, 0, 0, StatCollector.translateToLocal("guiProfile"), IconCore.PARTY));
             } else {
@@ -554,13 +554,13 @@ public class IngameMenuGUI extends ScreenGUI {
         else if (id == Categories.OPTIONS) {
             menu = new ListGUI(element, menuOffsetX, menuOffsetY, 130, 100);
 
-            final MenuGUI mnu = menu;
+            final MenuSlotGUI mnu = menu;
             Stream.of(OptionCore.values()).filter(opt -> opt.category == null).forEach(option -> mnu.elements.add(new OptionButton(mnu, 0, 0, option)));
         } else if (id == Categories.OPT_CAT) {
             openOptCat = ((OptionButton) element).getOption();
             menu = new ListGUI(element, menuOffsetX, menuOffsetY, 130, 100);
 
-            final MenuGUI mnu = menu;
+            final MenuSlotGUI mnu = menu;
             Stream.of(OptionCore.values()).filter(opt -> opt.category == openOptCat).forEach(option -> mnu.elements.add((new OptionButton(mnu, 0, 0, option))));
         }
         //Misc

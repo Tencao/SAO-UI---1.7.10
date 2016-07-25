@@ -26,7 +26,7 @@ public enum Categories {
     FIELD_MAP(NAVIGATION, true, false),
     DUNGEON_MAP(NAVIGATION, true, false),
 
-    OPTIONS(SETTINGS, true, false),
+    OPTIONS(SETTINGS, false, false),
     MENU(SETTINGS, false, false),
     LOGOUT(SETTINGS, false, false),
 
@@ -56,20 +56,48 @@ public enum Categories {
     OPTION(OPTIONS, false, false),
     OPT_CAT(OPTIONS, true, false),
 
-    ALERT(false, true);
+    ALERT(false, true),
+
+    /**
+     * BREAK POINT - Main Menu
+     */
+
+    SINGLEPLAYER(true, true),
+    MULTIPLAYER(true, true),
+    REALMS(true, true),
+    MODS(true, true),
+    LANGUAGES(true, true),
+    QUIT(false, true),
+
+    NEWGAME(SINGLEPLAYER, true, false),
+    LOADGAME(SINGLEPLAYER, true, false),
+    DELETEGAME(SINGLEPLAYER, true, false),
+
+
+    LANGUAGE(LANGUAGES, true, false);
 
     private final Categories parent;
     private final boolean menuFlag;
     private final boolean isMandatory;
+    private final boolean restricted;
 
-    Categories(Categories parentID, boolean menu, boolean isMain) {
+    Categories(Categories parentID, boolean menu, boolean isMain, boolean isRestricted) {
         parent = parentID;
         menuFlag = menu;
         isMandatory = isMain;
+        restricted = isRestricted;
     }
 
     Categories(boolean menu, boolean isMain) {
-        this(null, menu, isMain);
+        this(null, menu, isMain, false);
+    }
+
+    Categories(boolean menu, boolean isMain, boolean isRestricted) {
+        this(null, menu, isMain, isRestricted);
+    }
+
+    Categories(Categories parentID, boolean menu, boolean isMain) {
+        this(parentID, menu, isMain, false);
     }
 
     public boolean hasParent(Categories id) {

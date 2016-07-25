@@ -29,30 +29,14 @@ public class StateEventHandler {
                 resetState();
                 ticks = 0;
             } else ++ticks;
-
         }
     }
 
     static void checkRadius (){
-        List<Entity> entities = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, mc.thePlayer.boundingBox.expand(19.0D, 19.0D, 19.0D));
-        Entity living;
-        Iterator<Entity> iterator = entities.iterator();
-
-        while (iterator.hasNext()){
-            Entity entity = iterator.next();
-            if (entity == null) iterator.remove();
-            else if (!(entity instanceof EntityLivingBase)) iterator.remove();
-            else if (!(mc.thePlayer.canEntityBeSeen(entity))) iterator.remove();
-        }
-
-        for (Entity entity : entities) {
-            living = entity;
-            if (ColorStateHandler.getInstance().getSavedState((EntityLivingBase) living) == ColorState.VIOLENT)
-                ColorStateHandler.getInstance().set((EntityLivingBase) living, ColorState.KILLER, true);
-            if (((EntityLivingBase) living).getHealth() <= 0 && OptionCore.PARTICLES.getValue())
-                RenderHandler.deadHandlers.add((EntityLivingBase) living);
-        }
-
+        List<Entity> entities = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, mc.thePlayer.boundingBox.expand(20.0D, 20.0D, 20.0D));
+        entities.removeIf(ent -> !(ent != null && ent instanceof EntityLivingBase && ent.worldObj.isRemote));
+        entities.stream().filter(ent -> ((EntityLivingBase)ent).getHealth() <= 0 && OptionCore.PARTICLES.getValue()).forEach(ent -> RenderHandler.deadHandlers.add((EntityLivingBase)ent));
+        entities.stream().filter(ent -> mc.thePlayer.canEntityBeSeen(ent) && ColorStateHandler.getInstance().getSavedState((EntityLivingBase) ent) == ColorState.VIOLENT).forEach(ent -> ColorStateHandler.getInstance().set((EntityLivingBase) ent, ColorState.KILLER, true));
     }
 
     static void resetState(){
